@@ -1,0 +1,84 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group" ng-if="!showAddDialog" ng-click="add()">
+            <button class="btn btn-primary pull-right">Add Key Request</button>
+        </div>
+        <div ng-if="showAddDialog">
+            <div class="form-group">
+                <label>Movie</label>
+                <input single-select ng-model="newRequest.movieId" class="form-control" service="movieService" ng-change="updateMC()"/>
+            </div>
+            <div class="form-group">
+                <label>Media Clip</label>
+                <input single-select ng-model="newRequest.mediaClipId" class="form-control" service="mediaclipService" mparams="mediaclipParams"/>
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input single-select ng-model="newRequest.locationId" class="form-control" service="locationService"/>
+            </div>
+            <div class="form-group">
+                <label>Device</label>
+                <input single-select ng-model="newRequest.deviceId" class="form-control" service="deviceService"/>
+            </div>
+            <div class="form-group">
+                <label>Reason</label>
+                <textarea ng-model="newRequest.reason" cols="30" rows="2" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Start Time</label>
+                <fms-time-edit ng-model="newRequest.start">
+                </fms-time-edit>
+            </div>
+            <div class="form-group">
+                <label>End Time</label>
+                <fms-time-edit ng-model="newRequest.end">
+                </fms-time-edit>
+            </div>
+            <div class="form-group">
+                <div class="pull-right">
+                    <button class="btn btn-default" ng-click="add()">cancel</button>
+                    <button class="btn btn-primary" ng-click="send()">send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <br>
+    </div>
+    <div class="col-md-12">
+        <div class="form-group">
+            <div class="alert alert-info" ng-if="!keyrequests || keyrequests.length==0">No keys requests available</div>
+            <table class="table table-compact" ng-if="keyrequests && keyrequests.length>0">
+                <tr>
+                    <th>Requester</th>
+                    <th>Location</th>
+                    <th>Device</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Reason</th>
+                    <th>Fulfilled</th>
+                </tr>
+                <tr ng-repeat="keyrequest in keyrequests">
+                    <td width="10%"> {{keyrequest.requestedBy || keyrequest.createdBy}}</td>
+                    <td width="10%">{{keyrequest.locationName}}</td>
+                    <td width="10%">{{keyrequest.deviceName}}</td>
+                    <td width="10%">
+                        <fms-time ng-model="keyrequest.start">{{date.date}} {{date.time}}
+                        </fms-date>
+                    </td width="10%">
+                    <td width="10%">
+                        <fms-time ng-model="keyrequest.end">{{date.date}} {{date.time}}
+                        </fms-date>
+                    </td>
+                    <td width="70%">
+                        {{keyrequest.reason}}
+                    </td>
+                    <td width="5%">
+                        <span ng-if="keyrequest.fulfilled" class="label label-success"><i class="glyphicon glyphicon-check"></i></span>
+                        <span ng-if="keyrequest.cancelled" class="label label-error"><i class="glyphicon glyphicon-remove"></i></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

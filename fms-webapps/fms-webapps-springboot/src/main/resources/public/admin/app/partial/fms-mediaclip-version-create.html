@@ -1,0 +1,64 @@
+<div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Clip Type</label>
+                    <input single-select ng-model="mediaclip.type" service="mediaclipTypeService"  required ng-change="mediaclip.name = mediaclip.type+': '+mediaclip.externalId+'-' + movie.name;">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>External ID</label>
+                    <input class="form-control" placeholder="External ID" ng-model="mediaclip.externalId" required ng-blur="mediaclip.name = mediaclip.type+': '+mediaclip.externalId+'-' + movie.name;">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Mediaclip Name</label>
+                    <input class="form-control" placeholder="New media clip name"  ng-disabled="true" ng-model="mediaclip.name" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Length (Minutes)</label>
+                    <input class="form-control"  ng-model="mediaclip.length" required>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>Comments</label>
+                    <textarea class="form-control" rows="1" ng-model="comment.comment"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                    <hr>
+                    <h4>Version</h4>
+            </div>
+        </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Audio Languages</label>
+                <input multi-select model="createVersion.audioLanguageIds" service="languageService" required>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="form-group">
+                <label>Subtitle Languages</label>
+                <input multi-select model="createVersion.subtitleLanguageIds" service="languageService" required>
+            </div>
+        </div>
+    </div>
+        <div class="row"  ng-show="!canEdit">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button class="btn fms-dialog-close" ng-click="close()">cancel</button> 
+                    <button class="btn btn-primary fms-dialog-commit"ng-click="add()">save</button> 
+                </div>
+            </div>
+        </div>
+</div>

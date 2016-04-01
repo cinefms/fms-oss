@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/berlinale/!svn/ver/21/trunk/berlinale-parent/berlinale-core/berlinale-util/src/main/java/de/berlinale/core/util/md5
+END
+MD5InputStream.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/berlinale/!svn/ver/21/trunk/berlinale-parent/berlinale-core/berlinale-util/src/main/java/de/berlinale/core/util/md5/MD5InputStream.java
+END
+MD5OutputStream.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/berlinale/!svn/ver/21/trunk/berlinale-parent/berlinale-core/berlinale-util/src/main/java/de/berlinale/core/util/md5/MD5OutputStream.java
+END
+MD5.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/berlinale/!svn/ver/21/trunk/berlinale-parent/berlinale-core/berlinale-util/src/main/java/de/berlinale/core/util/md5/MD5.java
+END
+MD5State.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/berlinale/!svn/ver/21/trunk/berlinale-parent/berlinale-core/berlinale-util/src/main/java/de/berlinale/core/util/md5/MD5State.java
+END
+NullOutputStream.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/berlinale/!svn/ver/21/trunk/berlinale-parent/berlinale-core/berlinale-util/src/main/java/de/berlinale/core/util/md5/NullOutputStream.java
+END

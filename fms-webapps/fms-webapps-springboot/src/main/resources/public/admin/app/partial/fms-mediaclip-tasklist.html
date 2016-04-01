@@ -1,0 +1,51 @@
+<div class="row">
+    <div class="col-md-10">
+    	<h3>Tasks</h3>
+    </div>
+    <div class="col-md-1">
+        <button class="btn btn-default pull-right" ng-click="toggleShowClosed()" ng-if="!showClosed">Show closed</button>
+        <button class="btn btn-success pull-right" ng-click="toggleShowClosed()" ng-if="showClosed">Show closed</button>
+    </div>
+    <div class="col-md-1">
+        <fms-dialog>
+            <div name="trigger">
+                <button class="btn btn-primary pull-right open-dialog"><i class="glyphicon glyphicon-plus-sign"></i> Add </button>
+            </div>
+            <div name="contents" class="fms-block-overlay contents" ng-show="showDialog">
+                <div class="fms-modal-dialog">
+                    <div ng-click="close()" class="pull-right">
+                        <i class="glyphicon glyphicon-remove-circle"></i>
+                    </div>
+                    <div class="fms-modal-dialog-header">
+                        <h2>Add a Task</h2>
+                    </div>
+                    <div class="fms-modal-dialog-contents">
+                        <div class="col-md-12">
+                            <task-create media-clip-id="mediaClipId">
+                            </task-create>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fms-dialog>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+    	<br>
+    </div>
+</div>
+<div class="row" ng-if="tasks.length == 0">
+    <div class="col-md-12">
+        <div class="alert alert-info">
+        	<i>no tasks</i>
+        </div>
+    </div>
+</div>
+<div class="row" ng-if="tasks.length > 0">
+    <div class="col-md-12" ng-repeat="task in tasks">
+        <div class="shadow-box">
+            <task-editor id="task.id"  ng-if="task && task.id">
+        </div>
+    </div>
+</div>

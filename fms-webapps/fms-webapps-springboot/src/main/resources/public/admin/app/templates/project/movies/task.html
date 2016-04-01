@@ -1,0 +1,31 @@
+<div ng-controller="TaskController">
+
+    <!--                                    -->
+    <!--                                    -->
+    <!--      MOVIE                         -->
+    <!--                                    -->
+    <!--                                    -->
+    <div fms-headline>
+        <a href="#/movies/tasks">Tasks</a> | {{task.type}}
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <br>
+        </div>
+    </div>
+
+    <div class="col-md-12" ng-if="task">
+        <div class="row">
+            <div class="col-md-12">
+                <task-editor id="task.id" ng-if="task && task.id">
+            </div>
+            <!--
+            <div class="col-md-3">
+                <comments-full object="task" ng-if="task">
+            </div>
+            -->
+        </div>
+    </div>
+
+</div>

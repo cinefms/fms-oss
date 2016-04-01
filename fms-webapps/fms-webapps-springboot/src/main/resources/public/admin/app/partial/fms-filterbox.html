@@ -1,0 +1,16 @@
+                <div class="well well-sm">
+                    <div ng-click="showFilters = ( showFilters === true ? false: true)">
+                        <i class="pull-right glyphicon glyphicon-chevron-down" ng-show="showFilters"></i>
+                        <i class="pull-right glyphicon glyphicon-chevron-up" ng-show="!showFilters"></i>
+                        <div ng-if="selectedFilters.length==0 && !showFilters"> 
+                            <i>no filters</i>
+                            
+                        </div>
+                        <div ng-if="selectedFilters.length>0 && !showFilters">
+                            <span ng-repeat="f in selectedFilters" class="label label-primary" style="margin:2px">{{f}}</span>
+                        </div>
+                    </div>
+                    <div ng-show="showFilters" class="row">
+                        <ng-transclude>
+                    </div>
+                </div>

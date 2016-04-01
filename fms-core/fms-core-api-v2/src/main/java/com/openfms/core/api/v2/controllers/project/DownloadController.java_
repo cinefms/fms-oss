@@ -1,0 +1,138 @@
+package com.openfms.core.api.v2.controllers.project;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.openfms.core.service.project.FmsCryptoService;
+import com.openfms.core.service.project.FmsLocationService;
+import com.openfms.model.core.crypto.FmsCertificate;
+import com.openfms.model.core.crypto.FmsKey;
+import com.openfms.model.core.playback.FmsPlaybackDevice;
+import com.openfms.model.exceptions.DatabaseException;
+import com.openfms.model.exceptions.EntityNotFoundException;
+import com.openfms.model.exceptions.InvalidParameterException;
+import com.openfms.utils.common.IOUtils;
+
+@Controller
+@RequestMapping(DownloadController.BASE_URI)
+public class DownloadController {
+
+	public static final String BASE_URI = "/crypto/download";
+	
+	@Autowired
+	private FmsCryptoService  cryptoService;
+
+	@Autowired
+	private FmsLocationService locationService;
+
+	@RequestMapping(value="/certificates",method=RequestMethod.GET)
+	@ResponseBody
+	public void getCertificates(
+			@RequestParam(required=false,defaultValue="true") boolean chain,
+			@RequestParam(required=false) String searchTerm,
+			@RequestParam(required=false) String certificateId,
+			@RequestParam(required=false) String playbackDeviceId,
+			@RequestParam(required=false) String certificateDnQualifier,
+			@RequestParam(required=false) String certificateUuid,
+			@RequestParam(required=false) String parentDnQualifier,
+			@RequestParam(required=false) String parentId,
+			@RequestParam(required=false) Date validAt,
+			@RequestParam(required=false,defaultValue="certificateDn")  String order,
+			HttpServletResponse response
+		) throws DatabaseException, EntityNotFoundException, IOException, InvalidParameterException {
+		response.setContentType("application/zip");
+		response.setHeader("Content-Disposition", "attachment; filename=certificates.zip");
+		OutputStream os = response.getOutputStream();
+		ZipOutputStream zos = new ZipOutputStream(os);
+		for(FmsCertificate cert : cryptoService.listCertificates(searchTerm,certificateId,playbackDeviceId,certificateDnQualifier,certificateUuid,parentDnQualifier,parentId, validAt, order, true, null, null)) {
+			String name = cert.getCertificateDnQualifier().replaceAll("[^a-zA-Z0-9-_]", "-").replaceAll("-+", "-");
+			if(cert.getPlaybackDeviceId()!=null) {
+				FmsPlaybackDevice fpd = locationService.getPlaybackDevice(cert.getPlaybackDeviceId());
+				name = fpd.getName()+"-"+fpd.getModel()+"-SN"+fpd.getSerial()+"__"+name;
+				name = name.replaceAll("[^a-zA-Z0-9-_]", "-").replaceAll("-+", "-");
+			} else {
+				name = "ZZZ_no_device_"+name;
+			}
+			if(chain) {
+				name = name+"-chain";
+			}
+			ZipEntry ze = new ZipEntry(name+".pem");
+			zos.putNextEntry(ze);
+			while(true) {
+				InputStream is = cryptoService.getCertificateData(cert.getId()).getInputStream();
+				IOUtils.copy(is, zos);
+				if(cert.getParentId()==null || !chain || cert.getParentId().compareTo(cert.getId())==0) {
+					break;
+				} else {
+					cert = cryptoService.getCertificate(cert.getParentId());
+				} 
+			} 
+			zos.flush();
+			zos.closeEntry();
+		}
+		zos.flush();
+		zos.close();
+		os.flush();
+		os.close();
+	}
+
+	
+	@RequestMapping(value="/keys",method=RequestMethod.GET)
+	@ResponseBody
+	public void getKeys(
+			@RequestParam(required=false) String keyId,
+			@RequestParam(required=false) String recipientDnQualifier,
+			@RequestParam(required=false) String deviceId,
+			@RequestParam(required=false) String mediaClipExternalId,
+			@RequestParam(required=false) Date validAt,
+			HttpServletResponse response
+		) throws DatabaseException, EntityNotFoundException, IOException, InvalidParameterException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-hh-mm");
+		response.setContentType("application/zip");
+		response.setHeader("Content-Disposition", "attachment; filename=keys_"+sdf.format(new Date())+".zip");
+		OutputStream os = response.getOutputStream();
+		ZipOutputStream zos = new ZipOutputStream(os);
+		for(FmsKey key : cryptoService.listKeys(null, null, keyId, null, null, null, mediaClipExternalId, null, recipientDnQualifier, null, deviceId,null,validAt,null, true, null, null))	{
+
+			String name = "";
+			
+			try {
+				List<FmsCertificate> fcs = cryptoService.listCertificates(null, null, null, key.getCertificateDnQualifier(), null, null, null, null, null, true, null, null);
+				if(fcs.size()>0) {
+					FmsPlaybackDevice fpd = locationService.getPlaybackDevice(fcs.get(0).getPlaybackDeviceId());
+					name = name + (fpd.getName().replaceAll("[^a-zA-Z0-9-_]", "-"))+"/";
+				}
+			} catch (Exception e) {
+				name = name + "unknown device/";
+			}
+			
+			ZipEntry ze = new ZipEntry(name+"KDM_"+key.getExternalId()+"-"+key.getmediaClipExternalId()+".xml");
+			zos.putNextEntry(ze);
+			InputStream is = cryptoService.getKeyData(key.getId()).getInputStream();
+			IOUtils.copy(is, zos);
+			zos.flush();
+			zos.closeEntry();
+		}
+		zos.flush();
+		zos.close();
+		os.flush();
+		os.close();
+	}
+	
+	
+}

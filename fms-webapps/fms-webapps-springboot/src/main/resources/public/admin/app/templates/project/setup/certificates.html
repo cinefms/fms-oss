@@ -1,0 +1,65 @@
+<div ng-controller="CertificateListController">
+    <div fms-headline>
+        Certificates
+    </div>
+    <div class="col-md-12 form-group" ng-if="!permissions.list">
+        <div class="alert alert-warning">
+            <i>sorry, you have no permissions to list certificates</i>
+        </div>
+    </div>
+    <div class="col-md-8 form-group" ng-if="permissions.list">
+        <div class="input-group">
+            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+            <input ng-model="list.params.searchTerm" placeholder="search" class="form-control" autofocus/>
+        </div>
+    </div>
+    <div class="col-md-4 form-group" ng-if="permissions.create" style="margin-bottom:0px">
+        <form id="file-form" action="/api/v2/crypto/certificates/upload" method="POST" class="form form-inline pull-right" enctype="multipart/form-data">
+            <input type="file" name="file" class="form-control"/>
+            <button class="btn btn-primary" id="upload-button" ng-click="upload()">Upload</button>
+        </form>                                
+    </div>
+    <div class="col-md-12" ng-if="!certificates || certificates.length==0">
+        <i>no matching certificates found</i>
+    </div>
+    <div class="col-md-12" ng-if="certificates.length>0">
+        <fms-pagination ng-model="list.params"></fms-pagination>
+        <table class="table table-striped table-condensed">
+            <tr>   
+                <th ng-click="order('certificateDn')">CN</th>
+                <th ng-click="order('certificateDnQualifier')">DN Qualifier</th>
+                <th ng-click="order('type')">Type</th>
+                <th ng-click="order('size')">Size</th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr ng-repeat="certificate in certificates">
+                <td>
+                	<fms-link object="certificate">
+                    	{{certificate.certificateDn}}
+                    </fms-link>
+                </td>
+                <td>
+                    <fms-link object="certificate">
+                        {{certificate.certificateDnQualifier}}
+                    </fms-link>
+                </td>
+                <td>
+                    {{certificate.type}}
+                </td>
+                <td>
+                    {{certificate.size}}
+                </td>
+                <td>
+                    <a href="/api/v2/crypto/certificates/{{certificate.id}}/data" class="pull-right"><i class="glyphicon glyphicon-floppy-save"></i></a>
+                </td>
+                <td width="5%">
+                    <div class="pull-right"  ng-disabled="!permissions.delete"  ng-click="remove(certificate.id)"><i class="glyphicon glyphicon-minus-sign"></i></div>
+                </td>
+            </tr>
+        </table>
+        <fms-pagination ng-model="list.params"></fms-pagination>
+    </div>
+</div>
+
+

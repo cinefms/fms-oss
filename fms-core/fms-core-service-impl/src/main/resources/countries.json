@@ -1,0 +1,279 @@
+{"_id":"AD","code":"AD","codes":["AD","AND"],"name":"Andorra"}
+{"_id":"AE","code":"AE","codes":["AE","ARE"],"name":"United Arab Emirates"}
+{"_id":"AF","code":"AF","codes":["AF","AFG"],"name":"Afghanistan"}
+{"_id":"AG","code":"AG","codes":["AG","ATG"],"name":"Antigua and Barbuda"}
+{"_id":"AI","code":"AI","codes":["AI","AIA"],"name":"Anguilla"}
+{"_id":"AIDJ","code":"AIDJ","codes":["AIDJ"],"name":"French Afar and Issas"}
+{"_id":"AL","code":"AL","codes":["AL","ALB"],"name":"Albania"}
+{"_id":"AM","code":"AM","codes":["AM","ARM"],"name":"Armenia"}
+{"_id":"AO","code":"AO","codes":["AO","AGO"],"name":"Angola"}
+{"_id":"AQ","code":"AQ","codes":["AQ","ATA"],"name":"Antarctica"}
+{"_id":"AR","code":"AR","codes":["AR","ARG"],"name":"Argentina"}
+{"_id":"AS","code":"AS","codes":["AS","ASM"],"name":"American Samoa"}
+{"_id":"AT","code":"AT","codes":["AT","AUT"],"name":"Austria"}
+{"_id":"AU","code":"AU","codes":["AU","AUS"],"name":"Australia"}
+{"_id":"AW","code":"AW","codes":["AW","ABW"],"name":"Aruba"}
+{"_id":"AX","code":"AX","codes":["AX","ALA"],"name":"Åland Islands"}
+{"_id":"AZ","code":"AZ","codes":["AZ","AZE"],"name":"Azerbaijan"}
+{"_id":"BA","code":"BA","codes":["BA","BIH"],"name":"Bosnia and Herzegovina"}
+{"_id":"BB","code":"BB","codes":["BB","BRB"],"name":"Barbados"}
+{"_id":"BD","code":"BD","codes":["BD","BGD"],"name":"Bangladesh"}
+{"_id":"BE","code":"BE","codes":["BE","BEL"],"name":"Belgium"}
+{"_id":"BF","code":"BF","codes":["BF","BFA"],"name":"Burkina Faso"}
+{"_id":"BG","code":"BG","codes":["BG","BGR"],"name":"Bulgaria"}
+{"_id":"BH","code":"BH","codes":["BH","BHR"],"name":"Bahrain"}
+{"_id":"BI","code":"BI","codes":["BI","BDI"],"name":"Burundi"}
+{"_id":"BJ","code":"BJ","codes":["BJ","BEN"],"name":"Benin"}
+{"_id":"BL","code":"BL","codes":["BL","BLM"],"name":"Saint Barthélemy"}
+{"_id":"BM","code":"BM","codes":["BM","BMU"],"name":"Bermuda"}
+{"_id":"BN","code":"BN","codes":["BN","BRN"],"name":"Brunei Darussalam"}
+{"_id":"BO","code":"BO","codes":["BO","BOL"],"name":"Bolivia, Plurinational State of"}
+{"_id":"BQ","code":"BQ","codes":["BQ","BES"],"name":"Bonaire, Sint Eustatius and Saba"}
+{"_id":"BQAQ","code":"BQAQ","codes":["BQAQ"],"name":"British Antarctic Territory"}
+{"_id":"BR","code":"BR","codes":["BR","BRA"],"name":"Brazil"}
+{"_id":"BS","code":"BS","codes":["BS","BHS"],"name":"Bahamas"}
+{"_id":"BT","code":"BT","codes":["BT","BTN"],"name":"Bhutan"}
+{"_id":"BUMM","code":"BUMM","codes":["BUMM"],"name":"Burma"}
+{"_id":"BV","code":"BV","codes":["BV","BVT"],"name":"Bouvet Island"}
+{"_id":"BW","code":"BW","codes":["BW","BWA"],"name":"Botswana"}
+{"_id":"BY","code":"BY","codes":["BY","BLR"],"name":"Belarus"}
+{"_id":"BYAA","code":"BYAA","codes":["BYAA"],"name":"Byelorussian SSR"}
+{"_id":"BZ","code":"BZ","codes":["BZ","BLZ"],"name":"Belize"}
+{"_id":"CA","code":"CA","codes":["CA","CAN"],"name":"Canada"}
+{"_id":"CC","code":"CC","codes":["CC","CCK"],"name":"Cocos (Keeling) Islands"}
+{"_id":"CD","code":"CD","codes":["CD","COD"],"name":"Congo, the Democratic Republic of the"}
+{"_id":"CF","code":"CF","codes":["CF","CAF"],"name":"Central African Republic"}
+{"_id":"CG","code":"CG","codes":["CG","COG"],"name":"Congo"}
+{"_id":"CH","code":"CH","codes":["CH","CHE"],"name":"Switzerland"}
+{"_id":"CI","code":"CI","codes":["CI","CIV"],"name":"Côte d'Ivoire"}
+{"_id":"CK","code":"CK","codes":["CK","COK"],"name":"Cook Islands"}
+{"_id":"CL","code":"CL","codes":["CL","CHL"],"name":"Chile"}
+{"_id":"CM","code":"CM","codes":["CM","CMR"],"name":"Cameroon"}
+{"_id":"CN","code":"CN","codes":["CN","CHN"],"name":"China"}
+{"_id":"CO","code":"CO","codes":["CO","COL"],"name":"Colombia"}
+{"_id":"CR","code":"CR","codes":["CR","CRI"],"name":"Costa Rica"}
+{"_id":"CSHH","code":"CSHH","codes":["CSHH"],"name":"Czechoslovakia"}
+{"_id":"CSXX","code":"CSXX","codes":["CSXX"],"name":"Serbia and Montenegro"}
+{"_id":"CTKI","code":"CTKI","codes":["CTKI"],"name":"Canton and Enderbury Islands"}
+{"_id":"CU","code":"CU","codes":["CU","CUB"],"name":"Cuba"}
+{"_id":"CV","code":"CV","codes":["CV","CPV"],"name":"Cape Verde"}
+{"_id":"CW","code":"CW","codes":["CW","CUW"],"name":"Curaçao"}
+{"_id":"CX","code":"CX","codes":["CX","CXR"],"name":"Christmas Island"}
+{"_id":"CY","code":"CY","codes":["CY","CYP"],"name":"Cyprus"}
+{"_id":"CZ","code":"CZ","codes":["CZ","CZE"],"name":"Czech Republic"}
+{"_id":"DDDE","code":"DDDE","codes":["DDDE"],"name":"German Democratic Republic"}
+{"_id":"DE","code":"DE","codes":["DE","DEU"],"name":"Germany"}
+{"_id":"DJ","code":"DJ","codes":["DJ","DJI"],"name":"Djibouti"}
+{"_id":"DK","code":"DK","codes":["DK","DNK"],"name":"Denmark"}
+{"_id":"DM","code":"DM","codes":["DM","DMA"],"name":"Dominica"}
+{"_id":"DO","code":"DO","codes":["DO","DOM"],"name":"Dominican Republic"}
+{"_id":"DYBJ","code":"DYBJ","codes":["DYBJ"],"name":"Dahomey"}
+{"_id":"DZ","code":"DZ","codes":["DZ","DZA"],"name":"Algeria"}
+{"_id":"EC","code":"EC","codes":["EC","ECU"],"name":"Ecuador"}
+{"_id":"EE","code":"EE","codes":["EE","EST"],"name":"Estonia"}
+{"_id":"EG","code":"EG","codes":["EG","EGY"],"name":"Egypt"}
+{"_id":"EH","code":"EH","codes":["EH","ESH"],"name":"Western Sahara"}
+{"_id":"ER","code":"ER","codes":["ER","ERI"],"name":"Eritrea"}
+{"_id":"ES","code":"ES","codes":["ES","ESP"],"name":"Spain"}
+{"_id":"ET","code":"ET","codes":["ET","ETH"],"name":"Ethiopia"}
+{"_id":"FI","code":"FI","codes":["FI","FIN"],"name":"Finland"}
+{"_id":"FJ","code":"FJ","codes":["FJ","FJI"],"name":"Fiji"}
+{"_id":"FK","code":"FK","codes":["FK","FLK"],"name":"Falkland Islands (Malvinas)"}
+{"_id":"FM","code":"FM","codes":["FM","FSM"],"name":"Micronesia, Federated States of"}
+{"_id":"FO","code":"FO","codes":["FO","FRO"],"name":"Faroe Islands"}
+{"_id":"FQHH","code":"FQHH","codes":["FQHH"],"name":"French Southern and Antarctic Territories"}
+{"_id":"FR","code":"FR","codes":["FR","FRA"],"name":"France"}
+{"_id":"FXFR","code":"FXFR","codes":["FXFR"],"name":"France, Metropolitan"}
+{"_id":"GA","code":"GA","codes":["GA","GAB"],"name":"Gabon"}
+{"_id":"GB","code":"GB","codes":["GB","GBR"],"name":"United Kingdom"}
+{"_id":"GD","code":"GD","codes":["GD","GRD"],"name":"Grenada"}
+{"_id":"GE","code":"GE","codes":["GE","GEO"],"name":"Georgia"}
+{"_id":"GEHH","code":"GEHH","codes":["GEHH"],"name":"Gilbert and Ellice Islands"}
+{"_id":"GF","code":"GF","codes":["GF","GUF"],"name":"French Guiana"}
+{"_id":"GG","code":"GG","codes":["GG","GGY"],"name":"Guernsey"}
+{"_id":"GH","code":"GH","codes":["GH","GHA"],"name":"Ghana"}
+{"_id":"GI","code":"GI","codes":["GI","GIB"],"name":"Gibraltar"}
+{"_id":"GL","code":"GL","codes":["GL","GRL"],"name":"Greenland"}
+{"_id":"GM","code":"GM","codes":["GM","GMB"],"name":"Gambia"}
+{"_id":"GN","code":"GN","codes":["GN","GIN"],"name":"Guinea"}
+{"_id":"GP","code":"GP","codes":["GP","GLP"],"name":"Guadeloupe"}
+{"_id":"GQ","code":"GQ","codes":["GQ","GNQ"],"name":"Equatorial Guinea"}
+{"_id":"GR","code":"GR","codes":["GR","GRC"],"name":"Greece"}
+{"_id":"GS","code":"GS","codes":["GS","SGS"],"name":"South Georgia and the South Sandwich Islands"}
+{"_id":"GT","code":"GT","codes":["GT","GTM"],"name":"Guatemala"}
+{"_id":"GU","code":"GU","codes":["GU","GUM"],"name":"Guam"}
+{"_id":"GW","code":"GW","codes":["GW","GNB"],"name":"Guinea-Bissau"}
+{"_id":"GY","code":"GY","codes":["GY","GUY"],"name":"Guyana"}
+{"_id":"HK","code":"HK","codes":["HK","HKG"],"name":"Hong Kong"}
+{"_id":"HM","code":"HM","codes":["HM","HMD"],"name":"Heard Island and McDonald Islands"}
+{"_id":"HN","code":"HN","codes":["HN","HND"],"name":"Honduras"}
+{"_id":"HR","code":"HR","codes":["HR","HRV"],"name":"Croatia"}
+{"_id":"HT","code":"HT","codes":["HT","HTI"],"name":"Haiti"}
+{"_id":"HU","code":"HU","codes":["HU","HUN"],"name":"Hungary"}
+{"_id":"HVBF","code":"HVBF","codes":["HVBF"],"name":"Upper Volta"}
+{"_id":"ID","code":"ID","codes":["ID","IDN"],"name":"Indonesia"}
+{"_id":"IE","code":"IE","codes":["IE","IRL"],"name":"Ireland"}
+{"_id":"IL","code":"IL","codes":["IL","ISR"],"name":"Israel"}
+{"_id":"IM","code":"IM","codes":["IM","IMN"],"name":"Isle of Man"}
+{"_id":"IN","code":"IN","codes":["IN","IND"],"name":"India"}
+{"_id":"IO","code":"IO","codes":["IO","IOT"],"name":"British Indian Ocean Territory"}
+{"_id":"IQ","code":"IQ","codes":["IQ","IRQ"],"name":"Iraq"}
+{"_id":"IR","code":"IR","codes":["IR","IRN"],"name":"Iran, Islamic Republic of"}
+{"_id":"IS","code":"IS","codes":["IS","ISL"],"name":"Iceland"}
+{"_id":"IT","code":"IT","codes":["IT","ITA"],"name":"Italy"}
+{"_id":"JE","code":"JE","codes":["JE","JEY"],"name":"Jersey"}
+{"_id":"JM","code":"JM","codes":["JM","JAM"],"name":"Jamaica"}
+{"_id":"JO","code":"JO","codes":["JO","JOR"],"name":"Jordan"}
+{"_id":"JP","code":"JP","codes":["JP","JPN"],"name":"Japan"}
+{"_id":"JTUM","code":"JTUM","codes":["JTUM"],"name":"Johnston Island"}
+{"_id":"KE","code":"KE","codes":["KE","KEN"],"name":"Kenya"}
+{"_id":"KG","code":"KG","codes":["KG","KGZ"],"name":"Kyrgyzstan"}
+{"_id":"KH","code":"KH","codes":["KH","KHM"],"name":"Cambodia"}
+{"_id":"KI","code":"KI","codes":["KI","KIR"],"name":"Kiribati"}
+{"_id":"KM","code":"KM","codes":["KM","COM"],"name":"Comoros"}
+{"_id":"KN","code":"KN","codes":["KN","KNA"],"name":"Saint Kitts and Nevis"}
+{"_id":"KP","code":"KP","codes":["KP","PRK"],"name":"Korea, Democratic People's Republic of"}
+{"_id":"KR","code":"KR","codes":["KR","KOR"],"name":"Korea, Republic of"}
+{"_id":"KW","code":"KW","codes":["KW","KWT"],"name":"Kuwait"}
+{"_id":"KY","code":"KY","codes":["KY","CYM"],"name":"Cayman Islands"}
+{"_id":"KZ","code":"KZ","codes":["KZ","KAZ"],"name":"Kazakhstan"}
+{"_id":"LA","code":"LA","codes":["LA","LAO"],"name":"Lao People's Democratic Republic"}
+{"_id":"LB","code":"LB","codes":["LB","LBN"],"name":"Lebanon"}
+{"_id":"LC","code":"LC","codes":["LC","LCA"],"name":"Saint Lucia"}
+{"_id":"LI","code":"LI","codes":["LI","LIE"],"name":"Liechtenstein"}
+{"_id":"LK","code":"LK","codes":["LK","LKA"],"name":"Sri Lanka"}
+{"_id":"LR","code":"LR","codes":["LR","LBR"],"name":"Liberia"}
+{"_id":"LS","code":"LS","codes":["LS","LSO"],"name":"Lesotho"}
+{"_id":"LT","code":"LT","codes":["LT","LTU"],"name":"Lithuania"}
+{"_id":"LU","code":"LU","codes":["LU","LUX"],"name":"Luxembourg"}
+{"_id":"LV","code":"LV","codes":["LV","LVA"],"name":"Latvia"}
+{"_id":"LY","code":"LY","codes":["LY","LBY"],"name":"Libya"}
+{"_id":"MA","code":"MA","codes":["MA","MAR"],"name":"Morocco"}
+{"_id":"MC","code":"MC","codes":["MC","MCO"],"name":"Monaco"}
+{"_id":"MD","code":"MD","codes":["MD","MDA"],"name":"Moldova, Republic of"}
+{"_id":"ME","code":"ME","codes":["ME","MNE"],"name":"Montenegro"}
+{"_id":"MF","code":"MF","codes":["MF","MAF"],"name":"Saint Martin (French part)"}
+{"_id":"MG","code":"MG","codes":["MG","MDG"],"name":"Madagascar"}
+{"_id":"MH","code":"MH","codes":["MH","MHL"],"name":"Marshall Islands"}
+{"_id":"MIUM","code":"MIUM","codes":["MIUM"],"name":"Midway Islands"}
+{"_id":"MK","code":"MK","codes":["MK","MKD"],"name":"Macedonia, the former Yugoslav Republic of"}
+{"_id":"ML","code":"ML","codes":["ML","MLI"],"name":"Mali"}
+{"_id":"MM","code":"MM","codes":["MM","MMR"],"name":"Myanmar"}
+{"_id":"MN","code":"MN","codes":["MN","MNG"],"name":"Mongolia"}
+{"_id":"MO","code":"MO","codes":["MO","MAC"],"name":"Macao"}
+{"_id":"MP","code":"MP","codes":["MP","MNP"],"name":"Northern Mariana Islands"}
+{"_id":"MQ","code":"MQ","codes":["MQ","MTQ"],"name":"Martinique"}
+{"_id":"MR","code":"MR","codes":["MR","MRT"],"name":"Mauritania"}
+{"_id":"MS","code":"MS","codes":["MS","MSR"],"name":"Montserrat"}
+{"_id":"MT","code":"MT","codes":["MT","MLT"],"name":"Malta"}
+{"_id":"MU","code":"MU","codes":["MU","MUS"],"name":"Mauritius"}
+{"_id":"MV","code":"MV","codes":["MV","MDV"],"name":"Maldives"}
+{"_id":"MW","code":"MW","codes":["MW","MWI"],"name":"Malawi"}
+{"_id":"MX","code":"MX","codes":["MX","MEX"],"name":"Mexico"}
+{"_id":"MY","code":"MY","codes":["MY","MYS"],"name":"Malaysia"}
+{"_id":"MZ","code":"MZ","codes":["MZ","MOZ"],"name":"Mozambique"}
+{"_id":"NA","code":"NA","codes":["NA","NAM"],"name":"Namibia"}
+{"_id":"NC","code":"NC","codes":["NC","NCL"],"name":"New Caledonia"}
+{"_id":"NE","code":"NE","codes":["NE","NER"],"name":"Niger"}
+{"_id":"NF","code":"NF","codes":["NF","NFK"],"name":"Norfolk Island"}
+{"_id":"NG","code":"NG","codes":["NG","NGA"],"name":"Nigeria"}
+{"_id":"NHVU","code":"NHVU","codes":["NHVU"],"name":"New Hebrides"}
+{"_id":"NI","code":"NI","codes":["NI","NIC"],"name":"Nicaragua"}
+{"_id":"NL","code":"NL","codes":["NL","NLD"],"name":"Netherlands"}
+{"_id":"NO","code":"NO","codes":["NO","NOR"],"name":"Norway"}
+{"_id":"NP","code":"NP","codes":["NP","NPL"],"name":"Nepal"}
+{"_id":"NQAQ","code":"NQAQ","codes":["NQAQ"],"name":"Dronning Maud Land"}
+{"_id":"NR","code":"NR","codes":["NR","NRU"],"name":"Nauru"}
+{"_id":"NTHH","code":"NTHH","codes":["NTHH"],"name":"Neutral Zone"}
+{"_id":"NU","code":"NU","codes":["NU","NIU"],"name":"Niue"}
+{"_id":"NZ","code":"NZ","codes":["NZ","NZL"],"name":"New Zealand"}
+{"_id":"OM","code":"OM","codes":["OM","OMN"],"name":"Oman"}
+{"_id":"PA","code":"PA","codes":["PA","PAN"],"name":"Panama"}
+{"_id":"PCHH","code":"PCHH","codes":["PCHH"],"name":"Pacific Islands, Trust Territory of the"}
+{"_id":"PE","code":"PE","codes":["PE","PER"],"name":"Peru"}
+{"_id":"PF","code":"PF","codes":["PF","PYF"],"name":"French Polynesia"}
+{"_id":"PG","code":"PG","codes":["PG","PNG"],"name":"Papua New Guinea"}
+{"_id":"PH","code":"PH","codes":["PH","PHL"],"name":"Philippines"}
+{"_id":"PK","code":"PK","codes":["PK","PAK"],"name":"Pakistan"}
+{"_id":"PL","code":"PL","codes":["PL","POL"],"name":"Poland"}
+{"_id":"PM","code":"PM","codes":["PM","SPM"],"name":"Saint Pierre and Miquelon"}
+{"_id":"PN","code":"PN","codes":["PN","PCN"],"name":"Pitcairn"}
+{"_id":"PR","code":"PR","codes":["PR","PRI"],"name":"Puerto Rico"}
+{"_id":"PS","code":"PS","codes":["PS","PSE"],"name":"Palestine, State of"}
+{"_id":"PT","code":"PT","codes":["PT","PRT"],"name":"Portugal"}
+{"_id":"PUUM","code":"PUUM","codes":["PUUM"],"name":"U.S. Miscellaneous Pacific Islands"}
+{"_id":"PW","code":"PW","codes":["PW","PLW"],"name":"Palau"}
+{"_id":"PY","code":"PY","codes":["PY","PRY"],"name":"Paraguay"}
+{"_id":"PZPA","code":"PZPA","codes":["PZPA"],"name":"Panama Canal Zone"}
+{"_id":"QA","code":"QA","codes":["QA","QAT"],"name":"Qatar"}
+{"_id":"RE","code":"RE","codes":["RE","REU"],"name":"Réunion"}
+{"_id":"RHZW","code":"RHZW","codes":["RHZW"],"name":"Southern Rhodesia"}
+{"_id":"RO","code":"RO","codes":["RO","ROU"],"name":"Romania"}
+{"_id":"RS","code":"RS","codes":["RS","SRB"],"name":"Serbia"}
+{"_id":"RU","code":"RU","codes":["RU","RUS"],"name":"Russian Federation"}
+{"_id":"RW","code":"RW","codes":["RW","RWA"],"name":"Rwanda"}
+{"_id":"SA","code":"SA","codes":["SA","SAU"],"name":"Saudi Arabia"}
+{"_id":"SB","code":"SB","codes":["SB","SLB"],"name":"Solomon Islands"}
+{"_id":"SC","code":"SC","codes":["SC","SYC"],"name":"Seychelles"}
+{"_id":"SD","code":"SD","codes":["SD","SDN"],"name":"Sudan"}
+{"_id":"SE","code":"SE","codes":["SE","SWE"],"name":"Sweden"}
+{"_id":"SG","code":"SG","codes":["SG","SGP"],"name":"Singapore"}
+{"_id":"SH","code":"SH","codes":["SH","SHN"],"name":"Saint Helena, Ascension and Tristan da Cunha"}
+{"_id":"SI","code":"SI","codes":["SI","SVN"],"name":"Slovenia"}
+{"_id":"SJ","code":"SJ","codes":["SJ","SJM"],"name":"Svalbard and Jan Mayen"}
+{"_id":"SK","code":"SK","codes":["SK","SVK"],"name":"Slovakia"}
+{"_id":"SKIN","code":"SKIN","codes":["SKIN"],"name":"Sikkim"}
+{"_id":"SL","code":"SL","codes":["SL","SLE"],"name":"Sierra Leone"}
+{"_id":"SM","code":"SM","codes":["SM","SMR"],"name":"San Marino"}
+{"_id":"SN","code":"SN","codes":["SN","SEN"],"name":"Senegal"}
+{"_id":"SO","code":"SO","codes":["SO","SOM"],"name":"Somalia"}
+{"_id":"SR","code":"SR","codes":["SR","SUR"],"name":"Suriname"}
+{"_id":"SS","code":"SS","codes":["SS","SSD"],"name":"South Sudan"}
+{"_id":"ST","code":"ST","codes":["ST","STP"],"name":"Sao Tome and Principe"}
+{"_id":"SUHH","code":"SUHH","codes":["SUHH"],"name":"USSR"}
+{"_id":"SV","code":"SV","codes":["SV","SLV"],"name":"El Salvador"}
+{"_id":"SX","code":"SX","codes":["SX","SXM"],"name":"Sint Maarten (Dutch part)"}
+{"_id":"SY","code":"SY","codes":["SY","SYR"],"name":"Syrian Arab Republic"}
+{"_id":"SZ","code":"SZ","codes":["SZ","SWZ"],"name":"Swaziland"}
+{"_id":"TC","code":"TC","codes":["TC","TCA"],"name":"Turks and Caicos Islands"}
+{"_id":"TD","code":"TD","codes":["TD","TCD"],"name":"Chad"}
+{"_id":"TF","code":"TF","codes":["TF","ATF"],"name":"French Southern Territories"}
+{"_id":"TG","code":"TG","codes":["TG","TGO"],"name":"Togo"}
+{"_id":"TH","code":"TH","codes":["TH","THA"],"name":"Thailand"}
+{"_id":"TJ","code":"TJ","codes":["TJ","TJK"],"name":"Tajikistan"}
+{"_id":"TK","code":"TK","codes":["TK","TKL"],"name":"Tokelau"}
+{"_id":"TL","code":"TL","codes":["TL","TLS"],"name":"Timor-Leste"}
+{"_id":"TM","code":"TM","codes":["TM","TKM"],"name":"Turkmenistan"}
+{"_id":"TN","code":"TN","codes":["TN","TUN"],"name":"Tunisia"}
+{"_id":"TO","code":"TO","codes":["TO","TON"],"name":"Tonga"}
+{"_id":"TPTL","code":"TPTL","codes":["TPTL"],"name":"East Timor"}
+{"_id":"TR","code":"TR","codes":["TR","TUR"],"name":"Turkey"}
+{"_id":"TT","code":"TT","codes":["TT","TTO"],"name":"Trinidad and Tobago"}
+{"_id":"TV","code":"TV","codes":["TV","TUV"],"name":"Tuvalu"}
+{"_id":"TW","code":"TW","codes":["TW","TWN"],"name":"Taiwan"}
+{"_id":"TZ","code":"TZ","codes":["TZ","TZA"],"name":"Tanzania, United Republic of"}
+{"_id":"UA","code":"UA","codes":["UA","UKR"],"name":"Ukraine"}
+{"_id":"UG","code":"UG","codes":["UG","UGA"],"name":"Uganda"}
+{"_id":"UM","code":"UM","codes":["UM","UMI"],"name":"United States Minor Outlying Islands"}
+{"_id":"US","code":"US","codes":["US","USA"],"name":"United States"}
+{"_id":"UY","code":"UY","codes":["UY","URY"],"name":"Uruguay"}
+{"_id":"UZ","code":"UZ","codes":["UZ","UZB"],"name":"Uzbekistan"}
+{"_id":"VA","code":"VA","codes":["VA","VAT"],"name":"Holy See (Vatican City State)"}
+{"_id":"VC","code":"VC","codes":["VC","VCT"],"name":"Saint Vincent and the Grenadines"}
+{"_id":"VDVN","code":"VDVN","codes":["VDVN"],"name":"Viet-Nam, Democratic Republic of"}
+{"_id":"VE","code":"VE","codes":["VE","VEN"],"name":"Venezuela, Bolivarian Republic of"}
+{"_id":"VG","code":"VG","codes":["VG","VGB"],"name":"Virgin Islands, British"}
+{"_id":"VI","code":"VI","codes":["VI","VIR"],"name":"Virgin Islands, U.S."}
+{"_id":"VN","code":"VN","codes":["VN","VNM"],"name":"Viet Nam"}
+{"_id":"VU","code":"VU","codes":["VU","VUT"],"name":"Vanuatu"}
+{"_id":"WF","code":"WF","codes":["WF","WLF"],"name":"Wallis and Futuna"}
+{"_id":"WKUM","code":"WKUM","codes":["WKUM"],"name":"Wake Island"}
+{"_id":"WS","code":"WS","codes":["WS","WSM"],"name":"Samoa"}
+{"_id":"YDYE","code":"YDYE","codes":["YDYE"],"name":"Yemen, Democratic"}
+{"_id":"YE","code":"YE","codes":["YE","YEM"],"name":"Yemen"}
+{"_id":"YT","code":"YT","codes":["YT","MYT"],"name":"Mayotte"}
+{"_id":"YUCS","code":"YUCS","codes":["YUCS"],"name":"Yugoslavia"}
+{"_id":"ZA","code":"ZA","codes":["ZA","ZAF"],"name":"South Africa"}
+{"_id":"ZM","code":"ZM","codes":["ZM","ZMB"],"name":"Zambia"}
+{"_id":"ZRCD","code":"ZRCD","codes":["ZRCD"],"name":"Zaire"}
+{"_id":"ZW","code":"ZW","codes":["ZW","ZWE"],"name":"Zimbabwe"}

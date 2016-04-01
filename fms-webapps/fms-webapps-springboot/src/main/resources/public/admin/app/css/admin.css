@@ -1,0 +1,286 @@
+
+.label {
+	padding-right: 2px;
+	margin-right: 2px;
+	padding-bottom: 2px;
+	margin-bottom: 2px;
+}
+
+@keyframes spin {
+	to { transform: rotate(1turn); }
+}
+
+.form-control-xs {
+	font-size: 9px;
+	height: 22px;
+
+}
+
+html {
+	overflow-y: scroll; 
+}
+
+.loader-not-spinning {
+}
+
+.glyphicon-chevron-down, .glyphicon-chevron-up {
+	padding: 15px;
+	padding-top: 1px;
+}
+
+
+hr {
+  height: 0px; border: 0; border-style: dashed; border-color: #EEEEEE	; border-width: 1px; 
+}
+
+body {
+	font-size : 11px;
+}
+
+p {
+	font-size : 12px;
+}
+
+td, th {
+	font-size : 12px;
+}
+
+h1 {
+	font-size : 23px;
+}
+
+h2 {
+	font-size : 20px;
+}
+
+h3 {
+	font-size : 17px;
+}
+
+h4 {
+	font-size : 14px;
+}
+
+td, .form-control {
+	font-size: 12px;
+}
+
+.label {
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+.form .form-inline : {
+	margin-bottom: 0em;
+}
+
+.shadow-box {
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 10px;
+	margin-bottom: 20px;
+	border: 2px;
+	border-color: #999999;
+	border-top-style: solid;
+	#box-shadow: 0px 12px 12px -12px rgba(0,0,0,0.6);
+	border-radius: 2px;
+}
+
+.notification-box {
+	padding: 20px;
+	padding-right: 5px;
+	padding-top: 10px;
+	margin-top: 20px;
+	border: 1px;
+	border-style: solid;
+	border-color: #BBBBBB;
+	border-top-style: solid;
+	box-shadow: 3px 3px 3px 3px rgba(0,0,0,0.2);
+	border-radius: 2px;
+}
+
+.loader-spinning {
+	position: relative;
+	display: inline-block;
+	color: white;
+	animation: spin 4s infinite steps(36);
+}
+
+.loader-inactive {
+	color: white;
+}
+
+.loader-inactive a {
+	color: white;
+	opacity: 0.1;
+}
+
+.loader-active a {
+	color: white;
+	opacity: 1;
+}
+
+.fms-block-overlay {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width:100%;
+	height:100%;
+	background-color: black;
+	overflow: hidden;
+	background: rgba(0,0,0,0.8);
+	z-index: 999;
+}
+
+.fms-block-overlay-contents {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 9999;
+}
+
+.fms-modal-dialog {
+	border-radius: 10px;
+	position: fixed;
+	/**
+	left: 100px;
+	top: 50px;
+	right: 100px;
+	bottom: 50px;
+	**/
+	left: 15%;
+	top: 15%;
+	width: 70%;
+	height: 70%;
+	background: white;
+	overflow: hidden;
+	padding: 10px;
+	z-index: 9999;
+}
+
+.fms-modal-dialog-contents {
+	position: absolute;
+	top: 100px;
+	bottom: 70px;
+	left: 20px;
+	right: 20px;
+	overflow: auto;
+}
+
+.fms-modal-dialog-footer {
+	position: absolute;
+	left: 20px;
+	right: 20px;
+	height: 50px;
+	bottom: 20px;
+}
+
+.fms-modal-dialog-header {
+	position: absolute;
+	left: 20px;
+	right: 50px;
+	height: 60px;
+	top: 20px;
+	padding: 5px;
+}
+
+.fms-modal-dialog-close {
+	position: absolute;
+	right: 20px;
+	height: 10px;
+	top: 20px;
+}
+
+.movie-creation-btn {
+	position: absolute;
+	top: 60px;
+	right: 20px;
+	z-index: 1;
+}
+
+.checkbox label,
+.radio label {
+	background: #ccc;
+	padding-right: 20px;
+}
+
+.radio-compact ,
+.checkbox-compact {
+	margin: 0px;
+}
+
+.radio-compact label,
+.checkbox-compact label{
+	padding-left: 5px;
+	padding-right: 5px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+.checkbox input,
+.radio input {
+	display: none;
+}
+
+.checkbox input:checked + label,
+.radio input:checked + label {
+	color: #fff;
+	background-color: #337AB7;
+}
+
+.checkbox input:disabled + label,
+.radio input:disabled + label {
+	color: #999999;
+}
+
+
+.rotate-text {
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+}
+
+
+
+.fms-search-dialog {
+	border-radius: 10px;
+	position: fixed;
+	left: 15%;
+	top: 15%;
+	width: 70%;
+	height: 70%;
+	background: white;
+	overflow: hidden;
+	padding: 10px;
+	z-index: 10000;
+}
+
+.fms-search-overlay {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width:100%;
+	height:100%;
+	background-color: red;
+	overflow: hidden;
+	background: rgba(0,0,0,0.8);
+	z-index: 999;
+	display: none;
+}
+.fms-error-overlay {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width:100%;
+	height:100%;
+	background-color: red;
+	overflow: hidden;
+	background: rgba(0,0,0,0.8);
+	z-index: 999;
+}
+
+.fms-highlight {
+	background-color: #B8DBFF;
+}
+

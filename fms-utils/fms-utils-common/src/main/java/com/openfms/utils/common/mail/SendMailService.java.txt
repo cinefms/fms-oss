@@ -1,0 +1,11 @@
+package com.skjlls.services.mail;
+
+import java.util.Locale;
+
+import com.skjlls.services.mail.exceptions.MailingException;
+
+public interface SendMailService {
+
+	public abstract void sendMail(String recipient, Locale locale, String mail, Object model) throws MailingException;
+
+}

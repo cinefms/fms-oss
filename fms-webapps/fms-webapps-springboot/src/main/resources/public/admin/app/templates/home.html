@@ -1,0 +1,83 @@
+<div fms-headline>
+   Welcome!
+</div>
+
+
+<div ng-controller="MOTDController">
+	<div class="col-md-12">
+		<div class="row">
+			<div class="col-md-8">
+				<h3>Messages</h3>
+			</div>
+			<div class="col-md-1">
+		        <div ng-if="!permissions.create">
+		            <button class="btn btn-primary pull-right" disabled><i class="glyphicon glyphicon-plus-sign"></i> Add</button>
+		        </div>
+		        <fms-dialog ng-if="permissions.create">
+		            <div name="trigger">
+		                <button class="btn btn-primary pull-right open-dialog"><i class="glyphicon glyphicon-plus-sign"></i> Add </button>
+		            </div>
+		            <div name="contents" class="fms-block-overlay contents" ng-show="showDialog">
+		                <div class="fms-modal-dialog">
+		                    <div ng-click="close()" class="pull-right">
+		                        <i class="glyphicon glyphicon-remove-circle"></i>
+		                    </div>
+		                    <div class="fms-modal-dialog-header">
+		                        <h2>Add a Message</h2>
+		                    </div>
+		                    <div class="fms-modal-dialog-contents">
+		                    	<div class="form-group">
+		                    		<label>Title</label>
+		                    		<input class="form-control" ng-model="newObject.title">
+		                    	</div>
+		                    	<div class="form-group">
+		                    		<label>Message</label>
+		                    		<textarea class="form-control" cols="30" ng-model="newObject.message"></textarea>
+		                    	</div>
+		                    	<div class="form-group">
+					                <div class="pull-right">
+					                    <button class="btn btn-default" ng-click="close()">cancel</button> 
+					                    <button class="btn btn-primary" ng-click="add()">save</button> 
+					                </div>
+
+		                    	</div>
+		                    </div>
+		                </div>
+		            </div>
+		        </fms-dialog>
+			</div>
+			<div class="col-md-3">
+				<h3>Latest Comments</h3>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-9">
+				<div ng-repeat="message in messages | limitTo:2">
+					<hr>
+					<h2>{{message.title}}</h2>
+					<div>
+						<i>{{message.authorName}} wrote on</i>
+						<fms-time ng-model="message.date">
+							{{date.date}} {{date.time}} ({{date.since}})
+						</fms-time>
+					</div>
+					<div class="lead" ng-bind-html="message.message | markdown"></div>
+				</div>
+                <div ng-if="!messages || messages.length==0">
+                    No new messages.
+                </div>
+			</div>
+
+
+
+            <div ng-controller="CommentController">
+			<div class="col-md-3">
+				<hr>
+                <div ng-repeat="comment in comments | orderBy:created | limitTo:5 ">
+                    <ng-include src="'app/partial/fms-comment-display.html'"></ng-include></div>
+                </div>
+	        </div>
+            </div>
+		</div>
+	</div>
+</div>

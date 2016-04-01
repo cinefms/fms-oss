@@ -1,0 +1,57 @@
+<div ng-controller="ProjectController">
+	<div class="col-md-12">
+		<h3>Projects</h3>
+	</div>
+	<div class="col-md-12">
+		<div class="form-group">
+			<div class="input-group">
+				<div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+				<input class="form-control" ng-model="params.searchTerm" placeholder="filter" ng-blur="saveState()"/>
+			</div>	
+		</div>
+	</div>
+	<div class="col-md-12">
+		<form class="form">
+			<table class="table table-striped">
+				<tr>
+					<th width="30%">Name</th>
+					<th width="10%">Short</th>
+					<th width="45%">Hosts</th>
+					<th width="5%"></th>
+					<th width="5%"></th>
+					<th width="5%"></th>
+				</tr>
+				<tr ng-if="projects.length == 0">
+					<td colspan="6" class="alert alert-info">
+						<div >
+							<i>no matching projects found</i>
+						</div>
+					</td>
+				</tr>
+				<tr ng-repeat="project in projects">
+					<td width="30%" >{{project.name}}</td>
+					<td width="10%" >{{project.shortName}}</td>
+					<td width="45%" ng-if="project.hostnames.length > 0">
+						<span>{{project.hostnames.join(', ')}}</span>
+					</td>
+					<td width="45%" ng-if="project.hostnames.length == 0">
+						<small><i>no hostnames defined</i></small>
+					</td>
+					<td width="5%"><a href="#/admin/projects/{{project.id}}" class="btn btn-default"><i class="glyphicon glyphicon-pencil"></i></a>
+					<td width="5%"><button class="btn btn-danger" ng-click="delete(project)"><i class="glyphicon glyphicon-remove"></i></button>
+					<td width="5%"><button class="btn btn-primary" disabled><i class="glyphicon glyphicon-plus"></i></button>
+				</tr>
+				<tbody>
+					<tr>
+						<td><input class="form-control" ng-model="newProject.name"></td>
+						<td><input class="form-control" ng-model="newProject.shortName"></td>
+						<td></td>
+						<td width="5%"><button class="btn btn-default" disabled><i class="glyphicon glyphicon-pencil"></i></button>
+						<td width="5%"><button class="btn btn-danger" disabled><i class="glyphicon glyphicon-remove"></i></button>
+						<td width="5%"><button class="btn btn-primary" ng-click="add()"><i class="glyphicon glyphicon-plus"></i></button>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</div>
+</div>

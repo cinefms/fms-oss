@@ -1,0 +1,358 @@
+<div ng-mouseenter="hovering=true" ng-mouseleave="hovering=false">
+    <div ng-show="foldable && !expanded"> 
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <fms-status status="event.mediaStatus">
+                    <i class="glyphicon glyphicon-hdd"></i>
+                </fms-status>
+                <fms-status status="event.versionStatus">
+                    <i class="glyphicon glyphicon-film"></i>
+                </fms-status>
+                <fms-status status="event.encryptionStatus">
+                    <i class="glyphicon glyphicon-lock"></i>
+                </fms-status>
+                <fms-status status="event.playbackStatus">
+                    <i class="glyphicon glyphicon-play"></i>
+                </fms-status>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <fms-time ng-model="event.startTime">
+                    {{date.date}} {{date.time}}
+                </fms-time>
+            </div>
+            <div class="col-md-6 form-group">
+                <div class="form-group" ng-if="event">
+                    <label>Last Modified</label><br>
+                    <fms-time ng-model="event.updated">{{date.date}} {{date.time}}</fms-time>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <strong>Devices</strong>
+                </div>
+                <div class="form-group">
+                    <i ng-if="event && event.devices.length==0">No devices configured</i>
+                    <div ng-repeat="device in event.devices">
+                        <fms-link id="device.deviceId" type="'com.openfms.model.core.playback.FmsPlaybackDevice'">{{device.deviceName}} | {{device.deviceVendor || "[no vendor]"}} | {{device.deviceSerial || "[no serial]"}}  </fms-link> <i ng-if="device.disabled">(disabled)</i> 
+                    </div>
+                </div>
+                <div class="form-group">
+                    <span ng-repeat="eventItem in event.eventItems">
+                        <span ng-repeat="tag in eventItem.tags">
+                            <button class="btn btn-info btn-xs"> {{tag}} </button> 
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-12 form-group">
+                <label>Media Clips</label>
+                <table class="table table-compact table-striped">
+                    <tbody ng-repeat="eventItem in event.eventItems">
+                        <tr ng-if="!eventItem.movieVersionId">
+                            <td colspan="7">
+                                <i><strong>Event item {{$index+1}}: </strong>No version assigned</i>
+                            </td>
+                        </tr>
+                        <tr ng-if="eventItem.movieVersionId && eventItem.mediaClips.length==0">
+                            <td colspan="7">
+                                <i><strong>Event item {{$index+1}}: </strong>No media clips configured for the assigned version</i>
+                            </td>
+                        </tr>
+                        <tr ng-repeat="mediaclip in eventItem.mediaClips"  ng-if="eventItem.movieVersionId && eventItem.mediaClips.length>0">
+                            <td><small>Event item {{$index+1}}</small></td>
+                            <td><small><fms-link id="mediaclip.mediaClipId" type="'com.openfms.model.core.movie.FmsMediaClip'">{{mediaclip.mediaClipName}}</fms-link></small></td>
+                            <td><small>{{mediaclip.length}}</small></td>
+                            <td><small>{{mediaclip.mediaClipType}}</small></td>
+                            <td width="45%">
+                                <span ng-repeat="l in mediaclip.audioLanguageIds" class="label label-primary" style="margin:2px"><i class="glyphicon glyphicon-volume-up"></i> {{l}}</span>
+                                <span ng-repeat="l in mediaclip.subtitleLanguageIds" class="label label-primary" style="margin:2px"><i class="glyphicon glyphicon-font"></i> {{l}}</span>
+                                <span ng-repeat="l in mediaclip.tags" class="label label-success" style="margin:2px"><i class="glyphicon glyphicon-map-marker"></i> {{l}}</span>
+                                <span ng-if="mediaclip.encrypted" class="label label-danger">Encrypted</span>
+                                <span ng-if="mediaclip.disabled" class="label label-danger"><i class="glyphicon glyphicon-ban-circle"></i> Clip Disabled</span>
+                                <span ng-if="!mediaclip.disabled" class="label label-success"><i class="glyphicon glyphicon-ok-circle"></i> Clip Enabled</span>
+                            </td>
+                            <td width="5%">
+                                <fms-status status="mediaclip.status">
+                                    <i class="glyphicon glyphicon-hdd"></i>
+                                </fms-status>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div ng-show="(foldable && expanded) || !foldable"> 
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Status</label><br>
+                    <fms-status status="event.mediaStatus">
+                        <i class="glyphicon glyphicon-hdd"></i>
+                    </fms-status>
+                    <fms-status status="event.versionStatus">
+                        <i class="glyphicon glyphicon-film"></i>
+                    </fms-status>
+                    <fms-status status="event.encryptionStatus">
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </fms-status>
+                    <fms-status status="event.playbackStatus">
+                        <i class="glyphicon glyphicon-play"></i>
+                    </fms-status>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group" ng-if="event">
+                    <label>Last Modified</label><br>
+                    <fms-time ng-model="event.updated">{{date.date}} {{date.time}}</fms-time>
+                </div>
+            </div>
+            <!--
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label>Tags</label><br>
+                    <span ng-if="event.tags.length==0"><i>no tags</i></span>
+                    <span ng-repeat="tag in event.tags" class="label label-primary" style="margin:2px">{{tag}}</span>
+                </div>
+            </div>
+            -->
+            <div class="col-md-1" ng-if="canEdit">
+                <button ng-click="edit()" ng-disabled="!permissions.edit" class="btn btn-primary pull-right" hotkey="{e: edit}"><i class="glyphicon glyphicon-pencil"></i></button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>External ID / Title</label><br>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input id="movie_director" ng-disabled="!editing" ng-model="event.externalId" class="form-control" ng-blur="save()">
+                        </div>
+                        <div class="col-md-9">
+                            <input id="movie_title" ng-disabled="!editing" ng-model="event.name" class="form-control" ng-blur="save()">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Date</label><br>
+                    <fms-time-edit type='text' ng-disabled="!editing" ng-model="event.startTime" change="save()">
+                    </fms-time-edit>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Duration</label><br>
+                        <input id="movie_title" ng-disabled="!editing" ng-model="event.length" type="number" class="form-control" ng-blur="save()">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Duration Implicit</label><br>
+                        <input id="movie_title" ng-disabled="true" ng-model="event.implicitLength" type="number" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group" ng-if="editing">
+                    <label>Location</label><br>
+                    <input single-select ng-disabled="!editing" ng-model="event.locationId" ng-change="save()" service="locationService">
+                </div>
+                <div class="form-group" ng-if="!editing">
+                    <label>Location</label><br>
+                    <fms-link ng-if="event.locationId" id="event.locationId" class="form-control" style="background: #EEEEEE" type="'com.openfms.model.core.playback.FmsLocation'">
+                        {{event.locationName}}
+                    </fms-link>
+                </div>
+                <div class="form-group">
+                    <label>Remarks</label><br>
+                    <textarea ng-disabled="!editing" ng-model="event.eventRemarks" class="form-control" rows="6" ng-blur="save()"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Devices</label><br>
+                    <div ng-repeat="device in event.devices">
+                        <fms-link id="device.deviceId" type="'com.openfms.model.core.playback.FmsPlaybackDevice'">{{device.deviceName}} | {{device.deviceVendor || "[no vendor]"}} | {{device.deviceSerial || "[no serial]"}} </fms-link><i ng-if="device.disabled">(disabled)</i>
+                    </div>
+                    <div ng-if="event.devices.length == 0">
+                        <div class="alert alert-info"><i>no device configured in this location</i></div>
+                    </div>
+                </div>
+                <div class="form-group" ng-if="event.errors.length > 0">
+                    <label>Problems found</label>
+                    <div ng-repeat="error in event.errors">
+                        <fms-status status="error.status">
+                            <i class="glyphicon glyphicon-info-sign"> </i>
+                        </fms-status>
+                        &nbsp;
+                        {{error.message}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div ng-repeat="eventItem in event.eventItems" ng-if="event.eventItems" ng-style="eventItemStyle" ng-init="eventItemStyle={'background-color':'#f8f8f8'}">
+            <hr>
+            <div class="row">
+                <div class="col-md-11">
+                    <h5>EventItem {{$index+1}} | {{eventItem.name}}</h5>
+                </div>
+                <div class="col-md-1">
+                    <br>
+                    <button ng-click="removeItem($index)" ng-disabled="!editing" class="btn btn-danger pull-right"><i class="glyphicon glyphicon-minus-sign"></i></button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Status</label><br>
+                        <fms-status status="eventItem.mediaStatus">
+                            <i class="glyphicon glyphicon-hdd"></i>
+                        </fms-status>
+                        <fms-status status="eventItem.versionStatus">
+                            <i class="glyphicon glyphicon-film"></i>
+                        </fms-status>
+                        <fms-status status="eventItem.encryptionStatus">
+                            <i class="glyphicon glyphicon-lock"></i>
+                        </fms-status>
+                        <fms-status status="eventItem.playbackStatus">
+                            <i class="glyphicon glyphicon-play"></i>
+                        </fms-status>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Tags</label>
+                        <input multi-select model="eventItem.tags" change="save()" ng-disabled="!editing" service="tagService">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Length</label>
+                        <input ng-model="eventItem.length" ng-blur="save()" ng-disabled="!editing" class="form-control" type="numeric">
+                    </div>
+                    <div class="form-group" ng-if="editing">
+                        <label>Movie</label>
+                        <input single-select ng-model="eventItem.movieId" ng-disabled="!editing" ng-change="resetVersion($index)" service="movieService">
+                    </div>
+                    <div class="form-group" ng-if="!editing">
+                        <label>Movie</label><br>
+                        <fms-link ng-if="eventItem.movieId" id="eventItem.movieId" class="form-control" style="background: #EEEEEE" type="'com.openfms.model.core.movie.FmsMovie'">
+                            {{eventItem.movieName}}
+                        </fms-link>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Audio</label>
+                        <input multi-select model="eventItem.audioLanguageIds" ng-disabled="!editing" change="save()" service="languageService">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitles</label>
+                        <input multi-select model="eventItem.subtitleLanguageIds" ng-disabled="!editing" change="save()" service="languageService">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <br>
+            </div>
+            <div class="row">
+                <div class="col-md-12  form-group">
+                    <div>
+                        <label>Version</label>
+                        <div class="row" ng-if="!editing">
+                            <div class="col-md-12">
+                                <div class="form-control" style="background-color:#EEEEEE">
+                                    <fms-link ng-if="eventItem.movieVersionId" id="eventItem.movieId" type="'com.openfms.model.core.movie.FmsMovie'">
+                                        {{eventItem.movieVersionName || "[no version name]"}}
+                                    </fms-link>
+                                    <span ng-if="!eventItem.movieVersionId">
+                                        <i>none</i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-if="editing">
+                            <div class="col-md-9">
+                                <input single-select ng-model="eventItem.movieVersionId" ng-disabled="!editing" on-change="save()" service="movieVersionService" params='{"movieId":"{{eventItem.movieId}}"}'>
+                            </div>
+                            <div class="col-md-3">
+                                <button ng-disabled="!eventItem.movieVersionId  || !editing" class="form-control btn btn-primary" ng-click="resetVersion($index)" ><i  class="glyphicon glyphicon-remove-circle"></i> Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 form-group" style="min-height:120px">
+                    <label>Media Clips</label><br>
+                    <div ng-if="!eventItem.movieVersionId" class="alert alert-info">
+                        <span >
+                            <i>no movie version selected</i>
+                        </span>
+                    </div>
+                    <div ng-if="eventItem.movieVersionId && eventItem.mediaClips.length==0" class="alert alert-info">
+                        <span>
+                            <i>no media clips in this version</i>
+                        </span>
+                    </div>
+                    <div ng-if="eventItem.mediaClips.length > 0">
+                        <table class="table table-compact table-striped">
+                            <tbody ng-repeat="mediaclip in eventItem.mediaClips">
+                                <tr>
+                                    <td><small><fms-link id="mediaclip.mediaClipId" type="'com.openfms.model.core.movie.FmsMediaClip'">{{mediaclip.mediaClipName}}</fms-link></small></td>
+                                    <td><small>{{mediaclip.length}}</small></td>
+                                    <td><small>{{mediaclip.mediaClipType}}</small></td>
+                                    <td width="45%">
+                                        <span ng-repeat="l in mediaclip.audioLanguageIds" class="label label-primary" style="margin:2px"><i class="glyphicon glyphicon-volume-up"></i> {{l}}</span>
+                                        <span ng-repeat="l in mediaclip.subtitleLanguageIds" class="label label-primary" style="margin:2px"><i class="glyphicon glyphicon-font"></i> {{l}}</span>
+                                        <span ng-repeat="l in mediaclip.tags" class="label label-success" style="margin:2px"><i class="glyphicon glyphicon-map-marker"></i> {{l}}</span>
+                                        <span ng-if="mediaclip.encrypted" class="label label-danger">Encrypted</span>
+                                        <!--<span ng-if="mediaclip.disabled" class="label label-danger"><i class="glyphicon glyphicon-ban-circle"></i> Clip Disabled</span>
+                                        <span ng-if="!mediaclip.disabled" class="label label-success"><i class="glyphicon glyphicon-ok-circle"></i> Clip Enabled</span>-->
+                                    </td>
+                                    <td width="5%">  
+                                        <fms-status status="mediaclip.status">
+                                            <i class="glyphicon glyphicon-hdd"></i>
+                                        </fms-status>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Keys</label><br>
+                        <span ng-repeat="key in eventItem.keyIds">
+                            <a href="/api/v2/crypto/keys/{{key}}/data"><strong>Key {{$index+1}}:</strong>&nbsp;{{key}}</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-11">
+            </div>
+            <div class="col-md-1">
+                <br>
+                <button ng-click="addItem()" ng-disabled="!editing" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus-sign"></i></button>
+            </div>
+        </div>
+        <div class="row"  ng-if="!canEdit">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button class="btn fms-dialog-close" ng-click="close()">cancel</button> 
+                    <button class="btn btn-primary fms-dialog-commit"ng-click="add()">save</button> 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

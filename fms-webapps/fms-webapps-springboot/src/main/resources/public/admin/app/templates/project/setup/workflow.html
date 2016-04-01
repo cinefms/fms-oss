@@ -1,0 +1,32 @@
+<div ng-controller="WorkflowController">
+    <div fms-headline>
+        Workflow
+    </div>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <label>Add a Task Type</label>
+                <div class="row">
+                    <div class="col-md-11">
+                        <div class="form-group">
+                            <input ng-model="newtype.name" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button class="btn btn-primary pull-right" ng-click="addTaskType()">Add</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" ng-repeat="tasktype in tasktypes">
+                <div class="shadow-box" >
+                   <task-type-editor id="tasktype.id">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

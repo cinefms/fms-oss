@@ -1,0 +1,76 @@
+package com.openfms.core.service.project.impl.listeners;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.openfms.core.service.FmsMediaClipService;
+import com.openfms.core.service.FmsMediaClipTaskService;
+import com.openfms.model.FmsObjectChangeNotifier.OPERATION;
+import com.openfms.model.annotations.FmsListener;
+import com.openfms.model.annotations.FmsNotify;
+import com.openfms.model.core.movie.FmsMediaClip;
+import com.openfms.model.core.movie.FmsMediaClipTask;
+import com.openfms.model.core.movie.FmsMediaClipTaskProgress;
+
+@Component
+@FmsListener
+public class MediaClipTaskListener {
+
+	private static Log log = LogFactory.getLog(MediaClipTaskListener.class);
+
+	@Autowired
+	private FmsMediaClipService mediaClipservice;
+
+	@Autowired
+	private FmsMediaClipTaskService mediaClipTaskService;
+
+	@FmsNotify(operations = { OPERATION.UPDATED }, runWithRoles = "ROLE_ADMIN")
+	public void whenMediaClipTaskProgressSavedUpdateMediaClipTaskStatus(FmsMediaClipTaskProgress newMediaClipTaskprogress, FmsMediaClipTaskProgress oldMediaClipTaskprogress) {
+		try {
+			if (newMediaClipTaskprogress != null) {
+				FmsMediaClipTask eptask = mediaClipTaskService.getMediaClipTask(newMediaClipTaskprogress.getMediaClipTaskId());
+				if (eptask.getStatus() != newMediaClipTaskprogress.getStatus()) {
+					eptask.setStatus(newMediaClipTaskprogress.getStatus());
+					mediaClipTaskService.saveMediaClipTask(eptask);
+					log.info(" Task Progess changes Task status: " + eptask.getStatus() + " -> " + newMediaClipTaskprogress.getStatus());
+				} else {
+					log.info(" Task Progess does NOT change Task status: " + eptask.getStatus() + " -> " + newMediaClipTaskprogress.getStatus());
+				}
+			} else {
+				log.info(" NO NEW Entry Point Task ... ");
+			}
+		} catch (Exception e) {
+			log.warn("error in key listener!", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED }, runWithRoles = "ROLE_ADMIN")
+	public void whenmediaClipsavedUpdateMediaClipTaskDates(FmsMediaClip newMediaClip, FmsMediaClip oldMediaClip) {
+		try {
+			if (newMediaClip != null) {
+				for (FmsMediaClipTask task : mediaClipTaskService.listMediaClipTasks(newMediaClip.getId(), null, null, null, null, null, null, true, null, null)) {
+					task.setFirstEventDate(newMediaClip.getFirstEventDate());
+					task.setLastEventDate(newMediaClip.getLastEventDate());
+					mediaClipTaskService.saveMediaClipTask(task);
+				}
+			}
+		} catch (Exception e) {
+			log.warn("error in key listener!", e);
+			throw new RuntimeException("error updating tasks", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.PREPARE }, runWithRoles = "ROLE_ADMIN")
+	public void beforeTaskSavedUpdateDates(FmsMediaClipTask newTask, FmsMediaClipTask oldTask) {
+		try {
+			FmsMediaClip fep = mediaClipservice.getMediaClip(newTask.getMediaClipId());
+			newTask.setFirstEventDate(fep.getFirstEventDate());
+			newTask.setLastEventDate(fep.getLastEventDate());
+		} catch (Exception e) {
+			log.error("error preparing entry point Task", e);
+		}
+	}
+
+}

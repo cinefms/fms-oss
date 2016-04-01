@@ -1,0 +1,155 @@
+package com.openfms.core.service.project.impl.listeners;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.cinefms.dbstore.api.DBStoreQuery;
+import com.cinefms.dbstore.api.DataStore;
+import com.cinefms.dbstore.api.impl.BasicQuery;
+import com.openfms.core.service.FmsMediaClipService;
+import com.openfms.core.service.FmsMovieVersionService;
+import com.openfms.model.FmsObjectChangeNotifier.OPERATION;
+import com.openfms.model.Status;
+import com.openfms.model.annotations.FmsListener;
+import com.openfms.model.annotations.FmsNotify;
+import com.openfms.model.core.movie.FmsMediaClip;
+import com.openfms.model.core.movie.FmsMovieVersion;
+import com.openfms.model.core.playback.FmsEvent;
+import com.openfms.model.core.playback.FmsEventItem;
+import com.openfms.model.utils.StatusCombine;
+
+@Component
+@FmsListener
+public class MovieVersionListener {
+
+	private static Log log = LogFactory.getLog(MovieVersionListener.class);
+
+	@Autowired
+	private FmsMovieVersionService movieVersionService;
+
+	@Autowired
+	private FmsMediaClipService mediaClipservice;
+
+	@Autowired
+	private DataStore dataStore;
+
+	@FmsNotify(operations = { OPERATION.PREPARE }, runWithRoles = "ROLE_ADMIN")
+	public void whenMovieVersionSavedUpdateEventDates(FmsMovieVersion newVersion, FmsMovieVersion oldVersion) {
+		try {
+			DBStoreQuery qe = BasicQuery.createQuery().in("eventItems.movieVersionId", newVersion.getId());
+			qe = qe.order("startTime", true);
+			List<FmsEvent> es = dataStore.findObjects(FmsEvent.class, qe);
+			Date firstEventDate = null;
+			Date lastEventDate = null;
+			for (FmsEvent e : es) {
+				if (firstEventDate == null || firstEventDate.after(e.getStartTime())) {
+					firstEventDate = e.getStartTime();
+				}
+				if (lastEventDate == null || lastEventDate.before(e.getStartTime())) {
+					lastEventDate = e.getStartTime();
+				}
+			}
+			newVersion.setFirstEventDate(firstEventDate);
+			newVersion.setLastEventDate(lastEventDate);
+
+		} catch (Exception e) {
+			log.error("error preparing  version", e);
+			throw new RuntimeException("error preparing version", e);
+		}
+
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED }, runWithRoles = "ROLE_ADMIN")
+	public void whenmediaClipsavedUpdateStatus(FmsMediaClip newMediaClip, FmsMediaClip oldMediaClip) {
+		try {
+			SortedSet<FmsMovieVersion> movieVersions = new TreeSet<FmsMovieVersion>();
+			if (newMediaClip != null) {
+				List<FmsMovieVersion> mvs = movieVersionService.listMovieVersions(null, null, null, newMediaClip.getId(), null, null, 0, null);
+				movieVersions.addAll(mvs);
+			}
+			if (oldMediaClip != null) {
+				List<FmsMovieVersion> mvs = movieVersionService.listMovieVersions(null, null, null, oldMediaClip.getId(), null, null, 0, null);
+				movieVersions.addAll(mvs);
+			}
+			for (FmsMovieVersion mv : movieVersions) {
+
+				List<String> epIds = mv.getMediaClipIds();
+				int[] x = new int[epIds.size()];
+
+				for (int i = 0; i < epIds.size(); i++) {
+					String epId = epIds.get(i);
+					int status = Status.ERROR.value();
+					try {
+						FmsMediaClip ep = mediaClipservice.getMediaClip(epId);
+						status = ep.getStatus();
+					} catch (Exception e) {
+					}
+					x[i] = status;
+				}
+				int status = StatusCombine.combine(x);
+				if (status != mv.getStatus()) {
+					mv.setStatus(status);
+					movieVersionService.saveMovieVersion(mv);
+				}
+			}
+		} catch (Exception e) {
+			log.warn("error in key listener!", e);
+		}
+
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED, OPERATION.DELETED }, runWithRoles = "ROLE_ADMIN")
+	public void whenEventSavedUpdateFirstLastEventDate(FmsEvent oldEvent, FmsEvent newEvent) {
+		try {
+			Collection<FmsMovieVersion> mvs = new TreeSet<FmsMovieVersion>();
+			if (oldEvent != null) {
+				for (FmsEventItem fei : oldEvent.getEventItems()) {
+					if (fei.getMovieVersionId() != null) {
+						FmsMovieVersion mv = movieVersionService.getMovieVersion(fei.getMovieVersionId());
+						if (mv != null) {
+							mvs.add(mv);
+						} else {
+							log.warn("OLD_VERSION: CORRUPT EVENT: " + oldEvent.getId() + " / versionId is set: " + fei.getMovieVersionId() + ", but movieVersion is: NULL");
+						}
+					}
+				}
+			} else if (newEvent != null) {
+				for (FmsEventItem fei : newEvent.getEventItems()) {
+					if (fei.getMovieVersionId() != null) {
+						FmsMovieVersion mv = movieVersionService.getMovieVersion(fei.getMovieVersionId());
+						if (mv != null) {
+							mvs.add(mv);
+						} else {
+							log.warn("NEW_VERSION: CORRUPT EVENT: " + newEvent.getId() + " / versionId is set: " + fei.getMovieVersionId() + ", but movieVersion is: NULL");
+						}
+					}
+				}
+			}
+			updatemediaClipsForVersions(mvs);
+
+		} catch (Exception e) {
+			log.error("error updating versions after event changed", e);
+			throw new RuntimeException("error updating versions after event changed", e);
+		}
+
+	}
+
+	private void updatemediaClipsForVersions(Collection<FmsMovieVersion> mvs) {
+		try {
+			for (FmsMovieVersion mv : mvs) {
+				movieVersionService.saveMovieVersion(mv);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("error updating versions", e);
+		}
+	}
+
+}

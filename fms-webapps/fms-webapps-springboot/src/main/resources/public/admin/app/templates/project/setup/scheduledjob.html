@@ -1,0 +1,44 @@
+<div ng-controller="ScheduledJobController">
+    <div fms-headline>
+        <a href="#/setup/scheduledjobs">Jobs </a>| {{scheduledjob.name}}
+    </div>
+    <div class="col-md-12">
+        <ul class="nav nav-tabs">
+            <li ng-class="{'active': params.tab == 'overview'}"><a ng-click="tab('overview')">Overview</a></li>
+            <li ng-class="{'active': params.tab == 'logs'}"><a ng-click="tab('logs')">Logs</a></li>
+        </ul>
+    </div>
+    <div class="col-md-12">
+        <br>
+    </div>
+    <div class="col-md-12" ng-if="scheduledjob.id && params.tab == 'overview'">
+		<scheduled-job-editor id="scheduledjob.id">
+  	</div>
+    <div class="col-md-12" ng-if="scheduledjob.id && params.tab == 'logs'">
+        <div ng-controller="ScheduledJobLogController">
+            <div class="row" ng-if="!current.logId">
+                <div class="col-md-12">
+                    <div class="alert alert-info">
+                        <i>No log information available for this scheduled job</i>
+                    </div>
+                </div>
+            </div>
+            <div class="row" ng-if="current.logId">
+                <div class="col-md-8 form-group">
+                </div>
+                <div class="col-md-4 form-group">
+                    <select class="form-control" ng-model="current.logId">
+                        <option ng-repeat="brief in briefs" value="{{brief.id}}">
+                            {{brief.date}}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <h3><fms-time ng-model="log.created">{{date.date}} {{date.time}}</fms-time></h3><br>
+                    <div ng-include src="'app/partial/fms-job-log.html'">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,49 @@
+<div>
+    <div fms-headline>
+        Notifications
+    </div>
+    <div class="col-md-12" ng-controller="NotificationListController">
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <h3>Overview</h3>
+                    <hr>
+                    <div>
+                        <button class="btn btn-default pull-right" ng-click="toggleShowClosed()" ng-if="!showClosed">Show read</button>
+                        <button class="btn btn-danger pull-right" ng-click="toggleShowClosed()" ng-if="showClosed">Show read</button>
+                        <div ng-repeat="notification in notifications">
+                            <hr>
+                            <div>
+                                <div class="form-group">
+                                    <strong><fms-link type="notification.rootObjectType" id="notification.rootObjectId">{{notification.name}}</fms-link></strong>
+                                    <small><i><br>
+                                        {{notification.from}} <fms-time ng-model="notification.date">{{date.since}}
+                                            </fms-time>
+                                    </i></small><br>
+                                </div>
+                                <div>
+                                    {{notification.message}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <h3>Send</h3>
+                    <div class="form-group">
+                        <label>To</label>
+                        <input multi-select model="notification.to" service="userService">
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea ng-model="notification.text" class="form-control" rows="6"></textarea>
+                    </div>
+                    <button class="btn btn-primary" ng-click="add()">send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

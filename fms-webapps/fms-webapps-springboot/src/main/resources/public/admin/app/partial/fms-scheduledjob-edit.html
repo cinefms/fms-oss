@@ -1,0 +1,138 @@
+<div class="row">
+    <div class="col-md-12"  ng-if="canEdit">
+        <div class="row">
+            <div class="col-md-4">
+                <label>Status</label><br>
+                <span style="font-size:18px">
+                    <fms-status status="scheduledjob.status">
+                        <i class="glyphicon glyphicon-play"></i>
+                    </fms-status>
+                </span>
+            </div>
+            <div class="col-md-4">
+                <label>Last Execution</label><br>
+                <fms-time-edit ng-model="scheduledjob.lastExecuted" ng-if="scheduledjob.lastExecuted">
+                </fms-time-edit>
+                <span ng-if="!scheduledjob.lastExecuted">
+                    <i>never</i>
+                </span>
+            </div>
+            <div class="form-group col-md-4">
+                <div class="pull-right">
+                    <button ng-click="edit()" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i></button>
+                    <button ng-click="remove()" class="btn btn-danger"><i class="glyphicon glyphicon-minus-sign"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+            <div class="form-group col-md-11">
+                <label>Name</label>
+                <input ng-model="scheduledjob.name" ng-blur="save()" class="form-control"  ng-disabled="!editing"/>
+            </div>
+            <div class="form-group col-md-1">
+                &nbsp;<br>
+                <div class="checkbox checkbox-compact pull-right">
+                    <input type="checkbox" name="user_enabled" id="user_enabled" ng-model="scheduledjob.active" ng-change="save()" ng-disabled="!editing" >
+                    <label class="btn" for="user_enabled">   enabled   </label>
+                </div>
+            </div>
+            <div class="form-group col-md-12">
+                <label>Executed By</label>
+                <div class="form-group">
+                    <input multi-select class="form-control" model="scheduledjob.userIds" service="userService" change="save()" ng-disabled="!editing">
+                </div>
+            </div>
+            <div class="form-group col-md-12">
+                <label>Type</label>
+                <input single-select ng-disabled="!editing" class="form-control" ng-model="scheduledjob.type" service="scheduledJobTypeService" ng-change="save()">
+            </div>
+            <div class="form-group col-md-12">
+                <label>Schedule (cron - S M H D W M)</label>
+                <input ng-model="scheduledjob.schedule" ng-blur="save()" class="form-control"  ng-disabled="!editing"/>
+            </div>
+            <div class="form-group col-md-12">
+                <table cellspacing="1" cellpadding="3" class="table table-compact">
+                    <thead>
+                        <tr>
+                            <th>Field Name</th>
+                            <th>Mandatory</th>
+                            <th>Allowed Values</th>
+                            <th>Allowed Special Characters</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Seconds</td>
+                            <td>YES</td>
+
+                            <td>0-59</td>
+                            <td>, - * /</td>
+                        </tr>
+                        <tr>
+                            <td>Minutes</td>
+                            <td>YES</td>
+                            <td>0-59</td>
+
+                            <td>, - * /</td>
+                        </tr>
+                        <tr>
+                            <td>Hours</td>
+                            <td>YES</td>
+                            <td>0-23</td>
+                            <td>, - * /</td>
+
+                        </tr>
+                        <tr>
+                            <td>Day of month</td>
+                            <td>YES</td>
+                            <td>1-31</td>
+                            <td>, - * ? / L W<br clear="all">
+                            </td>
+                        </tr>
+                        <tr>
+
+                            <td>Month</td>
+                            <td>YES</td>
+                            <td>1-12 or JAN-DEC</td>
+                            <td>, - * /</td>
+                        </tr>
+                        <tr>
+                            <td>Day of week</td>
+
+                            <td>YES</td>
+                            <td>1-7 or SUN-SAT</td>
+                            <td>, - * ? / L #</td>
+                        </tr>
+                        <tr>
+                            <td>Year</td>
+                            <td>NO</td>
+
+                            <td>empty, 1970-2099</td>
+                            <td>, - * /</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group col-md-12">
+                <label>Config</label>
+                <div class="form-group">
+                    <div json-editor ng-model="scheduledjob.data" change="save()">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row"  ng-if="!canEdit">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button class="btn fms-dialog-close" ng-click="close()">cancel</button> 
+                    <button class="btn btn-primary fms-dialog-commit"ng-click="add()">save</button> 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

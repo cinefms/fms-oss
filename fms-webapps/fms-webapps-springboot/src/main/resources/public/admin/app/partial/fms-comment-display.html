@@ -1,0 +1,11 @@
+		<div class="form-group alert alert-warning">
+            <span ng-click="delete(comment)" class="pull-right"><i class="glyphicon  glyphicon-remove-circle"></i></span>
+            <strong>{{comment.author}}</strong> commented on <fms-link type="comment.rootType" id="comment.rootId">{{comment.name}}</fms-link><br>
+			<i>
+				<fms-time ng-model="comment.date">{{date.since}}
+				</fms-time>
+			</i>
+			<div style="margin-top:8px">
+				<span class="lead" ng-bind-html="comment.text | markdown"></span>
+			</div>
+		</div>

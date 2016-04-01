@@ -1,0 +1,57 @@
+<project name="fms-parent" default="build_all">
+
+	<property file="build.${user.name}.properties" />
+	<property file="build.properties" />
+
+	<target name="clean">
+		<delete failonerror="false">
+			<fileset dir="${tomcat_home}/webapps/ROOT/">
+				<include name="**/**" />
+			</fileset>
+			<fileset dir="${tomcat_home}/webapps/satellite/">
+				<include name="**/**" />
+			</fileset>
+		</delete>
+		<exec executable="${mvn_executable}">
+			<arg value="clean" />
+		</exec>
+	</target>
+	
+	<target name="sync_local">
+		<property name="tchome" location="${tomcat_home}"/>
+		<echo message="syncing to ${tchome}"/>
+		<mkdir dir="${tomcat_home}/webapps/ROOT"/>
+		<sync todir="${tomcat_home}/webapps/ROOT">
+			<fileset dir="./fms-webapps/fms-webapps-core/target/ROOT"/>
+		</sync>
+		<!--
+		<mkdir dir="${tomcat_home}/webapps/satellite"/>
+		<sync todir="${tomcat_home}/webapps/satellite">
+			<fileset dir="./fms-webapps/fms-webapps-satellite/target/satellite"/>
+		</sync>
+		<mkdir dir="${tomcat_home}/webapps/satellite"/>
+		<sync todir="${tomcat_home}/webapps/satellite">
+			<fileset dir="./fms-webapps/fms-webapps-satellite/target/satellite"/>
+		</sync>
+		<mkdir dir="${tomcat_home}/webapps/kdmupload"/>
+		<sync todir="${tomcat_home}/webapps/kdmupload">
+			<fileset dir="./fms-webapps/fms-webapps-kdmupload/target/kdmupload"/>
+		</sync>
+		-->
+	</target>
+
+	<target name="build_all" depends="clean">
+		<exec executable="${mvn_executable}">
+			<env key="JAVA_OPTS" value="-Xmx8048m"/>
+			<arg value="-DskipTests=true" />
+			<arg value="-e" />
+			<arg value="-T" />
+			<arg value="8" />
+			<arg value="-s" />
+			<arg value="${mvn_settings}"/>
+			<arg value="clean" />
+			<arg value="install" />
+		</exec>
+		<antcall target="sync_local"/>
+	</target>
+</project>

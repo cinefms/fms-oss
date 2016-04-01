@@ -1,0 +1,57 @@
+<div ng-controller="PackagesController">
+    <div fms-headline>
+        Packages
+    </div>
+    <div class="col-md-12" ng-if="!permissions.list">
+        <div class="alert alert-warning">
+            <i>sorry, you have no permissions to list packages</i>
+        </div>
+    </div>
+    <div class="col-md-12" ng-if="permissions.list">
+        <div class="row">
+            <div class="form-group col-md-11 col-sm-11">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                    <input ng-model="list.params.searchTerm" placeholder="search" class="form-control" autofocus/>
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-info" ng-if="!packages || packages.length==0">
+            <i>no matching Packages found</i>
+        </div>
+        <div class="row"  ng-if="packages && packages.length>0">
+            <div class="col-md-12">
+                <table class="table table-striped table-condensed">
+                    <tr>   
+                        <th>ExtID</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th></th>
+                    </tr>
+                    <tr ng-repeat="package in packages">
+                        <td>
+                            <fms-link object="package">
+                                <strong>[{{package.externalId}}]</strong>
+                            </fms-link>
+                        </td>
+                        <td>
+                            <fms-link object="package">
+                                {{package.name}}
+                                <i ng-if="!package.name || package.name.length == 0">[Empty Title]</i>
+                            </fms-link>
+                        </td>
+                        <td>
+                            <fms-link object="package">
+                                {{package.type}}
+                            </fms-link>
+                        </td>
+                        <td width="5%">
+                            <div class="pull-right" ng-disabled="!permissions.delete" ng-click="remove(package.id)"><i class="glyphicon glyphicon-minus-sign"></i></a></div>
+                        </td>
+                    </tr>
+                </table>
+                <fms-pagination ng-model="list.params">
+            </div>
+        </div>
+    </div>
+</div>

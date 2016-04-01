@@ -1,0 +1,87 @@
+        <div class="row">
+            <div class="col-md-12" ng-if="canEdit">
+                <button ng-click="edit()" ng-disabled="!permissions.edit" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-pencil"></i></button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Name</label><br>
+                    <input ng-disabled="!editing" ng-model="location.name" class="form-control" ng-blur="save()">
+                </div>
+            </div>
+            <div class="col-md-12 form-group">
+                <label>Show/Hide Location</label><br>
+                <button ng-disabled="!editing" ng-show="!location.active" class="btn btn-default btn-xs"  ng-click="location.active = true; save()">Location Hidden</button>
+                <button ng-disabled="!editing" ng-show="location.active" class="btn btn-success btn-xs"  ng-click="location.active = false; save()">Location Active</button>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Site</label><br>
+                    <input single-select ng-disabled="!editing" ng-model="location.siteId" service="siteService" class="form-control" ng-change="save()">
+                </div>
+                <div class="form-group">
+                    <label>Tags</label><br>
+                    <input multi-select ng-disabled="!editing" model="location.tags" service="tagService" class="form-control" change="save()">
+                </div>
+            </div>
+            <div class="col-md-12" ng-if="location.devices && location.devices.length > 0">
+                <hr>
+                <label>Devices</label>
+                <table class="table table-compact">
+                    <tr>
+                        <th>Name</th>
+                        <th>Vendor</th>
+                        <th>Serial</th>
+                        <th>Cert</th>
+                    </tr>
+                    <tr ng-repeat="device in location.devices">
+                        <td><fms-link id="device.deviceId" type="'com.openfms.model.core.playback.FmsPlaybackDevice'">{{device.deviceName}}</fms-link></td>
+                        <td><fms-link id="device.deviceId" type="'com.openfms.model.core.playback.FmsPlaybackDevice'">{{device.deviceVendor}}</fms-link></td>
+                        <td><fms-link id="device.deviceId" type="'com.openfms.model.core.playback.FmsPlaybackDevice'">{{device.deviceSerial}}</fms-link></td>
+                        <td><a href="/api/v2/crypt/certificates/{{device.certificateId}}/data"><i class="glyphicon glyphicon-floppy-save"></i></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-12">
+                <hr>
+                <label>Contacts</label>
+                <form name="fmsForm">
+                <table class="table table-compact">
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone (Format: +491234567890)</th>
+                        <th>E-Mail</th>
+                        <th></th>
+                    </tr>
+                    <tr ng-repeat="contact in location.data.contacts">
+                        <td>{{contact.name}}</td>
+                        <td>{{contact.phone}}</td>
+                        <td>{{contact.email}}</td>
+                        <td width="5%">
+                            <div class="pull-right"  ng-click="removeContact($index)"><i class="glyphicon glyphicon-minus-sign"></i></a></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input ng-disabled="!editing" ng-model="contact.name" class="form-control"></td>
+                        <td><input name="phone" ng-pattern="/^\+[0-9]+$/" ng-disabled="!editing" ng-model="contact.phone" class="form-control"><span ng-show="fmsForm.phone.$error.pattern" class="btn btn-danger">Not a valid phone number!</span>
+                        </td>
+                        <td><input name="email" type="email" ng-disabled="!editing" ng-model="contact.email" class="form-control"><span ng-show="fmsForm.email.$error.email" class="btn btn-danger">Not an valid e-mail!</span>
+                        </td>
+                        <td><button ng-disabled="!editing" class="btn btn-primary fms-dialog-commit" ng-click="addContact()">Add</button></td>
+                    </tr>
+                </table>
+                </form>
+            </div>
+        </div>
+        <div class="row"  ng-if="!canEdit">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button class="btn fms-dialog-close" ng-click="close()">cancel</button> 
+                    <button class="btn btn-primary fms-dialog-commit"ng-click="add()">save</button> 
+                </div>
+            </div>
+        </div>
+
+

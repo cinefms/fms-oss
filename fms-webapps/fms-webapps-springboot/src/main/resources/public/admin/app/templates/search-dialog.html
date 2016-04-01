@@ -1,0 +1,44 @@
+<div class="fms-search-overlay" id="search-dialog">
+	<div class="fms-search-dialog">
+		<div class="row">
+	    	<div class="col-md-12">
+				<h4>Search</h4>
+			</div>
+		</div>
+		<div class="row">
+	    	<div class="col-md-12">
+		        <ul class="nav nav-tabs">
+		            <li ng-class="{'active': tab == 'movies'}"><a ng-click="openTo('movies')">Movies</a></li>
+		            <li ng-class="{'active': tab == 'clips'}"><a ng-click="openTo('clips')">Clips</a></li>
+		            <li ng-class="{'active': tab == 'events'}"><a ng-click="openTo('events')">Events</a></li>
+		        </ul>
+			</div>
+		</div>
+		<div class="row">
+	    	<div class="col-md-12">
+	    		<br>
+	    	</div>
+	    </div>
+    	<div class="row" >
+	    	<div class="col-md-12">
+	    		<div class="form-group">
+		    		<div class="input-group">
+		    			<input ng-model="params.searchTerm" ng-change="update()" class="form-control" id="search-input">
+		    			<div class="input-group-addon"><i class='glyphicon glyphicon-search'> </i></div>
+		    		</div>
+	    		</div>
+	    	</div>
+    	</div>
+    	<div class="row" >
+	    	<div class="col-md-12">
+
+	    		<table class="table table-compact">
+	    			<tr ng-repeat="result in results" ng-click="close()" ng-class="{'fms-highlight' : $index == sresult}" id="result-{{$index}}">
+	    				<td width="20%"><fms-link object="result">{{result.externalId || "--- NoExtID ---"}}</fms-link></td>
+	    				<td width="80%"><fms-link object="result">{{result.name || "--- No Name ---"}}</fms-link></td>
+	    			</tr>
+	    		</table>
+	    	</div>
+    	</div>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.cinefms</groupId>
+		<artifactId>fms-parent</artifactId>
+		<version>0.7.12-SNAPSHOT</version>
+	</parent>
+	<artifactId>fms-utils</artifactId>
+	<packaging>pom</packaging>
+	<name>fms-utils</name>
+	<modules>
+		<module>fms-utils-crypto</module>
+		<module>fms-utils-common</module>
+		<module>fms-utils-pdf</module>
+		<module>fms-utils-dcp</module>
+		<module>fms-dcp</module>
+		<module>fms-utils-filesystem</module>
+	</modules>
+</project>

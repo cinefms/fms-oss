@@ -1,0 +1,232 @@
+package com.skjlls.services.mail.impl;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.Locale;
+import java.util.Properties;
+
+import javax.mail.Authenticator;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cinefms.dbstore.api.DBStoreQuery;
+import com.cinefms.dbstore.api.DataStore;
+import com.cinefms.dbstore.api.impl.BasicQuery;
+import com.skjlls.core.model.mail.SkjllsMail;
+import com.skjlls.core.model.mail.SkjllsMailTemplate;
+import com.skjlls.services.auth.AuthnService;
+import com.skjlls.services.mail.SendMailService;
+import com.skjlls.services.mail.exceptions.MailingException;
+import com.skjlls.services.util.ConfigServiceInternal;
+import com.sun.mail.smtp.SMTPMessage;
+
+import freemarker.cache.StringTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+
+public class SendMailServiceImpl implements SendMailService {
+	
+	private static Log log = LogFactory.getLog(SendMailServiceImpl.class);
+	
+	@Autowired
+	private DataStore dataStore;
+	
+	@Autowired
+	private ConfigServiceInternal configServiceInternal;
+
+	@Autowired
+	private AuthnService authnService;
+	
+	
+	public SkjllsMailTemplate getTemplate(Locale locale, String mail) {
+		try {
+
+			DBStoreQuery q = BasicQuery.createQuery().eq("name",mail);
+			SkjllsMail m = dataStore.findObject("default",SkjllsMail.class, q);
+			if(m!=null) {
+				DBStoreQuery q2 = BasicQuery.createQuery().eq("locale", locale).eq("mailId", m.getId());
+				SkjllsMailTemplate mt = dataStore.findObject("default",SkjllsMailTemplate.class, q2);
+				return mt;
+			}
+		} catch (Exception e) {
+			log.error("ERROR LOADING TEMPLATE: ",e);
+		}
+		return null;
+	}
+	
+	@Override
+	public void sendMail(String recipient, Locale locale, String mail, Object model) throws MailingException {
+		
+		if(recipient == null) {
+			log.warn("mail could not be sent: recipient has no email address!");
+			throw new MailingException("mail could not be sent: recipient has no email address!");
+		}
+		 
+		SkjllsMailTemplate mt = getTemplate(locale, mail);
+		if(mt==null) {
+			log.warn("mail could not be sent: mail "+mail+"/"+locale+" is not configured!");
+			throw new MailingException("mail could not be sent: mail "+mail+"/"+locale+" is not configured!");
+		}
+		if(mt.getTemplateHtml()==null && mt.getTemplateText()==null) {
+			log.warn("mail could not be sent: mail "+mail+"/"+locale+" has neither TEXT nor HTML!");
+			throw new MailingException("mail could not be sent: mail "+mail+"/"+locale+" has neither TEXT nor HTML!");
+		}
+		SMTPMessage message = null;
+		try {
+			String htmlContent = freemarkerDo(model, mt.getTemplateHtml());
+			String textContent = freemarkerDo(model, mt.getTemplateText());
+			String subject = freemarkerDo(model, mt.getSubject());
+			
+			Session session = getMailSession(mt.getSender());
+			
+			message = createMessage(session, mt.getSender(), recipient, subject, htmlContent, textContent);
+			
+			log.debug("sending mail to: "+recipient+" ===================================================== ");
+			Transport.send(message);
+			
+		} catch (Exception e) {
+			log.error("error sending mail: ",e);
+			try {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				message.writeTo(baos);
+				log.error("mail was: "+new String(baos.toByteArray(),"utf-8"));
+			} catch (Exception e2) {
+			}
+			throw new MailingException("error sending mail!",e);
+		}
+	}
+
+	
+	
+	public Session getMailSession(String sender) {
+		Properties props = System.getProperties();
+		
+		props.put("mail.transport.protocol", "smtp");
+		props.put("mail.smtp.from", sender);
+		props.put("mail.smtp.host", configServiceInternal.getString("general.mail.smtp.host"));
+
+		boolean useSSL = configServiceInternal.getBoolean("general.mail.smtp.ssl",true);
+		
+		if (useSSL) {
+			props.put("mail.smtp.port", configServiceInternal.getInt("general.mail.smtp.port",443));
+		} else {
+			props.put("mail.smtp.starttls.enable", configServiceInternal.getBoolean("general.mail.smtp.tls",true));
+			props.put("mail.smtp.starttls.require", configServiceInternal.getBoolean("general.mail.smtp.tlsrequire",false));
+			props.put("mail.smtp.port", configServiceInternal.getInt("general.mail.smtp.port",25));
+		}
+		String username = configServiceInternal.getString("general.mail.smtp.username");
+		String password = configServiceInternal.getString("general.mail.smtp.username");
+		log.debug("sending mail using SMTP host: "+props.getProperty("mail.smtp.host")+":"+props.getProperty("mail.smtp.port")+" / TLS:"+props.getProperty("mail.smtp.starttls")+" / SSL:"+props.getProperty("mail.smtp.ssl"));
+		if (username != null) {
+			props.put("mail.smtp.auth", "true");
+			log.debug("sending mail WITH SMTP auth ... ");
+			return Session.getInstance(props, new PasswordAuthenticator(username, password));
+		} else {
+			log.debug("sending mail WITHOUT SMTP auth ... ");
+			return Session.getInstance(props);
+		}
+	}
+	
+	
+	public SMTPMessage createMessage(Session mailSession, String sender, String recipient, String subject, String htmlContent, String textContent) throws MessagingException, UnsupportedEncodingException{
+
+		SMTPMessage mm = new SMTPMessage(mailSession);
+		InternetAddress senderAddr = new InternetAddress(sender);
+		InternetAddress recipientAddr = new InternetAddress(recipient);
+		mm.setRecipient(javax.mail.Message.RecipientType.TO, recipientAddr);
+		mm.setSender(senderAddr);
+		mm.setFrom(senderAddr);
+		mm.setEnvelopeFrom(sender);
+		mm.setHeader("Content-Type", "text/html; charset=utf-8");
+		mm.setHeader("Content-Transfer-Encoding", "quoted-printable");
+		mm.setSubject(subject);
+
+		MimeMultipart mmpt = new MimeMultipart("alternative");
+
+		if (textContent != null) {
+			MimeBodyPart bpText = new MimeBodyPart();
+			bpText.setText(textContent);
+			bpText.setHeader("Content-Type", "text/plain; charset=utf-8");
+			bpText.setHeader("Content-Transfer-Encoding", "quoted-printable");
+			mmpt.addBodyPart(bpText);
+		}
+
+		if (htmlContent != null) {
+
+			MimeBodyPart bpHtml = new MimeBodyPart();
+			bpHtml.setText(htmlContent);
+			bpHtml.setHeader("Content-Type", "text/html; charset=utf-8");
+			bpHtml.setHeader("Content-Transfer-Encoding", "quoted-printable");
+			mmpt.addBodyPart(bpHtml);
+		}
+
+		mm.setContent(mmpt);
+		mm.saveChanges();
+		return mm;
+	}
+	
+	public String freemarkerDo(Object model, String template) throws Exception {
+		try {
+			Template t = getTemplate(template);
+			if(t==null) {
+				return null;
+			}
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			OutputStreamWriter osw = new OutputStreamWriter(baos);
+			t.process(model, osw);
+			osw.flush();
+			osw.close();
+			return new String(baos.toByteArray(), "utf-8");
+		} catch (Exception e) {
+			log.error("error processing template: ", e);
+			throw e;
+		}
+	}
+
+	
+	public Template getTemplate(String template) throws IOException {
+		if(template == null) {
+			return null;
+		}
+		try {
+			Configuration freemarkerCfg = new Configuration();
+			StringTemplateLoader tl = new StringTemplateLoader();
+			freemarkerCfg.setURLEscapingCharset("utf-8");
+			freemarkerCfg.setTemplateLoader(tl);
+			tl.putTemplate("a", template);
+			return freemarkerCfg.getTemplate("a");
+		} catch (Exception e) {
+			log.error("error processing template: " + template);
+			log.error("error processing template: ", e);
+			throw new IOException("error creating template from string",e);
+		}
+	}
+
+	private class PasswordAuthenticator extends Authenticator {
+		private String username, password;
+
+		public PasswordAuthenticator(String username, String password) {
+			this.username = username;
+			this.password = password;
+		}
+
+		@Override
+		protected PasswordAuthentication getPasswordAuthentication() {
+			return new PasswordAuthentication(username, password);
+		}
+	}
+
+	
+
+}

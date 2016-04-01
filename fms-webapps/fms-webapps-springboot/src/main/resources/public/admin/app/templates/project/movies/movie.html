@@ -1,0 +1,240 @@
+<div ng-controller="MovieController">
+
+    <!--                                    -->
+    <!--                                    -->
+    <!--      MOVIE                         -->
+    <!--                                    -->
+    <!--                                    -->
+    <div fms-headline>
+        <a href="#/movies/movies">Movies</a> | [{{movie.externalId}}] {{movie.name}}
+        <i ng-show="!movie.name || movie.name.length == 0">[Empty Title]</i>
+    </div>
+
+    <div class="col-md-12">
+        <ul class="nav nav-tabs">
+            <li ng-class="{'active': params.tab == 'overview'}"><a ng-click="tab('overview')"><u>O</u>verview</a></li>
+            <li ng-class="{'active': params.tab == 'keys'}"><a ng-click="tab('keys')"><u>K</u>eys</a></li>
+            <li ng-class="{'active': params.tab == 'versions'}"><a ng-click="tab('versions')"><u>V</u>ersions</a></li>
+            <li ng-class="{'active': params.tab == 'mediaclips'}"><a ng-click="tab('mediaclips')"><u>M</u>edia Clips</a></li>
+            <li ng-class="{'active': params.tab == 'packages'}"><a ng-click="tab('packages')"><u>P</u>ackages</a></li>
+            <li ng-class="{'active': params.tab == 'screenings'}"><a ng-click="tab('screenings')"><u>S</u>creenings</a></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <br>
+        </div>
+    </div>
+
+    <div class="col-md-12" ng-if="params.tab == 'overview'">
+        <div class="row" ng-if="movie.id">
+            <div class="col-md-9">
+                <movie-editor id="movie.id">
+            </div>
+            <div class="col-md-3">
+                <comments-full object="movie">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-12" ng-if="params.tab == 'keys' && movie">
+        <div class="row" ng-controller="MovieKeyListController">
+            <div class="col-md-12 form-group" style="margin-bottom:0px">
+                <form id="file-form" action="/api/v2/crypto/keys/upload" method="POST" class="form form-inline pull-right" enctype="multipart/form-data">
+                    <input type="hidden" name="movieId" value="{{movieId}}">
+                    <input type="file" name="file" class="form-control"/>
+                    <button class="btn btn-primary" id="upload-button" ng-click="upload()">Upload</button>
+                </form>
+            </div>
+            <div class="col-md-12 form-group">
+                <key-list movie-id="movie.id">
+                </key-list>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="col-md-12" ng-if="params.tab == 'versions' && movie">
+        <div ng-controller="MovieVersionListController" ng-if="movie.id">
+            <div class="row">
+                <div class="col-md-12 form-group">
+                    <div ng-show="!permissions.create">
+                        <button class="btn btn-primary pull-right" disabled><i class="glyphicon glyphicon-plus-sign"></i> Add</button>
+                    </div>
+                    <fms-dialog ng-show="permissions.create">
+                        <div name="trigger">
+                            <button class="btn btn-primary pull-right open-dialog"><i class="glyphicon glyphicon-plus-sign"></i> Add </button>
+                        </div>
+                        <div name="contents" class="fms-block-overlay contents" ng-show="showDialog">
+                            <div class="fms-modal-dialog">
+                                <div ng-click="close()" class="pull-right">
+                                    <i class="glyphicon glyphicon-remove-circle"></i>
+                                </div>
+                                <div class="fms-modal-dialog-header">
+                                    <h2>Add a Version</h2>
+                                </div>
+                                <div class="fms-modal-dialog-contents">
+                                    <movie-version-editor movie-id="movieId" mode="create">
+                                    </movie-version-editor>
+                                </div>
+                            </div>
+                        </div>
+                    </fms-dialog>
+                </div>
+                <div class="col-md-12 form-group" ng-show="movieversions.length == 0" >
+                    <div class="alert alert-info">
+                        <i>no versions created for this movie</i>
+                    </div>
+                </div>
+                <div ng-repeat="movieversion in movieversions"class="col-md-12">
+                    <div class="shadow-box" ng-controller="MovieVersionListEntryController">
+                        <div class="row">
+                            <div class="col-md-9">
+                                <h4>[{{movieversion.externalId}}] <a>{{movieversion.name}}</a></h4>
+                                Created <fms-time ng-model="movieversion.created">{{date.since}}</fms-time>
+                            </div>
+                            <div class="col-md-3">
+                                <i class="pull-right glyphicon glyphicon-chevron-down" ng-show="child.expanded" ng-click="child.expanded=!child.expanded"></i>
+                                <i class="pull-right glyphicon glyphicon-chevron-up" ng-show="!child.expanded" ng-click="child.expanded=!child.expanded"></i>
+                            </div>
+                            <div class="col-md-12">
+                                <movie-version-editor id="movieversion.id" movie-id="movieId" mode="edit" foldable="child.foldable" expanded="child.expanded">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" ng-if="params.tab == 'packages' && movie">
+        <div ng-controller="PackageListController">
+            <div class="row" ng-repeat="package in packages">
+                <div class="col-md-12 form-group">
+                    <div class="shadow-box">
+                        <h4><fms-link id="package.id" type="'com.openfms.model.core.movie.FmsMoviePackage'">Package {{$index+1}}</fms-link></h4>
+                        <package-editor id="package.id">
+                        </package-editor>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" ng-if="params.tab == 'mediaclips' && movie">
+        <div ng-controller="MovieMediaClipListController">
+            <div class="row">
+                <div class="col-md-12 form-group">
+                    <div ng-show="!permissions.create">
+                        <button class="btn btn-primary pull-right" disabled><i class="glyphicon glyphicon-plus-sign"></i> Add</button>
+                    </div>
+                    <fms-dialog ng-show="permissions.create">
+                        <div name="trigger">
+                            <button class="btn btn-primary pull-right open-dialog"><i class="glyphicon glyphicon-plus-sign"></i> Add </button>
+                        </div>
+                        <div name="contents" class="fms-block-overlay contents" ng-show="showDialog">
+                            <div class="fms-modal-dialog">
+                                <div ng-click="close()" class="pull-right">
+                                    <i class="glyphicon glyphicon-remove-circle"></i>
+                                </div>
+                                <div class="fms-modal-dialog-header">
+                                    <h2>Add a Mediaclip</h2>
+                                </div>
+                                <div class="fms-modal-dialog-contents">
+                                    <media-clip-editor movie-id="movieId" mode="create">
+                                    </media-clip-editor>
+                                </div>
+                            </div>
+                        </div>
+                    </fms-dialog>
+                </div>
+                <div class="col-md-12 form-group">
+                <div ng-show="!permissions.create">
+                        <button class="btn btn-primary pull-right" disabled><i class="glyphicon glyphicon-plus-sign"></i> Add with version</button>
+                    </div>
+                    <fms-dialog ng-show="permissions.create">
+                        <div name="trigger">
+                            <button class="btn btn-primary pull-right open-dialog"><i class="glyphicon glyphicon-plus-sign"></i> Add  with version</button>
+                        </div>
+                        <div name="contents" class="fms-block-overlay contents" ng-show="showDialog">
+                            <div class="fms-modal-dialog">
+                                <div ng-click="close()" class="pull-right">
+                                    <i class="glyphicon glyphicon-remove-circle"></i>
+                                </div>
+                                <div class="fms-modal-dialog-header">
+                                    <h3>Add a Mediaclip and Version</h3>
+                                </div>
+                                <div class="fms-modal-dialog-contents">
+                                    <media-clip-version-create movie-id="movieId" mode="create" movie-name="movie.name" movie-external-id="movie.externalId">
+                                    </media-clip-version-create>
+                                </div>
+                            </div>
+                        </div>
+                    </fms-dialog>
+                </div>
+                <div class="col-md-12 form-group" ng-show="mediaclips.length == 0" >
+                    <div class="alert alert-info">
+                        <i>no media clips available for this movie</i>
+                    </div>
+                </div>
+                <div ng-controller="ShortcutController">
+                    <div ng-repeat="mediaclip in mediaclips" class="col-md-12">
+                        <div class="shadow-box" ng-controller="MovieMediaClipListEntryController" ng-mouseenter="hovering=true" ng-mouseleave="hovering=false">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <h4>Mediaclip <fms-link object="mediaclip">{{mediaclip.name}}</fms-link></h4>
+                                </div>
+                                <div class="col-md-3">
+                                    <i class="pull-right glyphicon glyphicon-chevron-down" ng-show="child.expanded" ng-click="child.expanded=!child.expanded"></i>
+                                    <i class="pull-right glyphicon glyphicon-chevron-up" ng-show="!child.expanded" ng-click="child.expanded=!child.expanded"></i>
+                                </div>
+                                <div class="col-md-12">
+                                    <media-clip-editor id="mediaclip.id" foldable="child.foldable" expanded="child.expanded">
+                                    </media-clip-editor>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-12" ng-if="params.tab == 'screenings' && movie">
+        <div ng-controller="MovieScreeningListController">
+            <div class="row">
+                <div class="col-md-12 form-group">
+                    <div>
+                        <button class="btn btn-primary pull-right" disabled><i class="glyphicon glyphicon-plus-sign"></i> Add</button>
+                    </div>
+                </div>
+                <div class="col-md-12 form-group" ng-show="events.length == 0" >
+                    <div class="alert alert-info">
+                        <i>no events scheduled for this movie</i>
+                    </div>
+                </div>
+                <div ng-controller="ShortcutController">
+                    <div ng-repeat="event in events" class="col-md-12" >
+                        <div class="shadow-box" ng-controller="MovieScreeningListEntryController" ng-mouseenter="hovering=true" ng-mouseleave="hovering=false">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <h4>Event {{$index+1}} | <fms-link object="event">{{event.name}}</fms-link> {{event.locationName}}</h4>
+                                </div>
+                                <div class="col-md-3">
+                                    <i class="pull-right glyphicon glyphicon-chevron-down" ng-show="child.expanded" ng-click="child.expanded=!child.expanded"></i>
+                                    <i class="pull-right glyphicon glyphicon-chevron-up" ng-show="!child.expanded" ng-click="child.expanded=!child.expanded"></i>
+                                </div>
+                                <div class="col-md-12">
+                                    <event-editor id="event.id" foldable="child.foldable" expanded="child.expanded">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+

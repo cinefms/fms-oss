@@ -1,0 +1,60 @@
+package com.openfms.core.service.project.impl.listeners;
+
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.openfms.core.service.FmsCryptoService;
+import com.openfms.core.service.FmsLocationService;
+import com.openfms.model.FmsObjectChangeNotifier.OPERATION;
+import com.openfms.model.annotations.FmsListener;
+import com.openfms.model.annotations.FmsNotify;
+import com.openfms.model.core.crypto.FmsCertificate;
+import com.openfms.model.core.playback.FmsPlaybackDevice;
+
+@Component
+@FmsListener
+public class CertificateListener {
+
+	private static Log log = LogFactory.getLog(CertificateListener.class);
+
+	@Autowired
+	private FmsCryptoService cryptoService;
+
+	@Autowired
+	private FmsLocationService locationService;
+
+	@FmsNotify(operations = { OPERATION.PREPARE }, runWithRoles = "ROLE_ADMIN")
+	public void whenCertificateSavedUpdateDeviceNameInCertificate(FmsCertificate newCertificate, FmsCertificate oldCertificate) {
+		if (newCertificate.getPlaybackDeviceId() != null) {
+			try {
+				FmsPlaybackDevice fpd = locationService.getPlaybackDevice(newCertificate.getPlaybackDeviceId());
+				newCertificate.setPlaybackDeviceName(fpd.getDisplayName() + " - " + newCertificate.getSerial());
+			} catch (Exception e) {
+				newCertificate.setPlaybackDeviceName(null);
+				log.warn("error getting playback device for certificate: ", e);
+			}
+		} else {
+			newCertificate.setPlaybackDeviceName(null);
+		}
+		log.info("certificate name set to: " + newCertificate.getPlaybackDeviceName());
+
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED }, runWithRoles = "ROLE_ADMIN")
+	public void whenDeviceSavedUpdateDeviceNameInCertificates(FmsPlaybackDevice newPlaybackDevice, FmsPlaybackDevice oldPlaybackDevice) {
+		try {
+			List<FmsCertificate> certs = cryptoService.listCertificates(null, null, newPlaybackDevice.getId(), null, null, null, null, null, null, true, null, null);
+			for (FmsCertificate cert : certs) {
+				cert.setPlaybackDeviceName(newPlaybackDevice.getDisplayName() + "-" + cert.getSerial());
+				cryptoService.saveCertificate(cert);
+			}
+		} catch (Exception e) {
+			log.error("error in certificate listener:", e);
+		}
+	}
+
+}

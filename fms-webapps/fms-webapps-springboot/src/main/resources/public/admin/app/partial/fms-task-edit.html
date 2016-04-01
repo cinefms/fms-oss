@@ -1,0 +1,246 @@
+    <div class="row" ng-if="task">
+        <div class="col-md-12">
+        	<h4><fms-link object="task">{{task.type}}</fms-link></h4>
+		</div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Mediaclip </label><br>
+                <fms-link object="mediaclip" ng-if="mediaclip">{{mediaclip.name}}</fms-link>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group" ng-if="mediaclip">
+                <label>Assigned To</label><br>
+                {{task.userName}}
+                <i ng-if="!task.userName">unassigned</i>
+                [ <a href="" ng-click="assignToMe()">assign to me</a> ]
+            </div>
+        </div>
+        <div class="col-md-3">
+            <h4 class="pull-right">
+                <label class="label label-danger" ng-show="task.closed">CLOSED </label>
+                <label class="label label-success" ng-show="!task.closed">OPEN </label>
+                <label ng-if="task.priority == -1" class="label label-default">Low</label>
+                <label ng-if="task.priority == 0" class="label label-info">Normal</label>
+                <label ng-if="task.priority == 1" class="label label-warning">High</label>
+                <label ng-if="task.priority == 2" class="label label-danger">Urgent</label>
+            </h4>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Created</label><br>
+                <fms-time ng-model="task.created">{{date.since}}
+                </fms-time>
+                {{task.userName}}
+            </div>
+        </div>
+        <div class="col-md-6" ng-if="!task.closed">
+            <div class="form-group">
+            <label>Due Date</label><br>
+                <fms-time ng-model="task.dueDate" ng-if="task.dueDate != null">{{date.since}}
+                </fms-time>
+                <div ng-if="task.dueDate == null">none</div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group" ng-if="task.previousTaskId">
+                <label>Previous</label><br>
+                <fms-link id="task.previousTaskId" type="'com.openfms.model.core.movie.FmsMediaClipTask'">
+                    {{task.previousTaskType}}
+                </fms-link>
+            </div>
+        </div>
+        <div class="col-md-12" ng-if="task.comment">
+            <div class="form-group">
+                <samp style="white-space:pre-wrap;">{{task.comment}}</samp>
+            </div>
+        </div>
+        <div class="col-md-12" ng-if="!progresses || progresses.length ==0">
+            <div class="alert alert-info"><i>no progress yet</i></div>
+        </div>
+        <div class="col-md-12">
+            <table class="table table-compact">
+                <tr ng-repeat="progress in progresses">
+                    <td width="15%">{{progress.user}}</td>
+                    <td width="20%">     
+                        <fms-time ng-model="progress.date">
+                            {{date.since}}
+                        </fms-time>
+                    </td>
+                    <td width="45%">
+
+                        <span ng-if="progress.close==true" class="label label-warning" style="margin:4px">CLOSED<i class="glyphicon glyphicon-off"></i> </span>
+                        <span ng-if="progress.close==false" class="label label-success" style="margin:4px">REOPENED<i class="glyphicon glyphicon-off"></i> </span>
+                        <fms-status status="progress.status" ng-if="!(progress.status==undefined)"  class="label-extra" style="margin:2px">
+                            <i class="glyphicon glyphicon-hdd"></i>
+                        </fms-status>
+                        <span ng-if="progress.assignTo" class="label label-info" style="margin:2px">
+                            <i class="glyphicon glyphicon-user"></i> {{progress.assignToUserName}}
+                        </span>
+                        <span ng-if="progress.deviceId" class="label label-default" style="margin:2px" ng-controller="DeviceSingleController" ng-init="init(progress.deviceId)">
+                            <i class="glyphicon glyphicon-play"></i> {{device.name}}
+                        </span>
+                        <span ng-if="progress.disable==true" class="label label-danger" style="margin:2px">
+                            <i class="glyphicon glyphicon-ban-circle"></i>
+                        </span>
+                        <span ng-if="progress.disable==false" class="label label-success" style="margin:2px">
+                            <i class=" glyphicon glyphicon-ok-circle"></i>
+                        </span>
+                        <label ng-if="progress.priority == -1" class="label label-default">Low</label>
+                        <label ng-if="progress.priority == 0" class="label label-info">Normal</label>
+                        <label ng-if="progress.priority == 1" class="label label-warning">High</label>
+                        <label ng-if="progress.priority == 2" class="label label-danger">Urgent</label>
+                        <span ng-repeat="fup in progress.followUps" style="margin:2px">
+                            <fms-link ng-if="fup.created" id="fup.created" type="'com.openfms.model.core.movie.FmsMediaClipTask'">
+                                <span  class="label label-success"><i class=" glyphicon glyphicon-share-alt"></i>  {{fup.type}}</span>
+                            </fms-link>
+                        </span>
+                    </td>
+                    <td width="65%">
+                       <samp style="white-space:pre-wrap;" ng-if="progress.comment.length > 0">{{progress.comment}}</samp>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-12">
+            <hr>
+        </div>
+        <div class="col-md-12">
+            <div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Add a comment</label>
+                        <div class="form-group">
+                            <textarea ng-model="progress.comment" class="form-control" rows="5"></textarea>
+                        </div>
+                        <div class="form-group" ng-if="!task.closed">
+                            <button ng-show="progress.addcomment" class="btn btn-success btn-xs"  ng-click="progress.addcomment = false">Add as Mediaclip comment</button>
+                            <button ng-show="!progress.addcomment" class="btn btn-default btn-xs"  ng-click="progress.addcomment = true">Add as Mediaclip comment</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+
+                        <div class="form-group" ng-if="!task.closed">
+                            <label>Device</label>
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <input single-select ng-model="progress.deviceId" class="form-control" service="deviceService">
+                                </div>
+                                <div class="col-md-3">
+                                    <button ng-disabled="!progress.deviceId" class="form-control btn btn-primary" ng-click="unsetDeviceId()" ><i  class="glyphicon glyphicon-remove-circle"></i> Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-if="!task.closed">
+                            <label>Mediaclip Status <fms-status status="task.mediaClipStatus"><i class="glyphicon glyphicon-hdd"></i></fms-status>&nbsp;</label>
+                            <select ng-model="progress.status" class="form-control">
+                                <option value="">Leave as is</option>
+                                <option value="0">Error</option>
+                                <option value="1">Warning</option>
+                                <option value="2">Pending</option>
+                                <option value="3">OK</option>
+                            </select>
+                        </div>
+                        <div class="form-group" ng-if="!task.closed">
+                            <label>Task Priority</label>
+                            <select ng-model="progress.priority" class="form-control">
+                                <option value="">Leave as is</option>
+                                <option value="-1">Low</option>
+                                <option value="0">Normal</option>
+                                <option value="1">High</option>
+                                <option value="2">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="form-group" ng-if="!task.closed">
+                            <label>En/Disable Mediaclip</label>
+                            <select ng-model="progress.disable" class="form-control">
+                                <option value="">Leave as is</option>
+                                <option value="true" ng-if="!mediaclip.disabled">Disable</option>
+                                <option value="false" ng-if="mediaclip.disabled">Enable</option>
+                            </select>
+                        </div>
+                        <div class="form-group" ng-if="!task.closed">
+                            <label>Assign Task To</label>
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <input single-select ng-model="progress.assignTo" class="form-control" service="userService">
+                                </div>
+                                <div class="col-md-3">
+                                    <button ng-disabled="!progress.assignTo" class="form-control btn btn-primary" ng-click="unsetAssignTo()" ><i  class="glyphicon glyphicon-remove-circle"></i> Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" ng-if="!task.closed">
+                        <div class="form-group">
+                            <label>Follow-up Tasks</label>
+                            <div ng-if="tasktype.next.length==0" class="alert alert-info">
+                                <i> no follow-ups configured for this task type</i>
+                            </div>
+                            <div ng-repeat="followUp in progress.followUps" class="form-group">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <span class="checkbox checkbox-compact">
+                                            <input type="checkbox" id="cb-{{$index}}-{{task.id}}" ng-model="followUp.create">
+                                            <label class="btn btn-xs" for="cb-{{$index}}-{{task.id}}">{{followUp.type}}</label>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <select id="cbp-{{next.nextTaskType}}" class="form-control" ng-model="followUp.priority" ng-disabled="!followUp.create">
+                                            <option value="-1">Low</option>
+                                            <option value="0">Normal</option>
+                                            <option value="1">High</option>
+                                            <option value="2">Urgent</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 form-group" ng-if="followUp.create">
+                                        <textarea ng-model="followUp.comment" cols="20" rows="5" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" ng-if="!task.closed">
+                        <div class="form-group">
+                            <label>Open Tasks</label>
+                            <div ng-if="taskSiblings.length==0" class="alert alert-info">
+                                <i> no open tasks for this Mediaclip</i>
+                            </div>
+                            <div ng-repeat="taskSibling in taskSiblings" class="form-group">
+                                <div class="row" ng-if="taskSibling.id != task.id">
+                                    <div class="col-md-6 form-group">
+                                        <span class="checkbox checkbox-compact">
+                                            <input type="checkbox" id="cb-{{$index}}-{{taskSibling.id}}" ng-model="taskSibling.update">
+                                            <label class="btn btn-xs" for="cb-{{$index}}-{{taskSibling.id}}">{{taskSibling.type}}</label>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <select id="cbp-{{taskSibling.type}}" class="form-control" ng-model="taskSibling.priority" ng-disabled="!taskSibling.update">
+                                            <option value="-1">Low</option>
+                                            <option value="0">Normal</option>
+                                            <option value="1">High</option>
+                                            <option value="2">Urgent</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 form-group" ng-if="taskSibling.update">
+                                        <textarea ng-model="taskSibling.comment" cols="20" rows="5" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="pull-right">
+                                <button class="btn btn-primary" ng-click="sendComment()"  ng-if="!task.closed">Send Update</button>
+                                <button class="btn btn-danger" ng-click="closeAndSendComment()" ng-if="!task.closed">Send Update & Close Task <i class="glyphicon glyphicon-off"></i> </button>
+                                <button class="btn btn-default" ng-click="reopenAndSendComment()" ng-if="task.closed">Reopen Task<i class="glyphicon glyphicon-off"></i> </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

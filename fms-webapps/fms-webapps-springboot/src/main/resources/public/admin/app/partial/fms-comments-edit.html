@@ -1,0 +1,27 @@
+<div class="row" ng-if="object.id">
+	<div class="col-md-12" ng-if="!input && object.id" ng-click="showInput()">
+		<div class="form-group">
+			<button class="btn btn-primary pull-right"> Add Comment</button>		
+		</div>
+	</div>
+	<div class="col-md-12" ng-if="input">
+		<div class="form-group">
+			<textarea ng-model="comment.text" rows="20" class="form-control"></textarea>
+		</div>
+		<div class="form-group pull-right">
+			<button class="btn btn-default" ng-click="hideInput()">Cancel</button>		
+			<button class="btn btn-primary" ng-click="send()">Send</button>		
+		</div>
+	</div>
+	<div class="col-md-12">
+		<br>
+	</div>
+	<div class="col-md-12" ng-if="!comments || comments.length==0">
+		<div class="form-group">
+			<div class="alert alert-info"><i>no comments yet</i></div>
+		</div>
+	</div>
+	<div class="col-md-12" ng-repeat="comment in comments">
+		<comment object="comment">
+	</div>
+</div>

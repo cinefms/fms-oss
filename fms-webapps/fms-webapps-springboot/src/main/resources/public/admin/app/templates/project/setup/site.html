@@ -1,0 +1,20 @@
+<div ng-controller="SiteController">
+
+    <!--                                    -->
+    <!--                                    -->
+    <!--      MOVIE                         -->
+    <!--                                    -->
+    <!--                                    -->
+    <div fms-headline>
+        <a href="#/setup/sites">Sites</a> | 
+        {{site.name}} <i ng-if="!site.name || site.name.vendor.length == 0">[name not set]</i>
+        
+    </div>
+
+    <div class="col-md-12">
+        <site-editor id="site.id" ng-if="site">
+    </div>
+
+
+
+</div>

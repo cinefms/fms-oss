@@ -1,0 +1,55 @@
+<div ng-controller="KeyListController">
+    <div fms-headline>
+        Keys
+    </div>
+    <div class="col-md-12" ng-if="!permissions.list">
+        <div class="alert alert-warning">
+            <i>sorry, you have no permissions to list keys</i>
+        </div>
+    </div>
+    <div class="col-md-12 form-group" ng-if="permissions.list">
+        <div class="row">
+            <div class="col-md-12 form-group">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                    <input ng-model="list.params.searchTerm" placeholder="search" class="form-control" autofocus/>
+                </div>
+            </div>
+            <div class="col-md-12 form-group" ng-if="!keys || keys.length==0">
+                <div class="alert alert-info" >
+                    <i>no matching keys found</i>
+                </div>
+            </div>
+            <div class="col-md-12  form-group">
+                <fms-pagination ng-model="list.params"></fms-pagination>
+                <table class="table table-striped table-condensed">
+                    <tr>   
+                        <th ng-click="order('name')">Name</th>
+                        <th ng-click="order('source')">Source</th>
+                        <th ng-click="order('size')">Size</th>
+                        <th ng-click="order('created')">Updated</th>
+                    </tr>
+                    <tr ng-repeat="key in keys">
+                        <td>
+                            <fms-link object="key">
+                                    {{key.name}}
+                            </fms-link>
+                        </td>
+                        <td>
+                        <span ng-if="key.source">{{key.source}}</span>
+                        </td>
+                        <td>
+                                {{key.size}}
+                        </td>
+                        <td>
+                            <fms-time ng-model="key.created">{{date.since}}</fms-time>
+                        </td>
+                    </tr>
+                </table>
+                <fms-pagination ng-model="list.params"></fms-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,49 @@
+package com.openfms.core.service.project.impl.listeners;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.openfms.core.service.FmsCryptoService;
+import com.openfms.model.FmsObjectChangeNotifier.OPERATION;
+import com.openfms.model.annotations.FmsListener;
+import com.openfms.model.annotations.FmsNotify;
+import com.openfms.model.core.crypto.FmsCertificate;
+import com.openfms.model.core.crypto.FmsKey;
+
+@Component
+@FmsListener
+public class KeyListener {
+
+	private static Log log = LogFactory.getLog(KeyListener.class);
+
+	@Autowired
+	private FmsCryptoService cryptoService;
+
+	@FmsNotify(operations = { OPERATION.UPDATED }, runWithRoles = "ROLE_ADMIN")
+	public void whenCertificateSavedUpdateDeviceNameInKey(FmsCertificate newCertificate, FmsCertificate oldCertificate) {
+		try {
+			if (oldCertificate != null) {
+				for (FmsKey key : cryptoService.listKeys(null, null, null, null, null, null, null, null, oldCertificate.getCertificateDnQualifier(), null, null, null, null, null, true, 0, null)) {
+					log.debug(" updating key: removing references to: " + oldCertificate.getPlaybackDeviceName());
+					key.setDeviceName(null);
+					key.setCertificateId(null);
+					cryptoService.saveKey(key);
+				}
+			}
+			if (newCertificate != null) {
+				for (FmsKey key : cryptoService.listKeys(null, null, null, null, null, null, null, null, newCertificate.getCertificateDnQualifier(), null, null, null, null, null, true, 0, null)) {
+					log.debug(" updating key: setting references to: " + newCertificate.getPlaybackDeviceName());
+					key.setDeviceName(newCertificate.getPlaybackDeviceName());
+					key.setCertificateId(newCertificate.getId());
+					cryptoService.saveKey(key);
+				}
+			}
+		} catch (Exception e) {
+			log.warn("error in key listener!", e);
+		}
+
+	}
+
+}

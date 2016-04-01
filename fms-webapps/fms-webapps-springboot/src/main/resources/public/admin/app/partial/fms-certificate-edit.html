@@ -1,0 +1,42 @@
+        <div class="row">
+            <div class="col-md-12" ng-if="canEdit">
+                <button ng-click="edit()" ng-disabled="!permissions.edit" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-pencil"></i></button>
+            </div>
+        </div>
+		<div class="row">
+		    <div class="col-md-12">
+		        <div class="form-group">
+		            <label>DN</label><br>
+		            {{certificate.certificateDn}}
+		        </div>
+		    </div>
+		    <div class="col-md-6">
+		        <div class="form-group">
+		            <label>Type</label><br>
+		            <div>
+			            {{certificate.type}}
+			        </div>
+		        </div>
+		    </div>
+		    <div class="col-md-6">
+		        <div class="form-group">
+		            <label>Parent</label><br>
+		            <div>
+		            	<fms-link id="certificate.parentId" type="'com.openfms.model.core.crypto.FmsCertificate'">{{certificate.parentDnQualifier}}</fms-link>
+		            </div>
+		        </div>
+		    </div>
+		    <div class="col-md-12">
+		        <div class="form-group">
+		            <label>Trusted Devices</label><br>
+		            <input multi-select ng-disabled="!editing" model="certificate.trustedCertificateIds" change="save()" service="certificateService">
+		        </div>
+		        <div class="form-group" ng-if="certificate.tdlThumbprints.length>0">
+		            <label>Trusted Thumbprints</label><br>
+		        	<span class="label label-info" ng-repeat="tdlThumbprint in certificate.tdlThumbprints">{{tdlThumbprint}}</span>
+		        </div>
+		        <div class="form-group" ng-if="certificate.tdlThumbprints.length==0">
+		            <label><i>No Trusted Thumbprints</i></label><br>
+		        </div>
+		    </div>
+		</div>

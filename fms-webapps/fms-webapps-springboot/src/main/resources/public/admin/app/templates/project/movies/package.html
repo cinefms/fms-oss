@@ -1,0 +1,24 @@
+<div ng-controller="PackageController">
+    <!--                                    -->
+    <!--                                    -->
+    <!--      PACKAGE                         -->
+    <!--                                    -->
+    <!--                                    -->
+    <div fms-headline>
+        <a href="#/movies/packages">Packages</a> | [{{package.externalId}}]
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <br>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="row" ng-if="package.id">
+            <div class="col-md-12">
+                <package-editor id="package.id">
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,25 @@
+<div class="row" ng-if="tasks.length == 0">
+    <div class="col-md-12">
+        <div class="alert alert-info">
+        	<i>no tasks</i>
+        </div>
+    </div>
+</div>
+<div class="row" ng-if="tasks.length > 0">
+    <div class="col-md-12">
+        <table class="table table-compact">
+            <tr ng-repeat="task in tasks">
+                <td>
+                    <fms-link object="task">{{task.type}}</fms-link>
+                </td>
+                <td>
+                    {{task.userName}}
+                </td>
+                <td>
+                    <span class="label label-danger" ng-if="task.close">closed</span>
+                    <span class="label label-success" ng-if="!task.close">open</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="row" ng-controller="ScheduledJobLogTreeController">
+	<table>
+		<tr height="25px">
+			<td style="width:45px" valign="top">
+				<div  style="margin-left: 15px">
+					<fms-status status="log.status">
+						<i ng-if="log.children.length>0 && !expand" class="glyphicon glyphicon-plus-sign"></i>
+						<i ng-if="log.children.length>0 && expand" class="glyphicon glyphicon-minus-sign"></i>
+						<i ng-if="log.children.length==0" class="glyphicon glyphicon-record"></i>
+					</fms-status>
+				</div>
+			</td>
+			<td  valign="top">
+				<span ng-click="expand=!expand"><pre>{{log.message || "[no message]"}}</pre></span>
+			</td>
+		</tr>
+		<tr>
+			<td  style="width:45px">
+
+			</td>
+			<td>
+				<div ng-repeat="log in log.children">
+					<span ng-if="expand" ng-include src="'app/partial/fms-job-log.html'">
+					</span>
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>	

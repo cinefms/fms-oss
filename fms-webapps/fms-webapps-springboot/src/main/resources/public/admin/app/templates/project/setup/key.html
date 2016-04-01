@@ -1,0 +1,110 @@
+<div ng-controller="KeyController">
+    <div fms-headline>
+        <a href="#/setup/keys">Keys</a> | Key Details
+    </div>
+    <div class="col-md-12" ng-if="keys">
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Details</h4>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Name</label><br>
+                    {{keys.name}}<br>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Source</label><br>
+                    {{keys.source}}<br>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Type</label><br>
+                    {{keys.type}} <a href="/api/v2/crypto/keys/{{keys.id}}/data"><i class="glyphicon glyphicon-floppy-save"></i></a><br>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Valid From</label><br>
+                    <fms-time ng-model="keys.validFrom">
+                        {{date.date}} {{date.time}}
+                    </fms-time><br>
+                </div>
+            </div>
+            <div class="col-md-3    ">
+                <div class="form-group">
+                    <label>Valid To</label><br>
+                    <fms-time ng-model="keys.validTo">
+                        {{date.date}} {{date.time}}
+                    </fms-time><br>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Target DN</label><br>
+                    {{keys.certificateDn}}<br>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Issuer DN</label><br>
+                    {{keys.issuerDn}}<br>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Target Device</h4>
+                <table class="table table-compact" ng-if="keys.devices.length > 0">
+                    <tr>
+                        <th>Name</th>
+                        <th>Vendor</th>
+                        <th>Model</th>
+                        <th>Serial</th>
+                        <th>Tags</th>
+                        <th>Types</th>
+                        <th>DN Qualifier</th>
+                    </tr>
+                    <tr ng-repeat="device in keys.devices">
+                        <td>{{device.deviceName}}</td>
+                        <td>{{device.deviceVendor}}</td>
+                        <td>{{device.deviceModel}}</td>
+                        <td>{{device.deviceSerial}}</td>
+                        <td><span ng-repeat="tag in device.deviceTags" class="label label-info">{{tag}}</span></td>
+                        <td><span ng-repeat="types in device.mediaClipTypes" class="label label-info">{{types}}</span></td>
+                        <td>{{device.certificateDnQualifier}}</td>
+                    </tr>
+                </table>
+                <span ng-if="keys.devices.length == 0" class="label label-danger">No matching Device</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h4>MediaClip</h4>
+                <table class="table table-compact" ng-if="mediaclips.length > 0">
+                    <tr>
+                        <th>Name</th>
+                        <th>External Id</th>
+                        <th>Movie</th>
+                        <th>Movie External Id</th>
+                    </tr>
+                    <tr ng-repeat="mediaclip in mediaclips">
+                        <td><fms-link id="mediaclip.id" type="'com.openfms.model.core.movie.FmsMediaClip'">{{mediaclip.name}}</fms-link></td>
+                        <td>{{mediaclip.externalId}}</td>
+                        <td><fms-link id="mediaclip.movieId" type="'com.openfms.model.core.movie.FmsMovie'">{{mediaclip.movieName}}</fms-link></td>
+                        <td>{{mediaclip.movieExternalId}}</td>
+                    </tr>
+                </table>
+                <span ng-if="mediaclips.length == 0" class="label label-danger">No matching MediaClip</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+

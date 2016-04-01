@@ -1,0 +1,18 @@
+<project name="core-generate-from-xsd">
+
+	<target name="generate_classes">
+		<exec command="/usr/local/java/bin/xjc -verbose -p com.openfms.model.core.media.dcp.interop.cpl -d src/main/java -xmlschema src/main/resources/schema/dcp/interop/PROTO-ASDCP-CPL-20040511.xsd"></exec>
+		<exec command="/usr/local/java/bin/xjc -verbose -p com.openfms.model.core.media.dcp.interop.am -d src/main/java -xmlschema src/main/resources/schema/dcp/interop/PROTO-ASDCP-AM-20040311.xsd"></exec>
+		<exec command="/usr/local/java/bin/xjc -verbose -p com.openfms.model.core.media.dcp.interop.pkl -d src/main/java -xmlschema src/main/resources/schema/dcp/interop/PROTO-ASDCP-PKL-20040311.xsd"></exec>
+		<!--
+		<exec command="/usr/local/java/bin/xjc -verbose -p com.openfms.model.core.media.dcp.smpte.cpl -d src/main/java -xmlschema src/main/resources/schema/dcp/interop/SMPTE-429-7-2006-CPL.xsd"></exec>
+		<exec command="/usr/local/java/bin/xjc -verbose -p com.openfms.model.core.media.dcp.smpte.am -d src/main/java -xmlschema src/main/resources/schema/dcp/interop/SMPTE-429-8-2006-PKL.xsd"></exec>
+		<exec command="/usr/local/java/bin/xjc -verbose -p com.openfms.model.core.media.dcp.smpte.pkl -d src/main/java -xmlschema src/main/resources/schema/dcp/interop/SMPTE-429-9-2007-AM.xsd"></exec>
+		-->
+		<exec command="/usr/local/java/bin/xjc -verbose -p com.openfms.model.core.media.dcp.subtitles -d src/main/java -xmlschema src/main/resources/schema/dcsubs/DCSubtitle.v1.mattsson.xsd"></exec>
+	</target>
+
+
+
+
+</project>

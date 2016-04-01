@@ -1,0 +1,37 @@
+<div class="row">
+    <div class="col-md-12">
+    	<div class="form-group">
+	    	<label>Name</label>
+	        <input class="form-control" ng-model="mailtemplate.name" ng-blur="save()">
+	    </div>
+    	<div class="form-group">
+	    	<label>Sender</label>
+	        <input class="form-control" ng-model="mailtemplate.sender" ng-blur="save()">
+	    </div>
+    	<div class="form-group">
+	    	<label>Subject</label>
+	        <textarea class="form-control" ng-model="mailtemplate.subject" ng-blur="save()" rows="4" cols="40"></textarea>
+	    </div>
+    	<div class="form-group">
+	    	<label>Body</label>
+	        <textarea class="form-control" ng-model="mailtemplate.body" ng-blur="save()" rows="20" cols="40"></textarea>
+	    </div>
+    	<div class="form-group">
+	    	<label>Examples</label>
+	        <div json-editor ng-model="mailtemplate.examples" style="height:400px;">
+	        </div>
+	    </div>
+    	<div class="form-group">
+    		<hr>
+    	</div>
+    	<div class="form-group">
+	    	<label>Recipient</label>
+	        <input class="form-control" ng-model="recipient" ng-blur="save()">
+	    </div>
+    	<div class="form-group">
+    		<button class="btn btn-primary pull-right" ng-click="sendTest()"><i class="glyphicon glyphicon-envelope"></i> Send Test</button>
+	    </div>
+    </div>
+    <div class="col-md-12 form-group">
+    </div>
+</div>

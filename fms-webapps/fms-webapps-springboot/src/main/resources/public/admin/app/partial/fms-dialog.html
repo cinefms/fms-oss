@@ -1,0 +1,19 @@
+<div ng-multi-transclude-controller>
+	<span 
+		class="fms-dialog-open"
+		ng-multi-transclude="trigger">
+	</span>
+	<div class="fms-block-overlay contents"  ng-show="showDialog">
+		<div class="fms-modal-dialog">
+			<div class="fms-modal-dialog-close fms-dialog-close">
+				<i class="glyphicon glyphicon-remove-circle"></i>
+			</div>
+			<div class="fms-modal-dialog-header" ng-multi-transclude="header">
+			</div>
+			<div class="fms-modal-dialog-contents" ng-multi-transclude="contents">
+			</div>
+			<div class="fms-modal-dialog-footer" ng-multi-transclude="footer">
+			</div>
+		</div>
+	</div>
+</div>

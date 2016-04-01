@@ -1,0 +1,29 @@
+<div ng-controller="EventController">
+    <div fms-headline>
+        <a href="#/schedule/events">Events</a> | [{{event.externalId}}] {{event.name}}
+        <i ng-if="!event.name || event.name.length == 0">[Empty Title]</i>
+    </div>
+    <div class="col-md-12" ng-if="!permissions.read">
+        <div class="alert alert-warning">
+            <i>sorry, you have no permissions to read this event</i>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <br>
+            </div>
+        </div>
+        <div class="row">
+            <hr>
+            <div class="col-md-9" ng-if="permissions.read && event.id">
+                <event-editor id="event.id" ng-if="event">
+                </event-editor>
+            </div>
+            <div class="col-md-3" ng-if="event">
+                <comments-full object="event">
+            </div>
+        </div>
+    </div>
+
+</div>

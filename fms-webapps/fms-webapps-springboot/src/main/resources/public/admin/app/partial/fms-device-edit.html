@@ -1,0 +1,126 @@
+        <div class="row">
+            <div class="col-md-12" ng-if="canEdit">
+                <button ng-click="edit()" ng-disabled="!permissions.edit" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-pencil"></i></button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 form-group">
+                <label>En/Disable Device</label><br>
+                <button ng-disabled="!editing" ng-show="device.disabled" class="btn btn-danger btn-xs"  ng-click="device.disabled = false; save()">Device Disabled</button>
+                <button ng-disabled="!editing" ng-show="!device.disabled" class="btn btn-default btn-xs"  ng-click="device.disabled = true; save()">Device Enabled</button>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Name</label><br>
+                    <input id="movie_director" ng-disabled="!editing" ng-model="device.name" class="form-control" ng-blur="save()">
+                </div>
+                <div class="form-group">
+                    <label>Vendor</label><br>
+                    <input id="movie_director" ng-disabled="!editing" ng-model="device.vendor" class="form-control" ng-blur="save()">
+                </div>
+                <div class="form-group">
+                    <label>Model</label><br>
+                    <input id="movie_director" ng-disabled="!editing" ng-model="device.model" class="form-control" ng-blur="save()">
+                </div>
+                <div class="form-group">
+                    <label>Serial</label><br>
+                    <input id="movie_director" ng-disabled="!editing" ng-model="device.serial" class="form-control" ng-blur="save()">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Tags</label><br>
+                    <input ng-disabled="!editing" multi-select class="form-control" model="device.tags" service="tagService" change="save()">
+                </div>
+                <div class="form-group">
+                    <label>Location</label><br>
+                    <div ng-if="editing">
+                        <input single-select ng-disabled="!editing" ng-model="device.locationId" ng-change="save()" service="locationService">
+                    </div>
+                    <div ng-if="!editing">
+                        <span class="form-control" style="background-color:#EEEEEE; overflow: hidden">
+                            <fms-link id="device.locationId" type="'com.openfms.model.core.playback.FmsLocation'">
+                                {{device.locationName}}
+                            </fms-link>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tags</label><br>
+                    <input multi-select ng-disabled="!editing" model="device.tags" change="save()" service="tagService">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Capabilities</label><br>
+                    <input multi-select ng-disabled="!editing" model="device.mediaClipTypes" change="save()" service="mediaclipTypeService">
+                </div>
+            </div>
+            <div class="col-md-10">
+                <div class="form-group">
+                    <label>Certificate</label><br>
+                    <div ng-if="editing">
+                        <input single-select ng-disabled="!editing" ng-model="device.certificateId" ng-change="save()" service="certificateService">
+                    </div>
+                    <div ng-if="!editing">
+                        <span class="form-control" style="background-color:#EEEEEE; overflow: hidden">
+                            <fms-link id="device.certificateId" type="'com.openfms.model.core.crypto.FmsCertificate'">
+                                {{device.certificate.certificateDn}}
+                            </fms-link>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <label>&nbsp;</label><br>
+                    <a ng-if="device.certificateId" href="/api/v2/crypto/certificates/{{device.certificateId}}/data" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-floppy-save"></i></a>
+                    <button ng-if="!device.certificateId" ng-disabled="true" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-floppy-save"></i></a>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <label>&nbsp;</label><br>
+                    <button ng-disabled="!device.locationId || !editing" class="btn btn-primary pull-right" ng-click="unsetCertificate()" ><i  class="glyphicon glyphicon-remove-circle"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <hr>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="checkbox checkbox-compact">
+                        <input type="checkbox" name="device_online" id="device_online" ng-model="device.online" ng-change="save()" ng-disabled="!editing" >
+                        <label class="btn btn-xs" for="device_online"><span ng-show="device.online">online</span><span ng-show="!device.online">offline</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Protocol</label><br>
+                    <input ng-disabled="!editing" single-select class="form-control" ng-model="device.protocol" service="deviceProtocolService" change="save()">
+                </div>
+                <div class="form-group">
+                    <label>Address</label><br>
+                    <input ng-disabled="!editing" ng-model="device.address" ng-blur="save()" class="form-control" >
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Username</label><br>
+                    <input ng-disabled="!editing" ng-model="device.username" ng-blur="save()" class="form-control" >
+                </div>
+                <div class="form-group">
+                    <label>Password</label><br>
+                    <input type="password" ng-disabled="!editing" ng-model="device.password" ng-blur="save()" class="form-control" >
+                </div>
+            </div>
+        </div>
+        <div class="row"  ng-if="!canEdit">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button class="btn fms-dialog-close" ng-click="close()">cancel</button> 
+                    <button class="btn btn-primary fms-dialog-commit"ng-click="add()">save</button> 
+                </div>
+            </div>
+        </div>
+
+

@@ -1,0 +1,91 @@
+    <div>
+        <div class="row">
+            <div class="col-md-12" ng-if="canEdit">
+                <div class="form-group">
+                    <div class="pull-right">
+                        <button ng-click="edit()" ng-disabled="!permissions.edit" class="btn btn-primary" hotkey="{e: edit}"><i class="glyphicon glyphicon-pencil"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Status</label><br>
+                    <fms-status status="movie.mediaStatus">
+                        <i class="glyphicon glyphicon-hdd"></i>
+                    </fms-status>
+                    <fms-status status="movie.versionStatus">
+                        <i class="glyphicon glyphicon-film"></i>
+                    </fms-status>
+                    <fms-status status="movie.encryptionStatus">
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </fms-status>
+                    <fms-status status="movie.playbackStatus">
+                        <i class="glyphicon glyphicon-play"></i>
+                    </fms-status>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input id="movie_title" ng-disabled="!editing" ng-model="movie.name" class="form-control" ng-blur="save()">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>External ID</label>
+                    <input id="movie_title" ng-disabled="!editing" ng-model="movie.externalId" class="form-control" ng-blur="save()">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Director</label>
+                    <input id="movie_director" ng-disabled="!editing" ng-model="movie.director" class="form-control" ng-blur="save()">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input id="movie_director" ng-disabled="!editing" ng-model="movie.category" class="form-control" ng-blur="save()">
+                </div>
+                <div class="form-group">
+                    <label>Length  (Minutes)</label>
+                    <input id="movie_director" ng-disabled="!editing" ng-model="movie.length" class="form-control" ng-blur="save()">
+                </div>
+                <div class="form-group">
+                    <label>Countries</label>
+                   <input multi-select ng-disabled="!editing"  model="movie.countryIds" service="countryService" change="save()">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Contact</label>
+                    <input id="movie_director" ng-disabled="!editing" ng-model="movie.contact" class="form-control" ng-blur="save()">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" ng-if="users && users.length>0">
+                <label>Users</label>
+                <table class="table table-compact">
+                    <tr ng-repeat="user in users">
+                        <td>{{user.username}}</td>
+                        <td>{{user.email}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-12" ng-if="!users || users.length==0">
+                <div class="alert alert-info">No Users</div>
+            </div>
+        </div>
+        <div class="row"  ng-if="!canEdit">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button class="btn fms-dialog-close" ng-click="close()">cancel</button> 
+                    <button class="btn btn-primary fms-dialog-commit"ng-click="add()">save</button> 
+                </div>
+            </div>
+        </div>
+    </div>
+    

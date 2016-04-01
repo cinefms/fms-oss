@@ -1,0 +1,46 @@
+<div class="row">
+    <div class="col-md-12 form-group" ng-if="!keys || keys.length==0">
+        <div class="alert alert-info"><i>No keys available</i></div>
+    </div>
+    <div class="col-md-12 form-group" ng-if="keys && keys.length>0">
+        <table class="table table-compact">
+            <tr>
+                <th>Key Name</th>
+                <th>Source</th>
+                <th>Devices</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Size</th>
+                <th></th>
+            </tr>
+            <tr ng-repeat="key in keys">
+                <td>
+                    <fms-link object="key">{{key.name}}</fms-link>
+                </td>
+                <td>{{key.source}}</td>
+                <td>
+                    <span class="label label-danger" ng-if="!key.devices || key.devices.length==0"> UNKNOWN DEVICE </span>
+
+                    <span ng-repeat="device in key.devices">
+                        {{device.deviceName}} {{device.deviceVendor}}  {{device.deviceSerial}}
+                    </span>
+                    <span ng-repeat="tdl in key.tdlThumbprints" class="label label-default" style="background-color:#BBBBBB">
+                        {{tdl}}
+                    </span>
+                </td>
+                <td>
+                    <fms-time ng-model="key.validFrom">{{date.date}} {{date.time}}
+                    </fms-date>
+                </td>
+                <td>
+                    <fms-time ng-model="key.validTo">{{date.date}} {{date.time}}
+                    </fms-date>
+                </td>
+                <td>{{key.size}}</td>
+                <td>
+                    <a href="/api/v2/crypto/keys/{{key.id}}/data"><i class="glyphicon glyphicon-floppy-save"></i></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

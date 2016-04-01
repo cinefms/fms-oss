@@ -1,0 +1,96 @@
+<div ng-controller="AssignVersionsController" ng-init="eventItemExternalId = 'dfdf'; currentEventItemExternalId =  'dfdf'">
+<div fms-headline>
+    Assign Versions
+</div>
+<div class="col-md-12">
+<div fms-filter ng-model="list.params">
+<div class="col-md-10">
+
+    <div class="row">
+        <div class="col-md-2">
+            <label class="pull-right">Mediaclip Type</label>
+        </div>
+        <div class="col-md-8">
+            <div class="checkbox checkbox-compact" data-filter-group="type"  data-filter-display="Type">
+                <input type="checkbox" id="version-status-any" name="version-status" data-filter-clear value="">
+                <label class="btn btn-xs" for="version-status-any">any</label>
+                                    <span ng-repeat="mediaClipType in mediaClipTypes">
+                                        <input type="checkbox" id="version-status-{{mediaClipType.name}}" name="version-status" value="{{mediaClipType.id}}" data-filter-display="{{mediaClipType.name}}">
+                                        <label class="btn btn-xs" for="version-status-{{mediaClipType.name}}">{{mediaClipType.name}}</label>
+                                    </span>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+    <div class="row">
+        <event-item-assigner current-event-id="currentEventId" current-event-item-external-id="currentEventItemExternalId"></event-item-assigner>
+    </div>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-condensed">
+            <tr>
+                <th ng-click="order('externalId')">ExtID</th>
+                <th ng-click="order('name')">EventItem Name</th>
+                <th ng-click="order('category')">Event Category</th>
+                <th ng-click="order('locationName')">Event Location</th>
+                <th>M</th>
+                <th ng-click="order('startTime')">Event Date</th>
+                <th ng-click="order('mediaStatus')">M</th>
+                <th ng-click="order('versionStatus')">V</th>
+                <th ng-click="order('encryptionStatus')">E</th>
+                <th ng-click="order('playbackStatus')">P</th>
+            </tr>
+            <tr ng-repeat="eventItem in eventItems">
+                <td width="5%">
+                    <fms-link id="eventItem.event.id" type="'com.openfms.model.core.playback.FmsEvent'">
+                        <strong>[{{eventItem.externalId}}]</strong>
+                    </fms-link>
+                </td>
+
+                <td widht="45%">
+                    <a href="" ng-click="$parent.currentEventId = eventItem.event.id; $parent.currentEventItemExternalId = eventItem.externalId">{{eventItem.name}}
+                        <i ng-if="!eventItem.name || eventItem.name.length == 0">[Empty Title]</i></a>
+                </td>
+                <td width="15%">
+                    {{eventItem.event.category}}
+                </td>
+                <td width="15%">
+                    {{eventItem.event.locationName}}
+                </td>
+                <td width="2%">
+                    {{eventItem.matchingMediaClipCount}}/{{eventItem.mediaClipCount}}
+                </td>
+
+                <td width="20%">
+                    <fms-time ng-model="eventItem.event.startTime">
+                        {{date.date}} {{date.time}}
+                    </fms-time>
+                </td>
+                <td width="3%">
+                    <fms-status status="eventItem.mediaStatus">
+                        <i class="glyphicon glyphicon-hdd"></i>
+                    </fms-status>
+                </td>
+                <td width="3%">
+                    <fms-status status="eventItem.versionStatus">
+                        <i class="glyphicon glyphicon-film" ng-if="eventItem.event.errors.length > 0" tooltips tooltip-side="bottom" tooltip-speed="medium" tooltip-smart="true" tooltip-size="medium" tooltip-template-array="{{eventItem.event.errors}}"></i>
+                        <i class="glyphicon glyphicon-film" ng-if="eventItem.event.errors.length == 0"></i>
+                    </fms-status>
+                </td>
+                <td width="3%">
+                    <fms-status status="eventItem.encryptionStatus">
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </fms-status>
+                </td>
+                <td width="3%">
+                    <fms-status status="eventItem.playbackStatus">
+                        <i class="glyphicon glyphicon-play"></i>
+                    </fms-status>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</div>
+</div>

@@ -1,0 +1,83 @@
+<div ng-controller="ScheduledJobListController">
+    <div fms-headline>
+        Scheduled Jobs
+    </div>
+    <div class="col-md-12" ng-if="!permissions.list">
+        <div class="alert alert-warning">
+            <i>sorry, you have no permissions to list scheduled jobs</i>
+        </div>
+    </div>
+    <div class="col-md-12" ng-if="permissions.list">
+        <div class="row">
+            <div class="form-group col-md-11 col-sm-11">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                    <input ng-model="list.params.searchTerm" placeholder="search" class="form-control" autofocus/>
+                </div>
+            </div>
+            <div class="form-group col-md-1 col-sm-1">
+                <div ng-if="!permissions.create">
+                    <button class="btn btn-primary pull-right" disabled><i class="glyphicon glyphicon-plus-sign"></i> Add</button>
+                </div>
+                <fms-dialog ng-if="permissions.create">
+                    <div name="trigger">
+                        <button class="btn btn-primary pull-right open-dialog"><i class="glyphicon glyphicon-plus-sign"></i> Add </button>
+                    </div>
+                    <div name="contents" class="fms-block-overlay contents" ng-show="showDialog">
+                        <div class="fms-modal-dialog">
+                            <div ng-click="close()" class="pull-right">
+                                <i class="glyphicon glyphicon-remove-circle"></i>
+                            </div>
+                            <div class="fms-modal-dialog-header">
+                                <h2>Add an scheduled job</h2>
+                            </div>
+                            <div class="fms-modal-dialog-contents">
+                                <scheduled-job-editor>
+                            </div>
+                        </div>
+                    </div>
+                </fms-dialog>
+            </div>
+        </div>
+        <div class="alert alert-info" ng-if="!scheduledjobs || scheduledjobs.length==0">
+            <i>no matching jobs found</i>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <fms-pagination ng-model="list.params"></fms-pagination>
+                <table class="table table-striped table-condensed">
+                    <tr>   
+                        <th ng-click="order('name')">Name</th>
+                        <th ng-click="order('status')">Status</th>
+                        <th ng-click="order('lastExecuted')">Last Execution</th>
+                        <th></th>
+                    </tr>
+                    <tr ng-repeat="scheduledjob in scheduledjobs">
+                        <td>
+                            <fms-link object="scheduledjob">
+                                <strong>{{scheduledjob.name}}</strong>
+                            </fms-link>
+                        </td>
+                        <td>
+		                    <fms-status status="scheduledjob.status">
+		                        <i class="glyphicon glyphicon-play"></i>
+		                    </fms-status>
+                        </td>
+                        <td>
+			                <fms-time-edit ng-model="scheduledjob.lastExecuted" ng-if="scheduledjob.lastExecuted">
+			                	{{date.since}}
+			                </fms-time-edit>
+			                <span ng-if="!scheduledjob.lastExecuted">
+			                    <i>never</i>
+			                </span>
+                        </td>
+                        <td width="5%">
+                            <div class="pull-right" ng-click="remove(scheduledjob.id)" ng-disabled="!permissions.delete"><i class="glyphicon glyphicon-minus-sign"></i></div>
+                        </td>
+                    </tr>
+                </table>
+                <fms-pagination ng-model="list.params"></fms-pagination>
+            </div>
+        </div>
+    </div>
+</div>

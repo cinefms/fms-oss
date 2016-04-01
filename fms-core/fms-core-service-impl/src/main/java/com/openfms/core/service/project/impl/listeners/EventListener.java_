@@ -1,0 +1,700 @@
+package com.openfms.core.service.project.impl.listeners;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.cinefms.dbstore.api.DBStoreQuery;
+import com.cinefms.dbstore.api.DataStore;
+import com.cinefms.dbstore.api.exceptions.DBStoreException;
+import com.cinefms.dbstore.api.impl.BasicQuery;
+import com.openfms.core.service.FmsCryptoService;
+import com.openfms.core.service.FmsEventService;
+import com.openfms.core.service.FmsLocationService;
+import com.openfms.core.service.FmsMediaClipService;
+import com.openfms.core.service.FmsMovieService;
+import com.openfms.core.service.FmsMovieVersionService;
+import com.openfms.core.service.FmsPlaybackStatusService;
+import com.openfms.model.FmsObjectChangeNotifier.OPERATION;
+import com.openfms.model.Status;
+import com.openfms.model.annotations.FmsListener;
+import com.openfms.model.annotations.FmsNotify;
+import com.openfms.model.core.crypto.FmsCertificate;
+import com.openfms.model.core.crypto.FmsKey;
+import com.openfms.model.core.movie.FmsMediaClip;
+import com.openfms.model.core.movie.FmsMovie;
+import com.openfms.model.core.movie.FmsMovieVersion;
+import com.openfms.model.core.playback.FmsEvent;
+import com.openfms.model.core.playback.FmsEventItem;
+import com.openfms.model.core.playback.FmsLocation;
+import com.openfms.model.core.playback.FmsPlaybackDevice;
+import com.openfms.model.core.playback.FmsPlaybackStatus;
+import com.openfms.model.exceptions.DatabaseException;
+import com.openfms.model.exceptions.EntityNotFoundException;
+import com.openfms.model.exceptions.InvalidParameterException;
+import com.openfms.model.utils.StatusCombine;
+
+@Component
+@FmsListener
+public class EventListener {
+
+	private static Log log = LogFactory.getLog(EventListener.class);
+
+	@Autowired
+	private FmsLocationService locationService;
+
+	@Autowired
+	private FmsMediaClipService mediaClipservice;
+
+	@Autowired
+	private FmsEventService eventService;
+
+	@Autowired
+	private FmsMovieVersionService movieVersionService;
+
+	@Autowired
+	private FmsMovieService movieService;
+
+	@Autowired
+	private FmsCryptoService cryptoService;
+
+	@Autowired
+	private DataStore dataStore;
+
+	@Autowired
+	private FmsPlaybackStatusService playbackStatusService;
+
+	@FmsNotify(operations = { OPERATION.PREPARE }, runWithRoles = "ROLE_ADMIN")
+	public void prepareEvent(FmsEvent newEvent, FmsEvent oldEvent) {
+		try {
+			if (newEvent != null) {
+
+				updatePlaybackStatus(newEvent);
+
+				boolean changed = false;
+				for (FmsEventItem fei : newEvent.getEventItems()) {
+
+					// version status
+					int vs = getVersionStatus(newEvent, fei);
+					if (vs != fei.getVersionStatus()) {
+						fei.setVersionStatus(vs);
+						changed = true;
+					}
+
+					// task status
+					int vts = getVersionTaskStatus(newEvent, fei);
+					if (vts != fei.getVersionTaskStatus()) {
+						fei.setVersionTaskStatus(vts);
+						changed = true;
+					}
+
+					// encryption
+					int es = getEncryptionStatus(newEvent, fei);
+					if (es != fei.getEncryptionStatus()) {
+						fei.setEncryptionStatus(es);
+						changed = true;
+					}
+
+					// missing: playback status ...
+					int ps = getPlaybackStatus(newEvent, fei);
+					if (ps != fei.getPlaybackStatus()) {
+						fei.setPlaybackStatus(ps);
+						changed = true;
+					}
+
+					if (fei.getMovieId() != null) {
+						FmsMovie m = movieService.getMovie(fei.getMovieId());
+						fei.setName("[" + m.getExternalId() + "] " + m.getName());
+					}
+				}
+				if (changed) {
+					newEvent.setUpdated(new Date());
+				}
+			}
+
+		} catch (Exception e) {
+			log.error("error in event listener:", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED, OPERATION.DELETED }, runWithRoles = "ROLE_ADMIN")
+	public void whenVersionUpdatedUpdateEvents(FmsMovieVersion newVersion, FmsMovieVersion oldVersion) {
+		try {
+			for (FmsMovieVersion mv : new FmsMovieVersion[] { newVersion, oldVersion }) {
+				if (mv != null) {
+					for (FmsEvent event : eventService.listEvents(false, null, null, null, null, null, null, null, null, null, null, null, null, mv.getId(), null, null, null, null, true, null, null)) {
+						updateEvent(event.getId());
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("error in event listener", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED, OPERATION.DELETED }, runWithRoles = "ROLE_ADMIN")
+	public void whenMovieUpdatedUpdateEvents(FmsMovie newMovie, FmsMovie oldMovie) {
+		try {
+			for (FmsMovie m : new FmsMovie[] { newMovie, oldMovie }) {
+				if (m != null) {
+					for (FmsEvent event : eventService.listEvents(false, null, null, null, null, null, null, null, null, null, null, null, m.getId(), null, null, null, null, null, true, null, null)) {
+						updateEvent(event.getId());
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("error in event listener", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED, OPERATION.DELETED }, runWithRoles = "ROLE_ADMIN")
+	public void whenCertificateUpdatedUpdateEvents(FmsCertificate newCertificate, FmsCertificate oldCertificate) {
+		try {
+			List<String> deviceIds = new ArrayList<String>();
+			if (newCertificate != null && newCertificate.getPlaybackDeviceId() != null) {
+				deviceIds.add(newCertificate.getPlaybackDeviceId());
+			}
+			if (oldCertificate != null && oldCertificate.getPlaybackDeviceId() != null) {
+				deviceIds.add(oldCertificate.getPlaybackDeviceId());
+			}
+			updateDevices(deviceIds);
+		} catch (Exception e) {
+			log.error("error in event listener", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED, OPERATION.DELETED }, runWithRoles = "ROLE_ADMIN")
+	public void whenDeviceUpdatedUpdateEvents(FmsPlaybackDevice newPlaybackDevice, FmsPlaybackDevice oldPlaybackDevice) {
+		try {
+			List<String> locationIds = new ArrayList<String>();
+			if (newPlaybackDevice != null && newPlaybackDevice.getLocationId() != null) {
+				locationIds.add(newPlaybackDevice.getLocationId());
+			}
+			if (oldPlaybackDevice != null && oldPlaybackDevice.getLocationId() != null) {
+				locationIds.add(oldPlaybackDevice.getLocationId());
+			}
+			log.debug("device changed, updating events from some locations ... ");
+			updateLocations(locationIds);
+		} catch (Exception e) {
+			log.error("error in event listener", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED, OPERATION.DELETED }, runWithRoles = "ROLE_ADMIN")
+	public void whenLocationUpdateUpdateEvents(FmsLocation newLocation, FmsLocation oldLocation) {
+		try {
+			log.debug("location changed, updating events from some locations ... ");
+			List<String> locationIds = new ArrayList<String>();
+			if (newLocation != null && newLocation.getId() != null) {
+				locationIds.add(newLocation.getId());
+			}
+			if (oldLocation != null && oldLocation.getId() != null && !locationIds.contains(oldLocation.getId())) {
+				locationIds.add(oldLocation.getId());
+			}
+			updateLocations(locationIds);
+		} catch (Exception e) {
+			log.error("error in event listener", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED }, runWithRoles = "ROLE_ADMIN")
+	public void whenMediaClipUpdatedUpdateEventStatus(FmsMediaClip newMediaClip, FmsMediaClip oldMediaClip) {
+
+		DBStoreQuery qep = BasicQuery.createQuery().eq("mediaClipIds", newMediaClip.getId());
+		try {
+			List<FmsMovieVersion> mvs = dataStore.findObjects(FmsMovieVersion.class, qep);
+			log.debug("ENTRY POINT UPDATED =====> updating " + (mvs.size()));
+
+			for (FmsMovieVersion fmv : mvs) {
+				List<FmsEvent> evs = eventService.listEvents(false, null, null, null, null, null, null, null, null, null, null, null, null, fmv.getId(), null, null, null, null, true, null, null);
+				log.debug("ENTRY POINT UPDATED =====> updating " + (evs.size()));
+				for (FmsEvent ev : evs) {
+					eventService.saveEvent(ev);
+				}
+			}
+		} catch (Exception e) {
+			log.error("error updating mediaClips -> movie versions -> events ... ", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED }, runWithRoles = "ROLE_ADMIN")
+	public void whenKeyAddedUpdateEventStatus(FmsKey key, FmsKey oldKey) {
+
+		DBStoreQuery qep = BasicQuery.createQuery().eq("externalId", key.getmediaClipExternalId());
+		try {
+			List<FmsMediaClip> eps = dataStore.findObjects(FmsMediaClip.class, qep);
+			log.debug("KEY UPDATED =====> updating " + (eps.size()) + " ENTRY POINTS");
+			for (FmsMediaClip ep : eps) {
+				whenMediaClipUpdatedUpdateEventStatus(ep, null);
+			}
+		} catch (Exception e) {
+			log.error("error updating mediaClips -> movie versions -> events ... ", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.DELETED }, runWithRoles = "ROLE_ADMIN")
+	public void whenKeyDeletedUpdateEventStatus(FmsKey key, FmsKey oldKey) {
+
+		DBStoreQuery qep = BasicQuery.createQuery().eq("externalId", oldKey.getmediaClipExternalId());
+		try {
+			List<FmsMediaClip> eps = dataStore.findObjects(FmsMediaClip.class, qep);
+			log.debug("KEY DELETED =====> updating " + (eps.size()) + " ENTRY POINTS");
+			for (FmsMediaClip ep : eps) {
+				whenMediaClipUpdatedUpdateEventStatus(ep, null);
+			}
+		} catch (Exception e) {
+			log.error("error updating mediaClips -> movie versions -> events ... ", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.DELETED, OPERATION.UPDATED }, runWithRoles = "ROLE_ADMIN")
+	public void whenPlaybackStatus(FmsPlaybackStatus status, FmsPlaybackStatus oldStatus) {
+		try {
+			if (status != null && status.getEventId() != null) {
+				updateEvent(status.getEventId());
+			} else if (oldStatus != null && oldStatus.getEventId() != null) {
+				updateEvent(oldStatus.getEventId());
+			}
+		} catch (Exception e) {
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.DELETED }, runWithRoles = "ROLE_ADMIN")
+	public void whenEventDeletedDeletePlaybackStatus(FmsEvent oldEvent, FmsEvent newEvent) {
+		if (oldEvent != null && oldEvent.getId() != null) {
+			try {
+				List<FmsPlaybackStatus> pss = playbackStatusService.listPlaybackStatus(null, null, null, null, null, null, null, oldEvent.getId(), null, null, null, true, null, null);
+				for (FmsPlaybackStatus ps : pss) {
+					playbackStatusService.deletePlaybackStatus(ps.getId());
+				}
+
+			} catch (Exception e) {
+				log.error("error removing playback statuses!", e);
+			}
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED }, runWithRoles = "ROLE_ADMIN")
+	public void whenEventSavedUpdatePlaybackStatus(FmsEvent oldEvent, FmsEvent newEvent) {
+		boolean updateStatus = false;
+		if (oldEvent != null && newEvent != null) {
+			String oldEventStr = oldEvent.getLocationId() + ":" + oldEvent.getStartTime();
+			for (FmsEventItem fei : oldEvent.getEventItems()) {
+				oldEventStr = oldEventStr + ":" + fei.getMovieId() + ":" + fei.getMovieVersionId();
+			}
+			String newEventStr = newEvent.getLocationId() + ":" + newEvent.getStartTime();
+			for (FmsEventItem fei : newEvent.getEventItems()) {
+				newEventStr = newEventStr + ":" + fei.getMovieId() + ":" + fei.getMovieVersionId();
+			}
+			updateStatus = oldEventStr.compareTo(newEventStr) != 0;
+		}
+		if (updateStatus) {
+			try {
+				List<FmsPlaybackStatus> pss = playbackStatusService.listPlaybackStatus(null, null, null, null, null, null, null, oldEvent.getId(), null, null, null, true, null, null);
+				for (FmsPlaybackStatus ps : pss) {
+					playbackStatusService.deletePlaybackStatus(ps.getId());
+				}
+
+			} catch (Exception e) {
+				log.error("error removing playback statuses!", e);
+			}
+			try {
+				updatePlaybackStatus(newEvent);
+			} catch (Exception e) {
+				log.error("error removing playback statuses!", e);
+			}
+		}
+	}
+
+	private void updatePlaybackStatus(FmsEvent ev) throws DatabaseException, EntityNotFoundException, InvalidParameterException {
+		List<FmsPlaybackDevice> fpds = locationService.listPlaybackDevices(null, ev.getLocationId(), null, null, null, null, true, null, null);
+		List<FmsPlaybackStatus> statuses = playbackStatusService.listPlaybackStatus(null, null, null, null, null, null, null, ev.getId(), null, null, null, true, null, null);
+		Map<String, FmsPlaybackStatus> existing = new HashMap<String, FmsPlaybackStatus>();
+		for (FmsPlaybackStatus fps : statuses) {
+			for (FmsPlaybackDevice fpd : fpds) {
+				existing.put(fps.getMediaClipId() + "-" + fpd.getId(), fps);
+			}
+		}
+		int unchanged = 0;
+		int added = 0;
+		int removed = 0;
+
+		log.debug("UPDATING PLAYBACKSTATUS: EVENT ID: " + ev.getId() + " has " + statuses.size() + " existing statuses for " + fpds.size() + " device(s)!");
+
+		List<FmsEventItem> evs = ev.getEventItems();
+		log.debug("UPDATING PLAYBACKSTATUS: EVENT ID: " + ev.getId() + " has " + evs.size() + " event item(s).");
+		for (FmsEventItem fei : evs) {
+			if (fei.getMovieVersionId() == null) {
+				log.debug("UPDATING PLAYBACKSTATUS: EVENT ID: " + (evs.indexOf(fei) + 1) + "/" + evs.size() + " has NO movie version set ... ");
+			} else if (fei.getMovieVersionId() != null) {
+				FmsMovieVersion fmv = movieVersionService.getMovieVersion(fei.getMovieVersionId());
+				if (fmv == null) {
+					log.warn("WARNING! event: " + ev.getId() + " has version set, but version doesn't exist! -- updatePlaybackStatus() ");
+				} else if (fmv != null) {
+					List<String> epIds = fmv.getMediaClipIds();
+					log.debug("UPDATING PLAYBACKSTATUS: EVENT ID: " + (evs.indexOf(fei) + 1) + "/" + evs.size() + " has movie version with " + epIds.size() + " mediaClips ... ");
+					for (String epId : epIds) {
+						DBStoreQuery fqe = BasicQuery.createQuery().eq("_id", epId);
+						FmsMediaClip ep = null;
+						try {
+							ep = dataStore.findObject(FmsMediaClip.class, fqe);
+						} catch (DBStoreException e) {
+							throw new DatabaseException(e);
+						}
+						if (ep == null) {
+							log.warn("WARNING! event: " + ev.getId() + " has version set, version " + fmv.getId() + " has mediaClips, but ep " + epId + " doesn't exist! -- updatePlaybackStatus() ");
+						} else {
+							for (FmsPlaybackDevice fpd : fpds) {
+								FmsPlaybackStatus fps = existing.get(ep.getId() + "-" + fpd.getId());
+								if (fps == null) {
+									fps = new FmsPlaybackStatus();
+									fps.setStatus(Status.ERROR.value());
+									fps.setDate(ev.getStartTime());
+									fps.setDeviceId(fpd.getId());
+									fps.setDeviceName(fpd.getName());
+									fps.setmediaClipExternalId(ep.getExternalId());
+									fps.setMediaClipExternalName(ep.getContentTitleText());
+									fps.setMediaClipId(ep.getId());
+									fps.setEventId(ev.getId());
+									fps.setEventName(ev.getName());
+									fps.setMovieId(fei.getMovieId());
+									fps.setMovieVersionId(fei.getMovieVersionId());
+									fps.setProjectId(fpd.getProjectId());
+									try {
+										dataStore.saveObject(fps);
+									} catch (DBStoreException e) {
+										throw new DatabaseException(e);
+									}
+									added++;
+								} else {
+									unchanged++;
+								}
+								existing.remove(ep.getId() + "-" + fpd.getId());
+							}
+						}
+					}
+				}
+			}
+		}
+		log.debug("UPDATING PLAYBACKSTATUS: EVENT ID: " + ev.getId() + " has " + existing.size() + " obsolete statuses.");
+		for (FmsPlaybackStatus fps : existing.values()) {
+			removed++;
+			try {
+				dataStore.deleteObject(FmsPlaybackStatus.class, fps.getId());
+			} catch (DBStoreException e) {
+				throw new DatabaseException(e);
+			}
+		}
+		log.info("UPDATING PLAYBACKSTATUS: EVENT ID: " + ev.getId() + " (unchanged:" + unchanged + " / added:" + added + " / removed:" + removed + ")");
+
+	}
+
+	private void updateDevices(List<String> deviceIds) throws EntityNotFoundException, DatabaseException, InvalidParameterException {
+		List<String> locationIds = new ArrayList<String>();
+		for (String deviceId : deviceIds) {
+			FmsPlaybackDevice d = locationService.getPlaybackDevice(deviceId);
+			locationIds.add(d.getId());
+		}
+		updateLocations(locationIds);
+	}
+
+	private void updateLocations(List<String> locationIds) throws DatabaseException, EntityNotFoundException, InvalidParameterException {
+		log.debug("updating events in " + locationIds.size() + " location ... ");
+		for (String locationId : locationIds) {
+			FmsLocation location = locationService.getLocation(locationId);
+			List<FmsEvent> events = eventService.listEvents(false, null, null, new String[] { locationId }, null, null, null, null, null, null, null, null, null, null, null, null, null, null, true, null, null);
+			log.debug("updating " + events.size() + " events in location: " + location.getName());
+			for (FmsEvent event : events) {
+				try {
+					updateEvent(event.getId());
+				} catch (Exception e) {
+					log.error("error updating event ... ", e);
+				}
+			}
+		}
+	}
+
+	private void updateEvent(String eventId) throws DatabaseException, EntityNotFoundException, InvalidParameterException {
+		FmsEvent e = eventService.getEvent(eventId, false);
+		eventService.saveEvent(e);
+	}
+
+	private int getVersionTaskStatus(FmsEvent event, FmsEventItem eventItem) throws EntityNotFoundException, DatabaseException {
+		if (eventItem.getMovieVersionId() == null) {
+			return Status.ERROR.value();
+		}
+		FmsMovieVersion fmv = movieVersionService.getMovieVersion(eventItem.getMovieVersionId());
+		if (fmv == null) {
+			log.warn("WARNING! event: " + event.getId() + " has version set, but version doesn't exist! getVersionTaskStatus()");
+			return Status.ERROR.value();
+		}
+		List<String> epIds = fmv.getMediaClipIds();
+		int[] taskStatuses = new int[epIds.size()];
+		if (epIds.size() == 0) {
+			return Status.ERROR.value();
+		}
+		for (int i = 0; i < epIds.size(); i++) {
+			FmsMediaClip mediaClip = mediaClipservice.getMediaClip(epIds.get(i));
+			taskStatuses[i] = mediaClip.getStatus();
+			log.debug("Task status: added " + mediaClip.getStatus());
+		}
+		int out = StatusCombine.combine(taskStatuses);
+		log.debug("Task status: returning " + event.getId() + " / item " + (event.getEventItems().indexOf(eventItem) + 1) + " of " + event.getEventItems().size() + " .... " + out);
+		return out;
+	}
+
+	private boolean compareLanguageIds(List<String> a, List<String> b) {
+		if (a.size() != b.size()) {
+			log.debug(" ----- COMPARING LANGUAGES, SIZE DIFFERS: " + a.size() + " != " + b.size());
+			return false;
+		}
+		for (int i = 0; i < a.size(); i++) {
+			if (a.get(i).compareTo(b.get(i)) != 0) {
+				log.debug(" ----- COMPARING LANGUAGES, LANG DIFFERS: " + a.get(i) + " != " + b.get(i));
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private int getVersionStatus(FmsEvent event, FmsEventItem eventItem) throws DatabaseException, EntityNotFoundException {
+		List<FmsPlaybackDevice> fpds = locationService.listPlaybackDevices(null, event.getLocationId(), null, null, null, null, true, null, null);
+		log.debug("===================================================================================");
+		if (fpds.size() == 0) {
+			log.debug("CHECKING VERSION STATUS: NO DEVICES IN LOCATION! THIS IS WRONG!");
+			return Status.WARN.value();
+		}
+		if (eventItem.getMovieVersionId() == null) {
+			List<FmsMovieVersion> mvs = movieVersionService.listMovieVersions(null, eventItem.getMovieId(), null, null, null, null, null, null);
+			log.debug("CHECKING VERSION STATUS: version is NOT SET, however, we have: " + mvs.size() + " versions already!");
+
+			if (mvs.size() > 0) {
+				log.debug("CHECKING VERSION STATUS: version is NOT SET - VERSION STATUS is PENDING");
+				List<String> acceptableEpTypes = new ArrayList<String>();
+				for (FmsPlaybackDevice fpd : fpds) {
+					acceptableEpTypes.addAll(fpd.getMediaClipTypes());
+				}
+				boolean hasAcceptableVersion = false;
+				for (FmsMovieVersion mv : mvs) {
+					boolean isAcceptable = mv.getMediaClipIds().size() > 0;
+					for (String epId : mv.getMediaClipIds()) {
+						FmsMediaClip ep = mediaClipservice.getMediaClip(epId);
+						if (!acceptableEpTypes.contains(ep.getType())) {
+							isAcceptable = false;
+							break;
+						}
+					}
+					if (isAcceptable) {
+						hasAcceptableVersion = true;
+						break;
+					}
+				}
+				if (hasAcceptableVersion) {
+					return Status.PENDING.value();
+				} else {
+					return Status.ERROR.value();
+				}
+			} else {
+				log.debug("CHECKING VERSION STATUS: version is NOT SET - VERSION STATUS is ERROR");
+				return Status.ERROR.value();
+			}
+		} else {
+			log.debug("CHECKING VERSION STATUS: version is set ... ");
+		}
+
+		List<Integer> xs = new ArrayList<Integer>();
+
+		FmsMovieVersion mv = movieVersionService.getMovieVersion(eventItem.getMovieVersionId());
+
+		if (mv == null) {
+			log.warn("WARNING! event: " + event.getId() + " has version set, but version doesn't exist! getVersionStatus()");
+			return Status.ERROR.value();
+		}
+
+		if (mv.getMediaClipIds() == null || mv.getMediaClipIds().size() == 0) {
+			log.debug("CHECKING VERSION STATUS: no entry points in version!");
+			xs.add(Status.WARN.value());
+		}
+
+		if (!compareLanguageIds(mv.getAudioLanguageIds(), eventItem.getAudioLanguageIds())) {
+			log.debug("CHECKING VERSION STATUS: " + event.getId() + " / version & event item - audio languages don't match!");
+			xs.add(Status.WARN.value());
+		}
+		if (!compareLanguageIds(mv.getSubtitleLanguageIds(), eventItem.getSubtitleLanguageIds())) {
+			log.debug("CHECKING VERSION STATUS: " + event.getId() + " / version & event item - subtitle languages don't match!");
+			xs.add(Status.WARN.value());
+		}
+		for (String epId : mv.getMediaClipIds()) {
+			boolean matches = false;
+			FmsMediaClip ep = mediaClipservice.getMediaClip(epId);
+			for (FmsPlaybackDevice fpd : fpds) {
+				if (fpd.getMediaClipTypes().contains(ep.getType())) {
+					log.debug("CHECKING VERSION STATUS: " + fpd.getName() + ": EP type " + ep.getType() + " is supported!");
+					matches = true;
+					break;
+				}
+				if (!matches) {
+					log.debug("CHECKING VERSION STATUS: " + fpd.getName() + ": EP type " + ep.getType() + " not supported!");
+				}
+			}
+			int st = matches ? Status.OK.value() : Status.WARN.value();
+			log.debug("CHECKING VERSION STATUS: " + event.getId() + " / " + ep.getId() + " / result is: " + st);
+			xs.add(st);
+		}
+		for (int i : xs) {
+			log.debug("CHECKING VERSION STATUS: " + event.getId() + " / result is --- " + i);
+		}
+		int out = StatusCombine.combine(xs);
+		log.debug("CHECKING VERSION STATUS: " + event.getId() + " / combined result is: " + out);
+		log.debug("===================================================================================");
+		return out;
+	}
+
+	private int getPlaybackStatus(FmsEvent event, FmsEventItem eventItem) throws DatabaseException, EntityNotFoundException, InvalidParameterException {
+
+		List<FmsPlaybackDevice> fpds = locationService.listPlaybackDevices(null, event.getLocationId(), null, null, null, null, true, null, null);
+
+		if (eventItem.getMovieVersionId() == null) {
+			return Status.ERROR.value();
+		}
+
+		FmsMovieVersion mv = movieVersionService.getMovieVersion(eventItem.getMovieVersionId());
+		if (mv == null) {
+			log.warn("WARNING! event: " + event.getId() + " has version set, but version doesn't exist! getPlaybackStatus()");
+			return Status.ERROR.value();
+		} else if (mv.getMediaClipIds() == null || mv.getMediaClipIds().size() == 0) {
+			log.info("INFO! event: " + event.getId() + " has version set, but version has no entry points! getPlaybackStatus()");
+			return Status.ERROR.value();
+		}
+
+		List<Integer> xs = new ArrayList<Integer>();
+
+		log.info("CHECKING PLAYBACK STATUS: " + event.getId() + " / " + eventItem.getName() + " got: " + mv.getMediaClipIds().size() + " entry points!");
+		for (String epId : mv.getMediaClipIds()) {
+			FmsMediaClip ep = mediaClipservice.getMediaClip(epId);
+			log.info("CHECKING PLAYBACK STATUS: " + event.getId() + " / " + eventItem.getName() + ", mediaClip status for " + fpds.size());
+			for (FmsPlaybackDevice fpd : fpds) {
+				if (fpd.getMediaClipTypes().contains(ep.getType())) {
+					if (fpd.isOnline()) {
+						List<FmsPlaybackStatus> ps = playbackStatusService.listPlaybackStatus(null, null, null, null, fpd.getId(), ep.getExternalId(), null, null, null, null, "date", false, 0, 1);
+						log.info("CHECKING PLAYBACK STATUS: " + event.getId() + " / " + eventItem.getName() + ", mediaClip status for " + fpd.getName() + " - got: " + ps.size() + " statuses");
+						if (ps.size() == 0) {
+							xs.add(Status.ERROR.value());
+						} else {
+							xs.add(ps.get(0).getStatus());
+							log.debug("CHECKING PLAYBACK STATUS: " + event.getId() + " / " + ep.getName() + " some:" + ps.get(0).getStatus() + " / " + ps.get(0).getDate());
+						}
+					} else {
+						xs.add(Status.NOT_APPLICABLE.value());
+					}
+				}
+			}
+		}
+
+		int out = StatusCombine.combine(xs);
+		log.debug("CHECKING PLAYBACK STATUS: " + event.getId() + " / " + eventItem.getName() + " combined result is: " + out);
+		log.debug("===================================================================================");
+		return out;
+
+	}
+
+	private int getEncryptionStatus(FmsEvent event, FmsEventItem eventItem) throws DatabaseException, EntityNotFoundException {
+		if (eventItem.getMovieVersionId() == null) {
+			return Status.ERROR.value();
+		}
+		log.debug("===================================================================================");
+		FmsMovieVersion mv = movieVersionService.getMovieVersion(eventItem.getMovieVersionId());
+		if (mv == null) {
+			log.warn("WARNING! event: " + event.getId() + " has version set, but version doesn't exist! getEncryptionStatus()");
+			return Status.ERROR.value();
+		}
+		List<FmsPlaybackDevice> fpds = locationService.listPlaybackDevices(null, event.getLocationId(), null, null, null, null, true, null, null);
+		List<Integer> xs = new ArrayList<Integer>();
+		log.debug("CHECKING ENCRYPTION STATUS: checking " + event.getName() + " / " + eventItem.getName());
+		if (mv.getMediaClipIds().size() == 0) {
+			xs.add(Status.ERROR.value());
+		}
+		for (String epId : mv.getMediaClipIds()) {
+			FmsMediaClip ep = mediaClipservice.getMediaClip(epId);
+			if (ep.getEncrypted() != null && !ep.getEncrypted().booleanValue()) {
+				log.debug("CHECKING ENCRYPTION STATUS: unencrypted... ");
+				xs.add(Status.NOT_APPLICABLE.value());
+			} else {
+				if (fpds.size() == 0) {
+					log.debug("CHECKING ENCRYPTION STATUS: no devices... ");
+					xs.add(Status.ERROR.value());
+				} else {
+					for (FmsPlaybackDevice fpd : fpds) {
+						log.info("CHECKING ENCRYPTION STATUS: device " + fpd.getName() + " checking ... ");
+
+						if (!fpd.getMediaClipTypes().contains(ep.getType())) {
+							log.info("CHECKING ENCRYPTION STATUS: device " + fpd.getName() + " can NOT play this, not considering for encryption status ... ");
+						} else {
+							log.debug("CHECKING ENCRYPTION STATUS: checking for keys for: ");
+							log.debug("CHECKING ENCRYPTION STATUS: 				   event: " + event.getName());
+							log.debug("CHECKING ENCRYPTION STATUS: 			   eventItem: " + eventItem.getName());
+							log.debug("CHECKING ENCRYPTION STATUS: 			  mediaClip: " + ep.getName());
+							log.debug("CHECKING ENCRYPTION STATUS: 			      device: " + fpd.getName());
+							List<FmsKey> keys = new ArrayList<FmsKey>();
+							List<FmsKey> keysDangerous = new ArrayList<FmsKey>();
+							List<FmsCertificate> certs = cryptoService.listCertificates(null, null, fpd.getId(), null, null, null, null, event.getStartTime(), null, true, null, null);
+							log.debug("CHECKING ENCRYPTION STATUS: 			       certs: " + certs.size());
+							for (FmsCertificate cert : certs) {
+								log.debug("CHECKING ENCRYPTION STATUS: 			        cert: " + cert.getName());
+								List<FmsKey> dkeys = cryptoService.listKeys(null, null, null, null, null, null, ep.getExternalId(), null, cert.getCertificateDnQualifier(), null, null, null, event.getStartTime(), "startTime", true, null, null);
+								for (FmsKey dk : dkeys) {
+									log.debug("CHECKING ENCRYPTION STATUS: 			         key: " + dk.getValidFrom() + " / " + dk.getValidTo() + " /// event " + event.getStartTime());
+									if (dk.getValidFrom().getTime() <= event.getStartTime().getTime()) {
+										int min = ep.getLength();
+										if (min > 1) {
+											min = min + 60;
+										} else {
+											min = 180;
+										}
+
+										if (dk.getValidTo().getTime() >= DateUtils.addMinutes(event.getStartTime(), min).getTime()) {
+											keys.add(dk);
+											log.debug("CHECKING ENCRYPTION STATUS: 			         key: (is OK)");
+										} else if (dk.getValidTo().getTime() > event.getStartTime().getTime()) {
+											keysDangerous.add(dk);
+											log.debug("CHECKING ENCRYPTION STATUS: 			         key: (is WARN)");
+										} else {
+											log.debug("CHECKING ENCRYPTION STATUS: 			         key: expires " + dk.getValidTo() + " (too early)");
+										}
+									} else {
+										log.debug("			         key: starts " + dk.getValidFrom() + " (too late)");
+									}
+								}
+								log.debug("CHECKING ENCRYPTION STATUS: 			        keys: " + keys.size());
+							}
+							log.debug("CHECKING ENCRYPTION STATUS: 			        keys: " + keys.size());
+							if (keys.size() > 0) {
+								log.debug("CHECKING ENCRYPTION STATUS: 			        ----> OK!");
+								xs.add(Status.OK.value());
+							} else if (keysDangerous.size() > 0) {
+								log.debug("CHECKING ENCRYPTION STATUS: 			        ----> WARN!");
+								xs.add(Status.WARN.value());
+							} else {
+								log.debug("CHECKING ENCRYPTION STATUS: 			        ----> ERROR!");
+								xs.add(Status.ERROR.value());
+							}
+						}
+					}
+				}
+			}
+		}
+		int out = StatusCombine.combine(xs);
+		log.debug("CHECKING ENCRYPTION STATUS: RESULT IS: " + out);
+		log.debug("===================================================================================");
+		return out;
+	}
+
+}

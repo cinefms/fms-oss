@@ -1,0 +1,369 @@
+<div ng-controller="EventsController">
+    <div fms-headline>
+        Events
+    </div>
+    <div class="col-md-12" ng-if="!permissions.list">
+        <div class="alert alert-warning">
+            <i>sorry, you have no permissions to list events</i>
+        </div>
+    </div>
+    <div class="col-md-12" ng-if="permissions.list">
+        <div class="row">
+            <div class="form-group col-md-11 col-sm-11">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                    <input ng-model="list.params.searchTerm" placeholder="search" class="form-control" autofocus/>
+                </div>
+            </div>
+            <div class="form-group col-md-1 col-sm-1">
+                <div ng-if="!permissions.create">
+                    <button class="btn btn-primary pull-right" disabled><i class="glyphicon glyphicon-plus-sign"></i> Add</button>
+                </div>
+                <fms-dialog ng-if="permissions.create">
+                    <div name="trigger">
+                        <button class="btn btn-primary pull-right open-dialog"><i class="glyphicon glyphicon-plus-sign"></i> Add </button>
+                    </div>
+                    <div name="contents" class="fms-block-overlay contents" ng-show="showDialog">
+                        <div class="fms-modal-dialog">
+                            <div ng-click="close()" class="pull-right">
+                                <i class="glyphicon glyphicon-remove-circle"></i>
+                            </div>
+                            <div class="fms-modal-dialog-header">
+                                <h2>Add an Event</h2>
+                            </div>
+                            <div class="fms-modal-dialog-contents">
+                                <event-editor>
+                            </div>
+                        </div>
+                    </div>
+                </fms-dialog>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" ng-if="tags">
+                <div fms-filter ng-model="list.params">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="pull-right">Media Status</label>
+                            </div>
+                            <div class="col-md-8">
+                               <div class="checkbox checkbox-compact" data-filter-group="mediaStatus"  data-filter-display="Media">
+                                    <input type="checkbox" id="media-status-any" name="media-status" data-filter-clear value="">
+                                    <label class="btn btn-xs" for="media-status-any">any</label>
+
+                                    <input type="checkbox" id="media-status-none" name="media-status" value="-1" data-filter-display="None">
+                                    <label class="btn btn-xs" for="media-status-none">None</label>
+
+                                    <input type="checkbox" id="media-status-error" name="media-status" value="0" data-filter-display="Error">
+                                    <label class="btn btn-xs" for="media-status-error">Error</label>
+
+                                    <input type="checkbox" id="media-status-warning" name="media-status" value="1" data-filter-display="Warning">
+                                    <label class="btn btn-xs" for="media-status-warning">Warning</label>
+
+                                    <input type="checkbox" id="media-status-pending" name="media-status" value="2" data-filter-display="Pending">
+                                    <label class="btn btn-xs" for="media-status-pending">Pending</label>
+
+                                    <input type="checkbox" id="media-status-ok" name="media-status" value="3" data-filter-display="OK">
+                                    <label class="btn btn-xs" for="media-status-ok">OK</label>
+
+                                </div>
+                            </div>
+                        </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="pull-right">Mediaclip Type</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="radio radio-compact" data-filter-group="mediaClipType"  data-filter-display="Type">
+                                        <input type="radio" id="mediaclip-type-any" name="mediaclip-type" data-filter-clear value="">
+                                        <label class="btn btn-xs" for="mediaclip-type-any">any</label>
+                                    <span ng-repeat="mediaClipType in mediaClipTypes">
+                                        <input type="radio" id="mediaclip-type-{{mediaClipType.name}}" name="mediaclip-type" value="{{mediaClipType.name}}" data-filter-display="{{mediaClipType.name}}">
+                                        <label class="btn btn-xs" for="mediaclip-type-{{mediaClipType.name}}">{{mediaClipType.name}}</label>
+                                    </span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="pull-right">Version Status</label>
+                            </div>
+                            <div class="col-md-8">
+                               <div class="checkbox checkbox-compact" data-filter-group="versionStatus"  data-filter-display="Version">
+                                    <input type="checkbox" id="version-status-any" name="version-status" data-filter-clear value="">
+                                    <label class="btn btn-xs" for="version-status-any">any</label>
+
+                                    <input type="checkbox" id="version-status-none" name="version-status" value="-1" data-filter-display="None">
+                                    <label class="btn btn-xs" for="version-status-none">None</label>
+
+                                    <input type="checkbox" id="version-status-error" name="version-status" value="0" data-filter-display="Error">
+                                    <label class="btn btn-xs" for="version-status-error">Error</label>
+
+                                    <input type="checkbox" id="version-status-warning" name="version-status" value="1" data-filter-display="Warning">
+                                    <label class="btn btn-xs" for="version-status-warning">Warning</label>
+
+                                    <input type="checkbox" id="version-status-pending" name="version-status" value="2" data-filter-display="Pending">
+                                    <label class="btn btn-xs" for="version-status-pending">Pending</label>
+
+                                    <input type="checkbox" id="version-status-ok" name="version-status" value="3" data-filter-display="OK">
+                                    <label class="btn btn-xs" for="version-status-ok">OK</label>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="pull-right">Encryption Status</label>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="checkbox checkbox-compact" data-filter-group="encryptionStatus" data-filter-display="Encryption">
+
+                                    <input type="checkbox" id="encryption-status-any" name="encryption-status" data-filter-clear value="">
+                                    <label class="btn btn-xs" for="encryption-status-any">any</label>
+
+                                    <input type="checkbox" id="encryption-status-none" name="encryption-status" value="-1" data-filter-display="None">
+                                    <label class="btn btn-xs" for="encryption-status-none">None</label>
+
+                                    <input type="checkbox" id="encryption-status-error" name="encryption-status" value="0" data-filter-display="Error">
+                                    <label class="btn btn-xs" for="encryption-status-error">Error</label>
+
+                                    <input type="checkbox" id="encryption-status-warning" name="encryption-status" value="1" data-filter-display="Warning">
+                                    <label class="btn btn-xs" for="encryption-status-warning">Warning</label>
+
+                                    <input type="checkbox" id="encryption-status-pending" name="encryption-status" value="2" data-filter-display="Pending">
+                                    <label class="btn btn-xs" for="encryption-status-pending">Pending</label>
+
+                                    <input type="checkbox" id="encryption-status-ok" name="encryption-status" value="3" data-filter-display="OK">
+                                    <label class="btn btn-xs" for="encryption-status-ok">OK</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="pull-right">Screening Status</label>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="checkbox checkbox-compact" data-filter-group="screeningStatus" data-filter-display="Screening">
+
+                                    <input type="checkbox" id="screening-status-any" name="screening-status" data-filter-clear value="">
+                                    <label class="btn btn-xs" for="screening-status-any">any</label>
+
+                                    <input type="checkbox" id="screening-status-none" name="screening-status" value="-1" data-filter-display="None">
+                                    <label class="btn btn-xs" for="screening-status-none">None</label>
+
+                                    <input type="checkbox" id="screening-status-error" name="screening-status" value="0" data-filter-display="Error">
+                                    <label class="btn btn-xs" for="screening-status-error">Error</label>
+
+                                    <input type="checkbox" id="screening-status-warning" name="screening-status" value="1" data-filter-display="Warning">
+                                    <label class="btn btn-xs" for="screening-status-warning">Warning</label>
+
+                                    <input type="checkbox" id="screening-status-pending" name="screening-status" value="2" data-filter-display="Pending">
+                                    <label class="btn btn-xs" for="screening-status-pending">Pending</label>
+
+                                    <input type="checkbox" id="screening-status-ok" name="screening-status" value="2" data-filter-display="OK">
+                                    <label class="btn btn-xs" for="screening-status-ok">OK</label>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="pull-right">Dates</label>
+                            </div>
+                            <div class="col-md-8" data-filter-group="within"  data-filter-display="Events">
+                                <div class="radio radio-compact">
+                                    <input type="radio" id="Dates-any" name="Dates" data-filter-clear>
+                                    <label for="Dates-any" class="btn btn-xs">any</label>
+
+                                    <input type="radio" id="Dates-24h" name="Dates" value="0h|24h"  data-filter-display="next 24h">
+                                    <label for="Dates-24h" class="btn btn-xs">24h</label>
+
+                                    <input type="radio" id="Dates-48h" name="Dates" value="0h|48h" data-filter-display="next 48h">
+                                    <label for="Dates-48h" class="btn btn-xs">48h</label>
+
+                                    <input type="radio" id="Dates-3d" name="Dates" value="0h|72h" data-filter-display="next 3 days">
+                                    <label for="Dates-3d" class="btn btn-xs">3d</label>
+
+                                    <input type="radio" id="Dates-5d" name="Dates" value="0h|125h" data-filter-display="next 5 days">
+                                    <label for="Dates-5d" class="btn btn-xs">5d</label>
+
+                                    <input type="radio" id="Dates-1w" name="Dates" value="0h|168h" data-filter-display="next week">
+                                    <label for="Dates-1w" class="btn btn-xs">1w</label>
+
+                                    <input type="radio" id="Dates-future" name="Dates" value="0h|"  data-filter-display="in the futures"> 
+                                    <label for="Dates-future" class="btn btn-xs">future</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label class="pull-right">Tags</label>
+                            </div>
+                            <div class="col-md-10">
+                               <div class="checkbox checkbox-compact" data-filter-group="tag"  data-filter-display="Tags">
+                                    <input type="checkbox" id="tags-any" name="version-status" data-filter-clear value="">
+                                    <label class="btn btn-xs" for="tags-any">any</label>
+
+                                    <span ng-repeat="tag in tags">
+                                        <input type="checkbox" id="tags-{{tag.name}}" name="version-status" value="{{tag.id}}" data-filter-display="{{tag.name}}">
+                                        <label class="btn btn-xs" for="tags-{{tag.name}}">{{tag.name}}</label>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label class="pull-right">Category</label>
+                            </div>
+                            <div class="col-md-8" data-filter-group="category"  data-filter-display="Category">
+                                <div class="radio radio-compact">
+                                    <input type="radio" id="Category-any" name="Category" data-filter-clear>
+                                    <label for="Category-any" class="btn btn-xs">any</label>
+
+                                    <input type="radio" id="Category-Wettbewerb" name="Category" value="Trailer Wettbewerb"  data-filter-display="Generation">
+                                    <label for="Category-Wettbewerb" class="btn btn-xs">Wbw</label>
+
+                                    <input type="radio" id="Category-Berlinale-Shorts" name="Category" value="Trailer Berlinale Shorts" data-filter-display="Berlinale-Shorts">
+                                    <label for="Category-Berlinale-Shorts" class="btn btn-xs">Sho</label>
+
+                                    <input type="radio" id="Category-Panorama" name="Category" value="Trailer Panorama" data-filter-display="Panorama">
+                                    <label for="Category-Panorama" class="btn btn-xs">Pan</label>
+
+                                    <input type="radio" id="Category-Berlinale-Special" name="Category" value="Trailer Berlinale Special" data-filter-display="Berlinale-Special">
+                                    <label for="Category-Berlinale-Special" class="btn btn-xs">BSp</label>
+
+                                    <input type="radio" id="Category-Kulinarisches-Kino" name="Category" value="Trailer Kulinarisches Kino"  data-filter-display="Kulinarisches-Kino">
+                                    <label for="Category-Kulinarisches-Kino" class="btn btn-xs">KuKi</label>
+
+                                    <input type="radio" id="Category-Forum" name="Category" value="Trailer Forum"  data-filter-display="Forum">
+                                    <label for="Category-Forum" class="btn btn-xs">For</label>
+
+                                    <input type="radio" id="Category-Forum-Expanded" name="Category" value="Trailer Forum Expanded"  data-filter-display="Forum-Expanded">
+                                    <label for="Category-Forum-Expanded" class="btn btn-xs">ForEx</label>
+
+                                    <input type="radio" id="Category-LOLA-at-Berlinale" name="Category" value="Trailer LOLA at Berlinale"  data-filter-display="LOLA-at-Berlinale">
+                                    <label for="Category-LOLA-at-Berlinale" class="btn btn-xs">Lola</label>
+
+                                    <input type="radio" id="Category-Perspektive-Deutsches-Kino" name="Category" value="Trailer Perspektive Deutsches Kino"  data-filter-display="Perspektive-Deutsches-Kino">
+                                    <label for="Category-Perspektive-Deutsches-Kino" class="btn btn-xs">PDK</label>
+
+                                    <input type="radio" id="Category-Generation" name="Category" value="Trailer Generation"  data-filter-display="Generation">
+                                    <label for="Category-Generation" class="btn btn-xs">Gen</label>
+
+                                    <input type="radio" id="Category-Retrospektive" name="Category" value="Trailer Retrospektive"  data-filter-display="Retrospektive">
+                                    <label for="Category-Retrospektive" class="btn btn-xs">Ret</label>
+
+                                    <input type="radio" id="Category-Hommage" name="Category" value="Trailer Hommage"  data-filter-display="Hommage">
+                                    <label for="Category-Hommage" class="btn btn-xs">Hom</label>
+
+                                    <input type="radio" id="Category-Teddy" name="Category" value="Trailer Teddy"  data-filter-display="Teddy">
+                                    <label for="Category-Teddy" class="btn btn-xs">Ted</label>
+
+                                    <input type="radio" id="Category-Berlinale-Classics" name="Category" value="Trailer Berlinale Classics"  data-filter-display="Berlinale-Classics">
+                                    <label for="Category-Berlinale-Classics" class="btn btn-xs">Cla</label>
+
+                                    <input type="radio" id="Category-Berlinale Talents" name="Category" value="Trailer Berlinale Talents"  data-filter-display="Berlinale Talents">
+                                    <label for="Category-Berlinale Talents" class="btn btn-xs">Tal</label>
+
+                                    <input type="radio" id="Category-EFM" name="Category" value="Trailer EFM"  data-filter-display="EFM">
+                                    <label for="Category-EFM" class="btn btn-xs">EFM</label>
+
+                                    <input type="radio" id="Category-NATIVe-Indigenous-Cinema" name="Category" value="Trailer NATIVe - Indigenous Cinema"  data-filter-display="NATIVe-Indigenous-Cinema">
+                                    <label for="Category-NATIVe-Indigenous-Cinema" class="btn btn-xs">Nat</label>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-info" ng-if="!events || events.length==0">
+            <i>no matching events found</i>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <fms-pagination ng-model="list.params"></fms-pagination>
+                <table class="table table-striped table-condensed">
+                    <tr>   
+                        <th ng-click="order('externalId')">ExtID</th>
+                        <th ng-click="order('name')">Name</th>
+                        <th ng-click="order('category')">Category</th>
+                        <th ng-click="order('locationName')">Location</th>
+                        <th ng-click="order('startTime')">Date</th>
+                        <th ng-click="order('mediaStatus')">M</th>
+                        <th ng-click="order('versionStatus')">V</th>
+                        <th ng-click="order('encryptionStatus')">E</th>
+                        <th ng-click="order('playbackStatus')">P</th>
+                        <th></th>
+                    </tr>
+                    <tr ng-repeat="event in events">
+                        <td width="5%">
+                            <fms-link object="event">
+                                <strong>[{{event.externalId}}]</strong>
+                            </fms-link>
+                        </td>
+
+                        <td widht="45%">
+                            <fms-link object="event">
+                                {{event.name}}
+                                <i ng-if="!event.name || event.name.length == 0">[Empty Title]</i>
+                            </fms-link>
+                        </td>
+                        <td width="15%">
+                            {{event.category}}
+                        </td>
+                        <td width="15%">
+                            {{event.locationName}}
+                        </td>
+                        <td width="20%">
+                            <fms-time ng-model="event.startTime">
+                                {{date.date}} {{date.time}}
+                            </fms-time>
+                        </td>
+                        <td width="3%">
+                            <fms-status status="event.mediaStatus">
+                                <i class="glyphicon glyphicon-hdd"></i>
+                            </fms-status>
+                        </td>
+                        <td width="3%">
+                            <fms-status status="event.versionStatus">
+                                <i class="glyphicon glyphicon-film" ng-if="event.errors.length > 0" tooltips tooltip-side="bottom" tooltip-speed="medium" tooltip-smart="true" tooltip-size="medium" tooltip-template-array="{{event.errors}}"></i>
+                                <i class="glyphicon glyphicon-film" ng-if="event.errors.length == 0"></i>
+                            </fms-status>
+                        </td>
+                        <td width="3%">
+                            <fms-status status="event.encryptionStatus">
+                                <i class="glyphicon glyphicon-lock"></i>
+                            </fms-status>
+                        </td>
+                        <td width="3%">
+                            <fms-status status="event.playbackStatus">
+                                <i class="glyphicon glyphicon-play"></i>
+                            </fms-status>
+                        </td>
+                        <td width="5%">
+                            <div class="pull-right" ng-click="delete()" ng-disabled="!permissions.delete"><i class="glyphicon glyphicon-minus-sign"></i></div>
+                        </td>
+                    </tr>
+                </table>
+                <fms-pagination ng-model="list.params"></fms-pagination>
+            </div>
+        </div>
+    </div>
+</div>

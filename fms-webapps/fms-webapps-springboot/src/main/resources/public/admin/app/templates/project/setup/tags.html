@@ -1,0 +1,379 @@
+<div ng-controller="TagsManagementController">
+
+	<div fms-headline>
+        Tags Management
+    </div>
+
+	<div class="col-md-12 form-group">
+	    <ul class="nav nav-tabs">
+	        <li ng-class="{'active': params.tab == 'tags'}"><a ng-click="tab('tags')">Tags</a></li>
+	        <li ng-class="{'active': params.tab == 'mediacliptypes'}"><a ng-click="tab('mediacliptypes')">Mediaclip Types</a></li>
+	        <li ng-class="{'active': params.tab == 'framerates'}"><a ng-click="tab('framerates')">Framerates</a></li>
+	        <li ng-class="{'active': params.tab == 'packagetypes'}"><a ng-click="tab('packagetypes')">Package Types</a></li>
+            <li ng-class="{'active': params.tab == 'devicetypes'}"><a ng-click="tab('devicetypes')">Device Types</a></li>
+            <li ng-class="{'active': params.tab == 'screenaspects'}"><a ng-click="tab('screenaspects')">Screen Aspects</a></li>
+            <li ng-class="{'active': params.tab == 'mediaaspect'}"><a ng-click="tab('mediaaspect')">Media Aspects</a></li>
+            <li ng-class="{'active': params.tab == 'audioformats'}"><a ng-click="tab('audioformats')">Audio Formats</a></li>
+	    </ul>
+	</div>
+
+
+	<div class="col-md-12" ng-controller="TagsController" ng-if="params.tab == 'tags'">
+
+		<div class="row" ng-if="!permissions.list">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    <i>sorry, you have no permissions to list tags</i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-if="permissions.list">
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                            <input ng-model="searchTerm.name" placeholder="filter" class="form-control">
+                        </div>
+                    </div>
+     
+                    <div class="col-md-12">
+                        <div class="alert alert-info" ng-if="!tags || tags.length==0">
+                            <i>no matching tags</i>
+                        </div>
+                        <table class="table table-compact table-striped">
+                            <tr ng-repeat="tag in tags">
+                                <td>{{tag.name}}</td>
+                                <td><div class="pull-right" ng-click="remove(tag.id)" ng-disabled="!permissions.delete"><i class="glyphicon glyphicon-minus-sign"></i></div></td>
+                            </tr>
+                            <tr ng-if="permissions.create">
+                            	<td><input class="form-control" placeholder="Tag Name" ng-model="newObject.name" required></td>
+                            	<td>
+                            		<button class="btn btn-primary  pull-right" ng-click="add()">
+                            			<i class="glyphicon glyphicon-plus-sign"></i> Add
+                            		</button>
+                            	</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+    </div><!-- tags end-->
+
+
+    <div class="col-md-12" ng-controller="MediaClipTypesController" ng-if="params.tab == 'mediacliptypes'">
+		<div class="row" ng-if="!permissions.list">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    <i>sorry, you have no permissions to list mediaClipTypes</i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-if="permissions.list">
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                            <input ng-model="searchTerm.name" placeholder="filter" class="form-control">
+                        </div>
+                    </div>
+     
+                    <div class="col-md-12">
+                        <div class="alert alert-info" ng-if="!mediaClipTypes || mediaClipTypes.length==0">
+                            <i>no matching MediaClipType</i>
+                        </div>
+                        <table class="table table-compact table-striped">
+                            <tr ng-repeat="mediaClipType in mediaClipTypes">
+                                <td>{{mediaClipType.name}}</td>
+                                <td><div class="pull-right" ng-click="remove(mediaClipType.id)" ng-disabled="!permissions.delete"><i class="glyphicon glyphicon-minus-sign"></i></div></td>
+                            </tr>
+                            <tr ng-if="permissions.create">
+                            	<td><input class="form-control" placeholder="MediaClipType Name" ng-model="newObject.name" required></td>
+                            	<td>
+                            		<button class="btn btn-primary pull-right" ng-click="add()">
+                            			<i class="glyphicon glyphicon-plus-sign"></i> Add
+                            		</button>
+                            	</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- MediaClipTypesController end-->
+
+    <div class="col-md-12" ng-controller="FrameratesController" ng-if="params.tab == 'framerates'">
+		<div class="row" ng-if="!permissions.list">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    <i>sorry, you have no permissions to list framerates</i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-if="permissions.list">
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                            <input ng-model="searchTerm.name" placeholder="filter" class="form-control">
+                        </div>
+                    </div>
+     
+                    <div class="col-md-12">
+                        <div class="alert alert-info" ng-if="!framerates || framerates.length==0">
+                            <i>no matching MediaClipType</i>
+                        </div>
+                        <table class="table table-compact table-striped">
+                            <tr ng-repeat="framerate in framerates">
+                                <td>{{framerate.name}}</td>
+                                <td><div class="pull-right" ng-click="remove(framerate.id)" ng-disabled="!permissions.delete"><i class="glyphicon glyphicon-minus-sign"></i></div></td>
+                            </tr>
+                            <tr ng-if="permissions.create">
+                            	<td><input class="form-control" placeholder="Framerates Name" ng-model="newObject.name" required></td>
+                            	<td>
+                            		<button class="btn btn-primary pull-right" ng-click="add()">
+                            			<i class="glyphicon glyphicon-plus-sign"></i> Add
+                            		</button>
+                            	</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+    <div class="col-md-12" ng-controller="PackagetypesController" ng-if="params.tab == 'packagetypes'">
+		<div class="row" ng-if="!permissions.list">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    <i>sorry, you have no permissions to list packagetypes</i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-if="permissions.list">
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                            <input ng-model="searchTerm.name" placeholder="filter" class="form-control">
+                        </div>
+                    </div>
+     
+                    <div class="col-md-12">
+                        <div class="alert alert-info" ng-if="!packagetypes || packagetypes.length==0">
+                            <i>no matching MediaClipType</i>
+                        </div>
+                        <table class="table table-compact table-striped">
+                            <tr ng-repeat="packagetype in packagetypes">
+                                <td>{{packagetype.name}}</td>
+                                <td><div class="pull-right" ng-click="remove(packagetype.id)" ng-disabled="!permissions.delete"><i class="glyphicon glyphicon-minus-sign"></i></div></td>
+                            </tr>
+                            <tr ng-if="permissions.create">
+                            	<td><input class="form-control" placeholder="Packagetype Name" ng-model="newObject.name" required></td>
+                            	<td>
+                            		<button class="btn btn-primary pull-right" ng-click="add()">
+                            			<i class="glyphicon glyphicon-plus-sign"></i> Add
+                            		</button>
+                            	</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="col-md-12" ng-controller="DevicetypesController" ng-if="params.tab == 'devicetypes'">
+        <div class="row" ng-if="!permissions.list">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    <i>sorry, you have no permissions to list devicetypes</i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-if="permissions.list">
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                            <input ng-model="searchTerm.name" placeholder="filter" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="alert alert-info" ng-if="!devicetypes || devicetypes.length==0">
+                            <i>no matching DeviceType</i>
+                        </div>
+                        <table class="table table-compact table-striped">
+                            <tr ng-repeat="devicetype in devicetypes">
+                                <td>{{devicetype.name}}</td>
+                                <td><div class="pull-right" ng-click="remove(devicetype.id)" ng-disabled="!permissions.delete"><i class="glyphicon glyphicon-minus-sign"></i></div></td>
+                            </tr>
+                            <tr ng-if="permissions.create">
+                                <td><input class="form-control" placeholder="Packagetype Name" ng-model="newObject.name" required></td>
+                                <td>
+                                    <button class="btn btn-primary pull-right" ng-click="add()">
+                                        <i class="glyphicon glyphicon-plus-sign"></i> Add
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-md-12" ng-controller="ScreenAspectsController" ng-if="params.tab == 'screenaspects'">
+		<div class="row" ng-if="!permissions.list">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    <i>sorry, you have no permissions to list ScreenAspects</i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-if="permissions.list">
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                            <input ng-model="searchTerm.name" placeholder="filter" class="form-control">
+                        </div>
+                    </div>
+     
+                    <div class="col-md-12">
+                        <div class="alert alert-info" ng-if="!screenAspects || screenAspects.length==0">
+                            <i>no matching MediaClipType</i>
+                        </div>
+                        <table class="table table-compact table-striped">
+                            <tr ng-repeat="screenAspect in screenAspects">
+                                <td>{{screenAspect.name}}</td>
+                                <td><div class="pull-right" ng-click="remove(screenAspect.id)" ng-disabled="!permissions.delete"><i class="glyphicon glyphicon-minus-sign"></i></div></td>
+                            </tr>
+                            <tr ng-if="permissions.create">
+                            	<td><input class="form-control" placeholder="ScreenAspect Name" ng-model="newObject.name" required></td>
+                            	<td>
+                            		<button class="btn btn-primary pull-right" ng-click="add()">
+                            			<i class="glyphicon glyphicon-plus-sign"></i> Add
+                            		</button>
+                            	</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="col-md-12" ng-controller="MediaAspectsController" ng-if="params.tab == 'mediaaspect'">
+        <div class="row" ng-if="!permissions.list">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    <i>sorry, you have no permissions to list mediaAspect</i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-if="permissions.list">
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                            <input ng-model="searchTerm.name" placeholder="filter" class="form-control">
+                        </div>
+                    </div>
+     
+                    <div class="col-md-12">
+                        <div class="alert alert-info" ng-if="!mediaAspects || mediaAspects.length==0">
+                            <i>no matching MediaClipType</i>
+                        </div>
+                        <table class="table table-compact table-striped">
+                            <tr ng-repeat="mediaAspect in mediaAspects">
+                                <td>{{mediaAspect.name}}</td>
+                                <td><div class="pull-right" ng-click="remove(mediaAspect.id)" ng-disabled="!permissions.delete"><i class="glyphicon glyphicon-minus-sign"></i></div></td>
+                            </tr>
+                            <tr ng-if="permissions.create">
+                                <td><input class="form-control" placeholder="mediaAspect Name" ng-model="newObject.name" required></td>
+                                <td>
+                                    <button class="btn btn-primary pull-right" ng-click="add()">
+                                        <i class="glyphicon glyphicon-plus-sign"></i> Add
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+    <div class="col-md-12" ng-controller="AudioFormatsController" ng-if="params.tab == 'audioformats'">
+        <div class="row" ng-if="!permissions.list">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    <i>sorry, you have no permissions to list audio formats</i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-if="permissions.list">
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                            <input ng-model="searchTerm.name" placeholder="filter" class="form-control">
+                        </div>
+                    </div>
+     
+                    <div class="col-md-12">
+                        <div class="alert alert-info" ng-if="!audioFormats || audioFormats.length==0">
+                            <i>no matching MediaClipType</i>
+                        </div>
+                        <table class="table table-compact table-striped">
+                            <tr ng-repeat="audioFormat in audioFormats">
+                                <td>{{audioFormat.name}}</td>
+                                <td><div class="pull-right" ng-click="remove(audioFormat.id)" ng-disabled="!permissions.delete"><i class="glyphicon glyphicon-minus-sign"></i></div></td>
+                            </tr>
+                            <tr ng-if="permissions.create">
+                                <td><input class="form-control" placeholder="audioFormat Name" ng-model="newObject.name" required></td>
+                                <td>
+                                    <button class="btn btn-primary pull-right" ng-click="add()">
+                                        <i class="glyphicon glyphicon-plus-sign"></i> Add
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+</div>

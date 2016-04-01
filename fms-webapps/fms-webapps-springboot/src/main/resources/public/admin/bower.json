@@ -1,0 +1,45 @@
+{
+  "name": "apitester",
+  "version": "0.0.0",
+  "homepage": "https://github.com/rmalchow/spring-api-tester",
+  "authors": [
+    "ruben malchow <ruben.malchow@gmail.com>"
+  ],
+  "main": "main.js",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.2.26",
+    "angular-chart.js": "~0.8.5",
+    "angular-hotkeys": "chieffancypants/angular-hotkeys#~1.5.0",
+    "angular-markdown-editor": "*",
+    "angular-moment": "~0.8.2",
+    "angular-route": "~1.2.19",
+    "angular-route-segment": "~1.3.3",
+    "angular-ui": "~0.4.0",
+    "angular-ui-calendar": "~1.0.1",
+    "bootstrap": "~3.2.0",
+    "bootstrap3-datetimepicker": "~3.1.3",
+    "d3": "~3.4.13",
+    "fullcalendar-scheduler": "~1.0.2",
+    "jsoneditor": "3.1.2",
+    "lodash": "~2.4.1",
+    "markdown": "~0.5.0",
+    "moment": "~2.8.3",
+    "moment-timezone": "~0.2.5",
+    "ng-multi-transclude": "~0.1.2",
+    "ngSweetAlert": "angular-sweetalert#~1.1.0",
+    "restangular": "~1.4.0",
+    "select2": "~3.5.2",
+    "ui-router": "~0.2.11",
+    "uri.js": "~1.14.1",
+    "video.js": "videojs#~5.4.4"
+  }
+}

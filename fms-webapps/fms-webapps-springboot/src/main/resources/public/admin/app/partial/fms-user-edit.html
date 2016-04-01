@@ -1,0 +1,87 @@
+    <div class="row">
+        <div class="form-group col-md-9">
+            <h4>User {{user.name}}</h4>
+        </div>
+        <div class="form-group col-md-3">
+            <div class="pull-right">
+                <button ng-click="edit()" ng-disabled="!permissions.edit" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i></button>
+                <button ng-click="delete()" ng-disabled="!permissions.delete" class="btn btn-danger"><i class="glyphicon glyphicon-minus-sign"></i></button>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <hr>
+        </div>
+        <div class="form-group col-md-12">
+            <div class="row">
+                <div class="col-md-8">
+                    <label>Details</label>
+                </div>
+                <div class="col-md-4">
+                    <div class="checkbox checkbox-compact pull-right">
+                        <input type="checkbox" name="user_enabled" id="user_enabled" ng-model="user.enabled" ng-change="save()" ng-disabled="!editing" >
+                        <label class="btn btn-xs" for="user_enabled">enabled</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-md-12">
+            <input ng-model="user.name" ng-blur="save()" class="form-control"  ng-disabled="!editing" ng-disabled="!editing" ng-blur="save()"/>
+        </div>
+        <div class="form-group col-md-12">
+            <input ng-model="user.username" ng-blur="save()" class="form-control"  ng-disabled="!editing" ng-disabled="!editing" ng-blur="save()"/>
+        </div>
+        <div class="form-group col-md-12">
+            <input ng-model="user.email" ng-blur="save()" class="form-control"  ng-disabled="!editing" ng-disabled="!editing" ng-blur="save()"/>
+        </div>
+
+        <div class="col-md-12">
+            <hr>
+        </div>
+        <div class="col-md-12">
+            <div class="form form-group">
+                <label>Groups</label>
+                <input multi-select ng-disabled="!editing" model="user.groups"  service="groupService"   change="save()" ng-if="user">
+            </div>
+            <div class="form form-group">
+                <label>Movies</label>
+                <input multi-select ng-disabled="!editing" model="user.movieIds" service="movieService"  change="save()" ng-if="user">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <input ng-model="user.properties.category" class="form-control" ng-disabled="!editing" ng-blur="save()" ng-if="user">
+            </div>
+
+        </div>
+        <div class="col-md-12">
+            <hr>
+        </div>
+        <!--
+        <div class="form-group col-md-12">
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Set Password</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="password" class="form-control" ng-model="set.newPasswordA">
+                </div>
+                <div class="col-md-4">
+                    <input type="password" class="form-control" ng-model="set.newPasswordB">
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-primary pull-right" ng-disabled="!set.newPasswordOK" ng-click="reset(user.username,undefined,set.newPasswordA)">Go!</button>
+                </div>
+            </div>
+        </div>
+        -->
+        <div class="form-group col-md-12">
+            <div class="row">
+                <div class="col-md-8">
+                    <label>Send Reset</label><br>
+                    send a password reset mail to this user.
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary pull-right" ng-click="reset(user.username,undefined,undefined)">Go!</button>
+                </div>
+            </div>
+        </div>
+    </div>

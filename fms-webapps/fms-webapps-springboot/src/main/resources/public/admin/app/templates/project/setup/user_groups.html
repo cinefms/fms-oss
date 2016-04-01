@@ -1,0 +1,171 @@
+<div>
+
+    <div fms-headline>
+        Users & Groups
+    </div>
+
+    <div class="col-md-12 form-group">
+        <ul class="nav nav-tabs">
+            <li ng-class="{'active': expanded == 'users_expand'  || !expanded }"><a ng-click="expanded = 'users_expand'">Users</a></li>
+            <li ng-class="{'active': expanded == 'groups_expand'}"><a ng-click="expanded = 'groups_expand'">Groups</a></li>
+        </ul>
+    </div>
+    <div class="col-md-12 form-group" ng-controller="UsersController" ng-if="expanded == 'users_expand' || !expanded">
+        <div class="row" ng-if="!permissions.list">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    <i>sorry, you have no permissions to list users</i>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="permissions.list">
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                            <input ng-model="list.params.searchTerm" placeholder="filter" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div ng-if="!permissions.create">
+                            <button class="btn btn-primary pull-right" disabled><i class="glyphicon glyphicon-plus-sign"></i> Add</button>
+                        </div>
+                        <fms-dialog ng-if="permissions.create">
+                            <div name="trigger">
+                                <button class="btn btn-primary pull-right open-dialog"><i class="glyphicon glyphicon-plus-sign"></i> Add </button>
+                            </div>
+                            <div name="contents" class="fms-block-overlay contents" ng-show="showDialog">
+                                <div class="fms-modal-dialog">
+                                    <div ng-click="close()" class="pull-right">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
+                                    </div>
+                                    <div class="fms-modal-dialog-header">
+                                        <h2>Add a User</h2>
+                                    </div>
+                                    <div class="fms-modal-dialog-contents">
+                                        <div class="form-group">
+                                            <label>Username</label>
+                                            <input class="form-control" placeholder="username" ng-model="newObject.username" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Real Name</label>
+                                            <input class="form-control" placeholder="Real Name" ng-model="newObject.name" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Email Address</label>
+                                            <input class="form-control" placeholder="user@email.com" ng-model="newObject.email" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Enable User</label>
+                                            <div class="checkbox checkbox-compact">
+                                                    <input type="checkbox" name="enabled" id="enabled" ng-model="newObject.enabled">
+                                                    <label class="btn btn-xs" for="enabled">enabled</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group pull-right">
+                                            <button class="btn btn-default" ng-click="close()">cancel</button> 
+                                            <button class="btn btn-primary" ng-click="add()">save</button> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fms-dialog>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="alert alert-info" ng-if="!users || users.length==0">
+                            <i>no matching users</i>
+                        </div>
+                        <table class="table table-compact table-striped" ng-if="users && users.length>0">
+                            <tr>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                            </tr>
+                            <tr ng-repeat="user in users" ng-click="selectUser(user.id)">
+                                <td width="50%">{{user.name}}</td>
+                                <td width="20%">{{user.username}}</td>
+                                <td width="30%">{{user.email}}</td>
+                            </tr>
+                        </table>
+                        <fms-pagination ng-model="list.params"></fms-pagination>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="alert alert-info" ng-if="!selectedUser.id">
+                    <i>Select a user to edit</i>
+                </div>
+                <user-editor id="selectedUser.id" ng-if="selectedUser.id">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 form-group" ng-controller="GroupsController" ng-if="expanded == 'groups_expand'">
+        <div class="row" ng-if="!permissions.list">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    <i>sorry, you have no permissions to list groups</i>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="permissions.list">
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                            <input ng-model="list.params.searchTerm" placeholder="filter" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div ng-if="!permissions.create">
+                            <button class="btn btn-primary pull-right" disabled><i class="glyphicon glyphicon-plus-sign"></i> Add</button>
+                        </div>
+                        <fms-dialog ng-if="permissions.create">
+                            <div name="trigger">
+                                <button class="btn btn-primary pull-right open-dialog"><i class="glyphicon glyphicon-plus-sign"></i> Add </button>
+                            </div>
+                            <div name="contents" class="fms-block-overlay contents" ng-show="showDialog">
+                                <div class="fms-modal-dialog">
+                                    <div ng-click="close()" class="pull-right">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
+                                    </div>
+                                    <div class="fms-modal-dialog-header">
+                                        <h2>Add a Group</h2>
+                                    </div>
+                                    <div class="fms-modal-dialog-contents">
+                                        <div class="form-group">
+                                            <label>Group Name</label>
+                                            <input class="form-control" placeholder="New group name" ng-model="newObject.name" required>
+                                        </div>
+                                        <div class="form-group pull-right">
+                                            <button class="btn btn-default" ng-click="close()">cancel</button> 
+                                            <button class="btn btn-primary" ng-click="add()">save</button> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fms-dialog>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="alert alert-info" ng-if="!groups || groups.length==0">
+                            <i>no matching groups</i>
+                        </div>
+                        <table class="table table-compact table-striped" ng-if="groups && groups.length>0">
+                            <tr ng-repeat="group in groups" ng-click="selectGroup(group)">
+                                <td>{{group.name}}</td>
+                            </tr>
+                       </table>
+                        <fms-pagination ng-model="list.params"></fms-pagination>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="alert alert-info" ng-if="!selectedGroup.id">
+                    <i>Select a group to edit</i>
+                </div>
+                <group-editor id="selectedGroup.id" ng-if="selectedGroup">
+            </div>
+        </div>
+    </div>
+</div>

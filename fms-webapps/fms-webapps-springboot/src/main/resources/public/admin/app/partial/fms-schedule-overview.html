@@ -1,0 +1,116 @@
+<div>
+    <div style="height:60px">
+    </div>
+    <div fms-headline>
+    	<div class="row">
+    		<div class="col-md-2">
+                Overview {{current.date}}
+		    </div>
+    		<div class="col-md-3" ng-if="locationGroups">
+    			<select ng-model="current.group" class="form-control" ng-options="l.name for l in locationGroups" ng-change="updateDisplayed();" ng-init="current.group = locationGroups[0]">
+    			</select>
+		    </div>
+    		<div class="col-md-3" ng-if="current.group">
+    			<select ng-model="current.date" class="form-control" ng-change="updateDisplayed();" ng-init="current.date = getToday" >
+    				<option ng-repeat="day in days" value="{{day.day}}">
+    					{{day.day}} |  <i>{{day.size + 1 - 1}} screenings</i>
+    				</option>
+    			</select>
+		    </div>
+		</div>
+    </div>
+
+    <div 
+    		id="details" 
+    		style="display:none; position:absolute; top:220; left:100; right:100; height: {{height-250}}; z-index:9999; padding:20px; background:white;
+    			box-shadow: 2px 2px 4px 4px rgba(0,0,0,0.5);border-radius: 10px;">
+
+    	<div style="position:relative;padding:10;top:10;left:10;height:30">
+	    	<div class="row" >
+		    	<div class="col-md-10">
+			    	<h3>{{current.detail.name}}</h3>
+				</div>
+		    	<div class="col-md-2">
+					<span class="pull-right">
+						<i class="glyphicon glyphicon-remove" ng-click="hideDetails()"></i>
+				        <i class="glyphicon glyphicon-chevron-down" ng-show="current.detail_expanded" ng-click="current.detail_expanded=!current.detail_expanded"></i>
+				        <i class="glyphicon glyphicon-chevron-up" ng-show="!current.detail_expanded" ng-click="current.detail_expanded=!current.detail_expanded"></i>
+				    </span>
+				</div>
+			</div>
+		</div>
+    	<div style="position:relative;padding:10;overflow-y:scroll;overflow-x:hidden;top:0;left:10;height: {{height-350}}; width: 100%">
+	    	<div class="row" >
+		    	<div class="col-md-12">
+					<event-editor id="current.detail.id" ng-if="current.detail" foldable="true" expanded="current.detail_expanded">
+			        </event-editor>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <div style="position:absolute;top:140px;left:20px;right:20px;bottom:20px;overflow-x:auto;box-shadow: 0px 0px 5px rgba(255,255,255,.5);">
+		<div style="position:relative;height:50px;width:{{(count*each)}}px;">
+			<div ng-repeat="location in display.locations" style="width:{{each-30}}px;float:left;margin:15px;padding:0px">
+				<strong>{{location.name}}</strong>
+			</div>
+		</div>
+		<div style="position:relative;width:{{(count*each)}}px;height:{{height-200}}px;overflow-y:auto;border-width:1px;border-top-style:solid;border-bottom-style:solid;border-color:#999999;">
+			<div ng-repeat="location in display.locations" style="width:{{each-20}}px;float:left;margin:10px;padding:0px">
+				<div ng-if="display.events[location.id].length == 0" class="alert alert-info">
+					<i>no screenings</i>
+				</div>
+
+				<div 
+					ng-repeat="event in display.events[location.id]" 
+					class="alert" 
+					ng-class="{'well well-sm' : event.startTime < date, 'alert-info' : event.startTime > date}" 
+					style="padding:5px;margin:2px;"
+					ng-click="showDetails($event,event)"
+					>
+					<div class="row">
+						<div class="col-md-12" style="padding-bottom:6px">
+                            <strong><fms-time ng-model="event.startTime">
+                                {{date.time}}
+                            </fms-time></strong>
+							<div class="pull-right" ng-if="event.errors.length > 0" tooltips tooltip-side="bottom" tooltip-speed="slow" tooltip-smart="true" tooltip-size="small" tooltip-template-array="{{event.errors}}">
+				                <fms-status status="event.mediaStatus">
+				                    <i class="glyphicon glyphicon-hdd"></i>
+				                </fms-status>
+				                <fms-status status="event.versionStatus">
+				                    <i class="glyphicon glyphicon-film"></i>
+				                </fms-status>
+				                <fms-status status="event.encryptionStatus">
+				                    <i class="glyphicon glyphicon-lock"></i>
+				                </fms-status>
+				                <fms-status status="event.playbackStatus">
+				                    <i class="glyphicon glyphicon-play"></i>
+				                </fms-status>
+				            </div>
+                            <div class="pull-right" ng-if="event.errors.length == 0">
+                                <fms-status status="event.mediaStatus">
+                                    <i class="glyphicon glyphicon-hdd"></i>
+                                </fms-status>
+                                <fms-status status="event.versionStatus">
+                                    <i class="glyphicon glyphicon-film"></i>
+                                </fms-status>
+                                <fms-status status="event.encryptionStatus">
+                                    <i class="glyphicon glyphicon-lock"></i>
+                                </fms-status>
+                                <fms-status status="event.playbackStatus">
+                                    <i class="glyphicon glyphicon-play"></i>
+                                </fms-status>
+                            </div>
+			            </div>
+						<div class="col-md-12">
+							{{event.externalId}} <strong>{{event.name}}</strong>
+						</div>
+						<div class="col-md-12">
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>

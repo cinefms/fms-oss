@@ -1,0 +1,17 @@
+<div ng-controller="LocationController">
+
+    <!--                                    -->
+    <!--                                    -->
+    <!--      MOVIE                         -->
+    <!--                                    -->
+    <!--                                    -->
+    <div fms-headline>
+        <a href="#/setup/locations">Locations</a> | 
+        {{location.name}} <i ng-if="!location.name || location.name.vendor.length == 0">[name not set]</i>
+        
+    </div>
+
+    <div class="col-md-12">
+    	<location-editor id="location.id" ng-if="location"></location-editor>
+    </div>
+</div>

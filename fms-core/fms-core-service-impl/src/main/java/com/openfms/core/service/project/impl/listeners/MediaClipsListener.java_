@@ -1,0 +1,124 @@
+package com.openfms.core.service.project.impl.listeners;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.openfms.core.service.FmsMediaClipService;
+import com.openfms.core.service.FmsMediaClipTaskService;
+import com.openfms.core.service.FmsMovieVersionService;
+import com.openfms.model.FmsObjectChangeNotifier.OPERATION;
+import com.openfms.model.annotations.FmsListener;
+import com.openfms.model.annotations.FmsNotify;
+import com.openfms.model.core.movie.FmsMediaClip;
+import com.openfms.model.core.movie.FmsMediaClipTask;
+import com.openfms.model.core.movie.FmsMovieVersion;
+import com.openfms.model.utils.StatusCombine;
+
+@Component
+@FmsListener
+public class MediaClipsListener {
+
+	private static Log log = LogFactory.getLog(MediaClipsListener.class);
+
+	@Autowired
+	private FmsMediaClipService mediaClipService;
+
+	@Autowired
+	private FmsMediaClipTaskService mediaClipTaskService;
+
+	@Autowired
+	private FmsMovieVersionService movieVersionService;
+
+	@FmsNotify(operations = { OPERATION.PREPARE }, runWithRoles = "ROLE_ADMIN")
+	public void prepareMediaClip(FmsMediaClip newMediaClip, FmsMediaClip oldMediaClip) {
+		try {
+			List<FmsMovieVersion> mvs = movieVersionService.listMovieVersions(null, null, null, newMediaClip.getId(), null, null, null, null);
+			log.info("ABOUT TO SAVE ENTRY POINT, UPDATING FIRST/LAST EVENT DATE ... FROM " + mvs.size() + " MOVIE VERSIONS ... ");
+			Date firstEventDate = null;
+			Date lastEventDate = null;
+			for (FmsMovieVersion mv : mvs) {
+				if (mv.getFirstEventDate() != null) {
+					if (firstEventDate == null || firstEventDate.after(mv.getFirstEventDate())) {
+						firstEventDate = mv.getFirstEventDate();
+					}
+				}
+				if (mv.getLastEventDate() != null) {
+					if (lastEventDate == null || lastEventDate.before(mv.getLastEventDate())) {
+						lastEventDate = mv.getLastEventDate();
+					}
+				}
+			}
+			newMediaClip.setFirstEventDate(firstEventDate);
+			newMediaClip.setLastEventDate(lastEventDate);
+
+		} catch (Exception e) {
+			log.error("error preparing entry point");
+			throw new RuntimeException("error preparing entry point", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED }, runWithRoles = "ROLE_ADMIN")
+	public void whenMediaClipTaskSavedUpdatemediaClipstatus(FmsMediaClipTask newMediaClipTask, FmsMediaClipTask oldMediaClipTask) {
+		try {
+			SortedSet<FmsMediaClip> mediaClips = new TreeSet<FmsMediaClip>();
+			if (newMediaClipTask != null) {
+				FmsMediaClip ep = mediaClipService.getMediaClip(newMediaClipTask.getMediaClipId());
+				mediaClips.add(ep);
+			}
+			if (oldMediaClipTask != null) {
+				FmsMediaClip ep = mediaClipService.getMediaClip(oldMediaClipTask.getMediaClipId());
+				mediaClips.add(ep);
+			}
+			for (FmsMediaClip ep : mediaClips) {
+
+				List<FmsMediaClipTask> tasks = mediaClipTaskService.listMediaClipTasks(ep.getId(), null, null, null, null, null, null, true, null, null);
+				int[] x = new int[tasks.size()];
+
+				for (int i = 0; i < tasks.size(); i++) {
+					FmsMediaClipTask eptask = tasks.get(i);
+					x[i] = eptask.getStatus();
+				}
+				int status = StatusCombine.combine(x);
+				if (status != ep.getStatus()) {
+					ep.setStatus(status);
+					mediaClipService.saveMediaClip(ep, null);
+				}
+			}
+		} catch (Exception e) {
+			log.warn("error in key listener!", e);
+		}
+	}
+
+	@FmsNotify(operations = { OPERATION.UPDATED, OPERATION.DELETED }, runWithRoles = "ROLE_ADMIN")
+	public void whenVersionDeletedOrModifiedUpdatemediaClips(FmsMovieVersion newMovieVersion, FmsMovieVersion oldMovieVersion) {
+		try {
+			Collection<FmsMediaClip> eps = new TreeSet<FmsMediaClip>();
+			for (FmsMovieVersion mv : new FmsMovieVersion[] { oldMovieVersion, newMovieVersion }) {
+				if (mv != null && mv.getMediaClipIds() != null) {
+					for (String epid : mv.getMediaClipIds()) {
+						try {
+							FmsMediaClip ep = mediaClipService.getMediaClip(epid);
+							eps.add(ep);
+						} catch (Exception e) {
+						}
+					}
+				}
+			}
+			for (FmsMediaClip ep : eps) {
+				mediaClipService.saveMediaClip(ep, null);
+			}
+		} catch (Exception e) {
+			log.error("error updating entry points on version update", e);
+			throw new RuntimeException("error updating entry points on version update", e);
+		}
+	}
+
+}

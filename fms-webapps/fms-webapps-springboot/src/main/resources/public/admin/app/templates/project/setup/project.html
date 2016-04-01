@@ -1,0 +1,66 @@
+<div ng-controller="ProjectSettingsController">
+
+    <!--                                    -->
+    <!--                                    -->
+    <!--      MOVIE                         -->
+    <!--                                    -->
+    <!--                                    -->
+    <div fms-headline>
+        Project
+    </div>
+
+    <div class="col-md-12" ng-if="projectSettings">
+        <hr>
+        <div class="row">
+            <div class="col-md-6" ng-if="mailSettings">
+                <div class="form-group">
+                    <h3>Mail Settings</h3>
+                </div>
+                <div class="form-group">
+                    <label>SMTP Host</label>
+                    <input class="form-control" ng-model="mailSettings.host" ng-blur="save()">
+                </div>
+                <div class="form-group">
+                    <label>Port</label>
+                    <input class="form-control" ng-model="mailSettings.port" ng-blur="save()">
+                </div>
+                <div class="form-group">
+                    <label>Encryption</label>
+                    <div class="checkbox checkbox-compact">
+                        <input type="checkbox" id="mail-settings-ssl" ng-model="mailSettings.useSsl" ng-change="save()">
+                        <label class="btn btn-xs" for="mail-settings-ssl">SSL</label>
+                        <input type="checkbox" id="mail-settings-tls" ng-model="mailSettings.useTls" ng-change="save()">
+                        <label class="btn btn-xs" for="mail-settings-tls">TLS</label>
+                    </div>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label>Credentials</label>
+                    <input class="form-control" ng-model="mailSettings.username">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" ng-model="newObject.password" type="password">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary pull-right" ng-click="updateCredentials()">update</button>
+                </div>
+
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <h3>Mail Templates</h3>
+                    <input single-select ng-model="selectedMailTemplateId" service="mailTemplateService">
+                    <br>
+                    <hr>
+                    <div class="alert alert-info" ng-if="!selectedMailTemplateId">
+                        please select a template to edit
+                    </div>
+                    <mail-editor id="selectedMailTemplateId" ng-if="selectedMailTemplateId">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>

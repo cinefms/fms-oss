@@ -1,0 +1,176 @@
+<div ng-mouseenter="hovering=true" ng-mouseleave="hovering=false">
+    <div ng-show="foldable && !expanded && mediaclip"> 
+        <div class="form-group">
+            <button ng-show="mediaclip.status==-1" class="btn btn-default btn-xs"> <i class="glyphicon glyphicon-hdd"></i>&nbsp;</button>
+            <button ng-show="mediaclip.status==0" class="btn btn-danger btn-xs"> <i class="glyphicon glyphicon-hdd"></i>&nbsp;</button>
+            <button ng-show="mediaclip.status==1" class="btn btn-warning btn-xs"> <i class="glyphicon glyphicon-hdd"></i>&nbsp;</button>
+            <button ng-show="mediaclip.status==2" class="btn btn-info btn-xs"> <i class="glyphicon glyphicon-hdd"></i>&nbsp;</button>
+            <button ng-show="mediaclip.status==3" class="btn btn-success btn-xs"> <i class="glyphicon glyphicon-hdd"></i>&nbsp;</button>
+            <button class="btn btn-primary btn-xs">{{mediaclip.type}}</button>
+            <button ng-show="mediaclip.disabled" class="btn btn-danger btn-xs"> Clip Disabled</button>
+            <button ng-show="!mediaclip.disabled" class="btn btn-default btn-xs"> Clip Enabled</button>
+            <button ng-show="mediaclip.encrypted" class="btn btn-danger btn-xs"> Encrypted</button>
+            <button ng-show="!mediaclip.encrypted" class="btn btn-default btn-xs"> Not Encrypted</button>
+
+            <button class="btn btn-success btn-xs">
+                <i class="glyphicon glyphicon-volume-up"></i>
+                <span ng-repeat="a in mediaclip.audioLanguageIds">{{a}}&nbsp;</span>
+                <span ng-show="mediaclip.audioLanguageIds.length==0"><i>none</i></span>
+            </button>
+            <button class="btn btn-success btn-xs">
+                <i class="glyphicon glyphicon-font"></i>
+                <span ng-repeat="a in mediaclip.subtitleLanguageIds">{{a}}&nbsp;</span>
+                <span ng-show="mediaclip.subtitleLanguageIds.length==0"><i>none</i></span>
+            </button>
+        </div>
+        <div class="form-group" ng-show="mediaclip.tags && mediaclip.tags.length>0">
+            <span  ng-repeat="tag in mediaclip.tags">
+                <button class="btn btn-info btn-xs"> {{tag}} </button> 
+            </span>
+        </div>
+    </div>
+    <div ng-show="(foldable && expanded) || !foldable"> 
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Status</label><br>
+                    <fms-status status="mediaclip.status">
+                        <i class="glyphicon glyphicon-hdd"></i>
+                    </fms-status>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>En/Disable Clip</label><br>
+                    <button ng-disabled="!editing" ng-show="mediaclip.disabled" class="btn btn-danger btn-xs"  ng-click="mediaclip.disabled = false; save()">Clip Disabled</button>
+                    <button ng-disabled="!editing" ng-show="!mediaclip.disabled" class="btn btn-default btn-xs"  ng-click="mediaclip.disabled = true; save()">Clip Enabled</button>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Encryption</label><br>
+                    <button ng-disabled="!editing" ng-show="mediaclip.encrypted" class="btn btn-danger btn-xs"  ng-click="mediaclip.encrypted = false; save()">Encrypted</button>
+                    <button ng-disabled="!editing" ng-show="!mediaclip.encrypted" class="btn btn-default btn-xs"  ng-click="mediaclip.encrypted = true; save()">Not Encrypted</button>
+                </div>
+            </div>
+            <div class="col-md-2" ng-show="canEdit">
+                <button ng-click="edit()" ng-disabled="!permissions.edit" class="btn btn-primary pull-right" hotkey="{e: edit}"><i class="glyphicon glyphicon-pencil"></i></button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group" ng-show="mediaclip.id">
+                    <label>Movie</label>
+                    <span class="form-control" ng-show="!editing" style="background-color:#EEEEEE">
+
+                        <fms-link id="mediaclip.movieId" type="'com.openfms.model.core.movie.FmsMovie'">
+                           {{mediaclip.movieName || "[empty movie name]"}} 
+                        </fms-link>
+                    </span>
+                    <span ng-show="editing">
+                        <input single-select ng-model="mediaclip.movieId" service="movieService" ng-disabled="!movieId" ng-change="save()">
+                    </span>
+                </div>
+                <div class="form-group" ng-show="!mediaclip.id">
+                    <label>Movie</label>
+                    <input single-select ng-model="mediaclip.movieId" service="movieService" ng-change="save()">
+                </div>
+                <div class="form-group">
+                    <label>Mediaclip Name</label>
+                    <input class="form-control" placeholder="New media clip name" ng-model="mediaclip.name" required ng-disabled="!editing"  ng-blur="save()">
+                </div>
+                <div class="form-group">
+                    <label>External ID</label>
+                    <input class="form-control" placeholder="External ID" ng-model="mediaclip.externalId" required ng-disabled="!editing"  ng-blur="save()">
+                </div>
+                <div class="form-group">
+                    <hr>
+                </div>
+                <div class="form-group">
+                    <label>Clip Type</label>
+                    <input single-select ng-model="mediaclip.type" service="mediaclipTypeService"  required ng-disabled="!editing"  ng-change="save()">
+                </div>
+                <div class="form-group">
+                    <label>Length (Minutes)</label>
+                    <input class="form-control"  ng-model="mediaclip.length" required ng-disabled="!editing"  ng-blur="save()">
+                </div>
+                <div class="form-group">
+                    <label>Framerate</label>
+                    <input single-select ng-model="mediaclip.fps" service="framerateService" required ng-disabled="!editing"  ng-change="save()">
+                </div>
+                <div class="form-group">
+                    <label>Audio Format</label>
+                    <input single-select ng-model="mediaclip.audioFormat" service="audioFormatService" required ng-disabled="!editing"  ng-change="save()">
+                </div>
+                <div class="form-group">
+                    <label>Media Aspect</label>
+                    <input single-select ng-model="mediaclip.mediaAspect" service="mediaAspectService" required ng-disabled="!editing"  ng-change="save()">
+                </div>
+                <div class="form-group">
+                    <label>Screen Aspect</label>
+                    <input single-select ng-model="mediaclip.screenAspect" service="screenAspectService" required ng-disabled="!editing"  ng-change="save()">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Audio Languages</label>
+                    <input multi-select model="mediaclip.audioLanguageIds" service="languageService" required ng-disabled="!editing"  change="save()">
+                </div>
+                <div class="form-group">
+                    <label>Subtitle Languages</label>
+                    <input multi-select model="mediaclip.subtitleLanguageIds" service="languageService" required ng-disabled="!editing"  change="save()">
+                </div>
+                <div class="form-group">
+                    <hr>
+                </div>
+                <div class="form-group">
+                    <label>Tags</label>
+                    <input multi-select model="mediaclip.tags" service="tagService" required ng-disabled="!editing" change="save()">
+                </div>
+                <div class="form-group">
+                    <label>Screenings Remarks</label>
+                    <textarea class="form-control" rows="5" ng-model="mediaclip.screeningRemarks"  ng-disabled="!editing"  ng-blur="save()"></textarea>
+                </div>
+                <div class="form-group">
+                    <hr>
+                </div>
+                <div class="form-group">
+                    <label>
+                        Created:
+                    </label>
+                    <fms-time ng-model="mediaclip.created">{{date.since}}
+                    </fms-time>
+                    (<fms-time ng-model="mediaclip.created">{{date.date}} {{date.time}}
+                </fms-time>)
+                </div>
+                <div class="form-group" ng-show="mediaclip.fileIds">
+                    <label>Download files</label>
+                    <div ng-repeat="fileId in mediaclip.fileIds">
+                        <a href="/api/v2/packages/files/{{fileId}}/data"> File {{$index+1}} <i class="glyphicon glyphicon-floppy-save"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <hr>
+                </div>
+            </div>
+            <div class="col-md-12" ng-show="canEdit">
+                <!--
+                <key-list media-clip-external-id="mediaclip.externalId">
+                </key-list>
+                <media-clip-task-list-small media-clip-id="mediaclip.id" ng-show="mediaclip.id">
+                </media-clip-task-list-small>
+                -->
+            </div>
+        </div>
+        <div class="row"  ng-show="!canEdit">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button class="btn fms-dialog-close" ng-click="close()">cancel</button> 
+                    <button class="btn btn-primary fms-dialog-commit"ng-click="add()">save</button> 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

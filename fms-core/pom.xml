@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.cinefms</groupId>
+		<artifactId>fms-parent</artifactId>
+		<version>0.7.12-SNAPSHOT</version>
+	</parent>
+	<artifactId>fms-core</artifactId>
+	<packaging>pom</packaging>
+	<modules>
+		<module>fms-core-service</module>
+		<module>fms-core-service-impl</module>
+		<module>fms-core-connector</module>
+		<module>fms-core-api-v2</module>
+	</modules>
+	<name>fms-core</name>
+	<dependencies>
+		<dependency>
+			<groupId>com.cinefms</groupId>
+			<artifactId>fms-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+</project>

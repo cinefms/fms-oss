@@ -1,0 +1,32 @@
+{
+  "name": "ng-multi-transclude",
+  "version": "0.1.2",
+  "homepage": "https://github.com/zachsnow/ng-multi-transclude",
+  "authors": [
+    "Zach Snow <z@zachsnow.com>"
+  ],
+  "description": "Richer transclusion for AngularJS",
+  "dependencies": {
+    "angular": ">=1.2.16"
+  },
+  "main": "src/multi-transclude.js",
+  "keywords": [
+    "ng-multi-transclude",
+    "multi-transclude"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "*.md",
+    "LICENSE"
+  ],
+  "_release": "0.1.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.2",
+    "commit": "f39e1ffa6e3619647fee8c9c7bfd82ea1f5c4a22"
+  },
+  "_source": "git://github.com/zachsnow/ng-multi-transclude.git",
+  "_target": "~0.1.2",
+  "_originalSource": "ng-multi-transclude"
+}

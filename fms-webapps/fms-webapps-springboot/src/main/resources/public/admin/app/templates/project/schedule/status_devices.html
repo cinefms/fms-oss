@@ -1,0 +1,48 @@
+<div ng-controller="LocationDeviceListController">
+    <div fms-headline>
+        Status Online Devices
+    </div>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="form-group col-md-12 col-sm-11">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                    <input ng-model="search.$" placeholder="search" class="form-control" autofocus/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-xs-12">
+                <div ng-repeat="location in locations | filter:search:strict" >
+                    <div class="panel panel-default col-xs-3" style="width:24%;margin-right:1%; margin-bottom:5px; height: 150px">
+                        <div class="panel-body">
+                            <b>{{location.name}}</b>
+                                <div ng-repeat="device in location.devices">
+                                    <div>
+                                    <i class="glyphicon glyphicon-facetime-video"></i> <fms-link type="'com.openfms.model.core.playback.FmsPlaybackDevice'" id="device.id"><span>{{device.vendor}} {{device.model}}</span></fms-link> <span class="label label-default pull-right">{{device.status[0].cpls}}</span>
+                                    </span>
+                                        <div class="progress" ng-if="(device.status[0].used / device.status[0].total * 100) <= 70">
+                                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{device.status[0].used / device.status[0].total * 100}}" aria-valuemin="0" aria-valuemax="100" style="width: {{device.status[0].used / device.status[0].total * 100}}%;">
+                                            </div>
+                                        </div>
+                                        <div class="progress" ng-if="(device.status[0].used / device.status[0].total * 100) > 70 && (device.status[0].used / device.status[0].total * 100) <= 85">
+                                            <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{device.status[0].used / device.status[0].total * 100}}" aria-valuemin="0" aria-valuemax="100" style="width: {{device.status[0].used / device.status[0].total * 100}}%;">
+                                            </div>
+                                        </div>
+                                        <div class="progress" ng-if="(device.status[0].used / device.status[0].total * 100) > 85">
+                                            <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{device.status[0].used / device.status[0].total * 100}}" aria-valuemin="0" aria-valuemax="100" style="width: {{device.status[0].used / device.status[0].total * 100}}%;">
+                                            </div>
+                                        </div>
+                                        </div>
+                                        Size: {{device.status[0].total | byteFilter}}<br>
+                                        Available: {{device.status[0].total - device.status[0].used | byteFilter}}
+                                    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

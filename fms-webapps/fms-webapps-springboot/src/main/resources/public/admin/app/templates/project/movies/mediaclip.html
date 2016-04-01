@@ -1,0 +1,639 @@
+<div ng-controller="MediaclipController">
+
+    <div fms-headline>
+        <a href="#/movies/mediaclips">Mediaclips</a> | [{{mediaclip.externalId}}] {{mediaclip.name}}
+    </div>
+    <div class="col-md-12" ng-if="!permissions.read">
+        <div class="alert alert-warning">
+            <i>sorry, you have no permissions to read this media clip</i>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <ul class="nav nav-tabs">
+            <li ng-class="{'active': params.tab == 'overview'}"><a ng-click="tab('overview')"><u>O</u>verview</a></li>
+            <li ng-class="{'active': params.tab == 'tasks'}"><a ng-click="tab('tasks')"><u>T</u>asks</a></li>
+
+            <li ng-class="{'active': params.tab == 'keys'}" ng-if="mediaclip.encrypted"><a ng-click="tab('keys')"><u>K</u>eys</a></li>
+            <li ng-class="{'active': params.tab == 'keyrequests'}" ng-if="mediaclip.encrypted"><a ng-click="tab('keyrequests')">Key <u>R</u>equests</a></li>
+
+            <li ng-class="{'active': params.tab == 'keys'}" ng-if="!mediaclip.encrypted"><a style="color:#999999">Keys</a></li>
+            <li ng-class="{'active': params.tab == 'keyrequests'}" ng-if="!mediaclip.encrypted"><a style="color:#999999">Key Requests</a></li>
+
+            <li ng-class="{'active': params.tab == 'packages'}"><a ng-click="tab('packages')"><u>P</u>ackages</a></li>
+            <li ng-class="{'active': params.tab == 'screenings'}"><a ng-click="tab('screenings')"><u>S</u>creenings</a></li>
+            <li ng-class="{'active': params.tab == 'versions'}"><a ng-click="tab('versions')"><u>V</u>ersions</a></li>
+            <li ng-class="{'active': params.tab == 'data'}"><a ng-click="tab('data')"><u>D</u>ata</a></li>
+
+            <li ng-class="{'active': params.tab == 'attachments'}" ng-if="mediaclip.attachments.length!=0"><a ng-click="tab('attachments')"><u>A</u>ttachments</a></li>
+            <li ng-class="{'active': params.tab == 'attachments'}" ng-if="mediaclip.attachments.length==0"><a style="color:#999999"><u>A</u>ttachments</a></li>
+
+
+            <li ng-class="{'active': params.tab == 'devices'}"><a ng-click="tab('devices')">De<u>v</u>ices</a></li>
+            <li ng-class="{'active': params.tab == 'movie'}"><a ng-click="tab('movie')"><u>M</u>ovie</a></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <br>
+        </div>
+    </div>
+    <div class="col-md-12" ng-if="permissions.read && mediaclip">
+        <div class="row" ng-if="params.tab == 'overview'">
+            <div class="col-md-9">
+              <media-clip-editor id="mediaclip.id">
+            </div>
+            <div class="col-md-3">
+                <comments-full object="mediaclip">
+            </div>
+        </div>
+        <div class="row" ng-if="params.tab == 'tasks' && mediaclip">
+            <div class="col-md-12" ng-controller="MediaclipTasklistController">
+                <span ng-repeat="task in tasks">
+                    <fms-link id="task.id" type="'com.openfms.model.core.movie.FmsMediaClipTask'"><label class="label label-default" ng-if="task.closed==true"><i class="glyphicon glyphicon-ban-circle" ng-if="task.status==0"></i>{{task.type}}</label>
+                    <label class="label label-primary" ng-if="task.closed!=true">{{task.type}}</label></fms-link>
+                </span>
+                <media-clip-task-list media-clip-id="mediaclip.id" order="created" asc="false">
+                    <div class="shadow-box" ng-repeat="task in tasks">
+                        <task-editor id="task.id"  ng-if="task && task.id">
+                    </div>
+                </media-clip-task-list>
+            </div>
+        </div>
+        <div class="row" ng-if="params.tab == 'keys' && mediaclip">
+            <div class="col-md-12">
+              <key-list media-clip-external-id="mediaclip.externalId">
+            </div>
+        </div>
+        <div class="row" ng-if="params.tab == 'keyrequests' && mediaclip">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <key-request-list media-clip-id="mediaclip.id" movie-id="mediaclip.movieId">
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="params.tab == 'packages' && mediaclip">
+            <div class="col-md-12">
+                <div ng-repeat="packageId in mediaclip.moviePackageIds">
+                    <h4><fms-link id="packageId" type="'com.openfms.model.core.movie.FmsMoviePackage'">Package {{$index+1}}</fms-link></h4>
+                    <package-editor id="packageId">
+                    </package-editor>
+                </div>
+                <hr>
+            </div>
+        </div>
+        <div class="row" ng-if="params.tab == 'screenings' && events">
+            <div class="col-md-12" ng-controller="MediaclipEventController">
+                <div ng-if="mediaclip.events.length==0" class="alert alert-info">
+                    <i>no screenings planned for this media clip</i>
+                </div>
+                <table class="table table-compact">
+                    <tr ng-repeat="event in events | orderBy :'startTime'">
+                        <td width="20%"><fms-time ng-model="event.startTime">{{date.date}} {{date.time}}</fms-time></td>
+                        <td width="20%"><fms-link id="event.locationId" type="'com.openfms.model.core.playback.FmsLocation'">{{event.locationName}}</fms-link></td>
+                        <td width="20%"><fms-link id="event.id" type="'com.openfms.model.core.playback.FmsEvent'">{{event.externalId}} {{event.name}}</fms-link></td>
+                        <td>
+                            <div class="pull-right" ng-repeat="audioLanguageId in event.audioLanguageIds">
+                                <span class="label label-primary" ng-repeat="audioLanguage in audioLanguageId"><i class="glyphicon glyphicon-volume-up" ng-if="audioLanguage"></i> {{audioLanguage}}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="pull-right" ng-repeat="subtitleLanguageId in event.subtitleLanguageIds">
+                                <span class="label label-primary" ng-repeat="subtitleLanguage in subtitleLanguageId"><i class="glyphicon glyphicon-font" ng-if="subtitleLanguage"></i> {{subtitleLanguage}}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="pull-right">
+                                <fms-status status="event.mediaStatus">
+                                    <i class="glyphicon glyphicon-hdd"></i>
+                                </fms-status>
+                                <fms-status status="event.versionStatus">
+                                    <i class="glyphicon glyphicon-film"></i>
+                                </fms-status>
+                                <fms-status status="event.encryptionStatus">
+                                    <i class="glyphicon glyphicon-lock"></i>
+                                </fms-status>
+                                <fms-status status="event.playbackStatus">
+                                    <i class="glyphicon glyphicon-play"></i>
+                                </fms-status>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row" ng-if="params.tab == 'data' && mediaclip">
+            <div class="col-md-12" ng-if="!mediaclip.data.DCP && mediaclip.type != 'DIGITAL-PRORES' &&  mediaclip.type != 'TAPE-DIGIBETA' && mediaclip.type != 'TAPE-HDCAM' && mediaclip.type != 'TAPE-HDCAMSR'">
+                <div class="alert alert-info"><i>no data</i></div>
+            </div>
+            <div class="col-md-12" ng-if="mediaclip.type == 'DIGITAL-PRORES'">
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <h3><span class="label label-primary">Videofile</span></h3>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>File Path</label></div>
+                    <div class="col-md-9"><input class="form-control" placeholder="File Path" ng-model="mediaclip.data.videofile.fileName" ng-blur="save()"></div>
+                </div>
+            </div>
+            <div class="col-md-12" ng-if="mediaclip.type == 'TAPE-DIGIBETA' || mediaclip.type == 'TAPE-HDCAM' || mediaclip.type == 'TAPE-HDCAMSR'">
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <h3><span class="label label-primary">Tape</span></h3>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>In Point</label></div>
+                    <div class="col-md-9"><input class="form-control" placeholder="InPoint" ng-model="mediaclip.data.tape.inPoint" ng-change="checkTimecode()" ng-blur="save()"></div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>Out Point</label></div>
+                    <div class="col-md-9"><input class="form-control" placeholder="OutPoint" ng-model="mediaclip.data.tape.outPoint" ng-change="checkTimecode()" ng-blur="save()"></div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>Dropframe</label></div>
+                    <div class="col-md-9"><input type="checkbox" ng-model="mediaclip.data.tape.dropFrame" ng-blur="save()"></div>
+                </div>
+            </div>
+            <div class="col-md-12" ng-if="mediaclip.data.DCP">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3><span class="label label-primary">Overview</span></h3>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>ContentTitleText</label></div>
+                    <div class="col-md-3">{{mediaclip.data.DCP.ContentTitleText}}</div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>Content Kind</label></div>
+                    <div class="col-md-9">{{mediaclip.data.DCP.ContentKind}}</div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>AnnotationText</label></div>
+                    <div class="col-md-9">{{mediaclip.data.DCP.AnnotationText}}</div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>Creator</label></div>
+                    <div class="col-md-9">{{mediaclip.data.DCP.Creator}}</div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>Issuer</label></div>
+                    <div class="col-md-9">{{mediaclip.data.DCP.Issuer}}</div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>Issued</label></div>
+                    <div class="col-md-9">{{mediaclip.data.DCP.IssueDate}}</div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>UUID</label></div>
+                    <div class="col-md-9">{{mediaclip.data.DCP.UUID}}</div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>Duration (frames)</label></div>
+                    <div class="col-md-9">{{mediaclip.data.DCP.Duration}}</div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>Duration (minutes)</label></div>
+                    <div class="col-md-9">{{mediaclip.data.DCP.DurationMinutes}}</div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>FrameRate</label></div>
+                    <div class="col-md-9">{{mediaclip.data.DCP.FrameRate}}</div>
+                </div>
+
+                <div class="row form-group" ng-if="!mediaclip.data.Resolution">
+                    <div class="col-md-3"><label>Resolution</label></div>
+                    <div class="col-md-9">{{mediaclip.data.DCP.Resolution}} ({{mediaclip.data.DCP.ImageWidth}}x{{mediaclip.data.DCP.ImageHeight}})</div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-3"><label>Errors</label></div>
+                    <div class="col-md-9">
+                        <div ng-repeat="error in mediaclip.data.DCP.Errors" >
+                            <h5>
+                                <span class="label" ng-class="{'label-danger': error.severity == 'Error','label-warning': error.severity == 'Warning','label-info': error.severity == 'Trivial'}">{{error.severity}} {{error.code}}</span>
+                                {{error.message}}
+                                <span ng-if="error.description != ''" class="row"><br>Info: {{error.description}}</span>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-md-3"><label>FMS Validator Version</label></div>
+                    <div class="col-md-3">{{mediaclip.data.DCP.ValidatorVersion}}</div>
+                </div>
+
+
+                <div ng-repeat="reel in mediaclip.data.DCP.Reels">
+                    <div class="row form-group">
+                        <hr>
+                        <div class="col-md-12">
+                            <h3>REEL {{$index +1}}</h3>
+                        </div>
+                    </div>
+                    <div class="row form-group" ng-if="reel.Errors && reel.Errors.length>0">
+                        <div class="col-md-3"><label>Errors</label></div>
+                        <div class="col-md-9">
+                            <div ng-repeat="error in reel.Errors" class="alert" ng-class="{'alert-danger': error.severity == 'Error','alert-warning': error.severity == 'Warning'}">
+                                <h5>
+                                    <span class="label" ng-class="{'label-danger': error.severity == 'Error','label-warning': error.severity == 'Warning','label-info': error.severity == 'Trivial'}">{{error.severity}} {{error.code}}</span>
+                                    {{error.message}}
+                                    <span ng-if="error.description != ''" class="row"><br>Info: {{error.description}}</span>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <h4>
+                                        <i class="glyphicon glyphicon-film"></i>
+                                        Main Picture
+                                        <span class="label label-danger pull-right" ng-if="reel.MainPicture.Errors.length > 0">{{reel.MainPicture.Errors.length}}</span>
+                                        <span class="label label-success pull-right" ng-if="!reel.MainPicture.Errors">0</span>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Encryption</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="reel.MainPicture.Encrypted == false">No</span>
+                                    <span ng-if="reel.MainPicture.Encrypted == true">Yes</span>
+                                    <span ng-if="reel.MainPicture.Encrypted === undefined"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group" ng-if="!reel.MainPicture.CryptographicKeyID == null">
+                                <div class="col-md-3"><label>Cryptographic KeyID</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainPicture.CryptographicKeyID === undefined)">{{reel.MainPicture.CryptographicKeyID}}</span>
+                                    <span ng-if="(reel.MainPicture.CryptographicKeyID === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>UUID</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainPicture.UUID === undefined)">{{reel.MainPicture.UUID}}</span>
+                                    <span ng-if="!(reel.MainPicture.Supplemental === false)" class="label label-warning">supplemental</span>
+                                    <span ng-if="(reel.MainPicture.UUID === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Resolution</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="(reel.MainPicture.Stereoscopic == 'false')">2D: </span>
+                                    <span ng-if="(!reel.MainPicture.Stereoscopic == 'false')">3D: </span>
+                                    <span ng-if="reel.p.Resolution == '[unknown]'"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                    <span ng-if="reel.p.Resolution != '[unknown]'">{{reel.MainPicture.Resolution}} <i>({{reel.MainPicture.ImageWidth}}x{{reel.MainPicture.ImageHeight}})</i> </span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Color Space</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainPicture.Colorspace === undefined)">{{reel.MainPicture.Colorspace}}</span>
+                                    <span ng-if="(reel.MainPicture.Colorspace === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Company Name</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainPicture.CompanyName === undefined)">{{reel.MainPicture.CompanyName}}</span>
+                                    <span ng-if="(reel.MainPicture.CompanyName === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Product Name</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainPicture.ProductName === undefined)">{{reel.MainPicture.ProductName}}</span>
+                                    <span ng-if="(reel.MainPicture.ProductName === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Product Version</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainPicture.ProductVersion === undefined)">{{reel.MainPicture.ProductVersion}}</span>
+                                    <span ng-if="(reel.MainPicture.ProductVersion === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Type</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainPicture.LabelSetType === undefined)">{{reel.MainPicture.LabelSetType}}</span>
+                                    <span ng-if="(reel.MainPicture.LabelSetType === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Edit Rate</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="(reel.MainPicture.EditRate == '[unknown]')"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                    <span ng-if="(reel.MainPicture.EditRate != '[unknown]')">{{reel.MainPicture.EditRate}} fps</span>
+                                </div>
+                            </div>
+                            <div class="row form-group" ng-if="reel.MainPicture.IntrinsicDuration > -1">
+                                <div class="col-md-3"><label>Asset Duration</label></div>
+                                <div class="col-md-3">
+                                    {{reel.MainPicture.IntrinsicDuration}} frames
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Entry Point</label></div>
+                                <div class="col-md-3">
+                                    {{reel.MainPicture.EntryPoint}} frames
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Duration in CPL</label></div>
+                                <div class="col-md-3">
+                                    {{reel.MainPicture.CplDuration}} frames
+                                </div>
+                            </div>
+                            <div class="row form-group" ng-if="reel.MainPicture.Errors.length > 0">
+                                <div class="col-md-3"><label>Errors</label></div>
+                                <div class="col-md-9">
+                                    <div ng-repeat="error in reel.MainPicture.Errors" >
+                                        <h5>
+                                            <span class="label" ng-class="{'label-danger': error.severity == 'Error','label-warning': error.severity == 'Warning','label-info': error.severity == 'Trivial'}">{{error.severity}} {{error.code}}</span>
+                                            {{error.message}}
+                                            <span ng-if="error.description != ''" class="row"><br>Info: {{error.description}}</span>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <h4>
+                                        <i class="glyphicon glyphicon-volume-up"></i>
+                                        Main Sound
+                                        <span class="label label-danger pull-right" ng-if="reel.MainSound.Errors.length > 0">{{reel.MainSound.Errors.length}}</span>
+                                        <span class="label label-success pull-right" ng-if="!reel.MainSound.Errors">0</span>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Encryption</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="reel.MainSound.Encrypted == false">No</span>
+                                    <span ng-if="reel.MainSound.Encrypted == true">Yes</span>
+                                    <span ng-if="reel.MainSound.Encrypted === undefined"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group" ng-if="!reel.MainSound.CryptographicKeyID == null">
+                                <div class="col-md-3"><label>Cryptographic KeyID</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainSound.CryptographicKeyID === undefined)">{{reel.MainSound.CryptographicKeyID}}</span>
+                                    <span ng-if="(reel.MainSound.CryptographicKeyID === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>UUID</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainSound.UUID === undefined)">{{reel.MainSound.UUID}}</span>
+                                    <span ng-if="!(reel.MainSound.Supplemental === false)" class="label label-warning">supplemental</span>
+                                    <span ng-if="(reel.MainSound.UUID === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Channels</label></div>
+                                <div class="col-md-1">
+                                    {{reel.MainSound.Channels}}
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Sample Rate</label></div>
+                                <div class="col-md-9">
+                                    {{reel.MainSound.SampleRate}}
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Company Name</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainSound.CompanyName === undefined)">{{reel.MainSound.CompanyName}}</span>
+                                    <span ng-if="(reel.MainSound.CompanyName === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Product Name</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainSound.ProductName === undefined)">{{reel.MainSound.ProductName}}</span>
+                                    <span ng-if="(reel.MainSound.ProductName === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Product Version</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainSound.ProductVersion === undefined)">{{reel.MainSound.ProductVersion}}</span>
+                                    <span ng-if="(reel.MainSound.ProductVersion === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Type</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainSound.LabelSetType === undefined)">{{reel.MainSound.LabelSetType}}</span>
+                                    <span ng-if="(reel.MainSound.LabelSetType === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group" ng-if="reel.MainSound.IntinsicDuration > -1">
+                                <div class="col-md-3"><label>Asset Duration</label></div>
+                                <div class="col-md-3">
+                                    {{reel.MainSound.IntinsicDuration}} frames
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Entry Point</label></div>
+                                <div class="col-md-3">
+                                    {{reel.MainSound.EntryPoint}} frames
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>Duration in CPL</label></div>
+                                <div class="col-md-3">
+                                    {{reel.MainSound.CplDuration}} frames
+                                </div>
+                            </div>
+                            <div class="row form-group" ng-if="reel.MainSound.Errors.length > 0">
+                                <div class="col-md-3"><label>Errors</label></div>
+                                <div class="col-md-9">
+                                    <div ng-repeat="error in reel.MainSound.Errors" >
+                                        <h5>
+                                            <span class="label" ng-class="{'label-danger': error.severity == 'Error','label-warning': error.severity == 'Warning'}">{{error.severity}} {{error.code}}</span>
+                                            {{error.message}}
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12" ng-if="reel.MainSubtitle">
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <h4>
+                                        <i class="glyphicon glyphicon-font"></i>
+                                        Main Subtitles
+                                        <span class="label label-danger pull-right" ng-if="reel.MainSubtitles.Errors.length > 0">{{reel.MainSubtitles.Errors.length}}</span>
+                                        <span class="label label-success pull-right" ng-if="!reel.MainSubtitles.Errors">0</span>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-3"><label>UUID</label></div>
+                                <div class="col-md-9">
+                                    <span ng-if="!(reel.MainSubtitle.UUID === undefined)">{{reel.MainSubtitle.UUID}}</span>
+                                    <span ng-if="!(reel.MainSubtitle.Supplemental === false)" class="label label-warning">supplemental</span>
+                                    <span ng-if="(reel.MainSubtitle.UUID === undefined)"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                </div>
+                            </div>
+                            <div class="row form-group" ng-if="reel.MainSubtitle">
+                                <div class="col-md-3"><label>Type</label></div>
+                                <div class="col-md-1">
+                                    {{reel.MainSubtitle.Type}}
+                                </div>
+                            </div>
+                            <div class="row form-group" ng-if="reel.MainSubtitles.Errors.length > 0">
+                                <div class="col-md-3"><label>Errors</label></div>
+                                <div class="col-md-9">
+                                    <div ng-repeat="error in reel.MainSubtitles.Errors" >
+                                        <h5>
+                                            <span class="label" ng-class="{'label-danger': error.severity == 'Error','label-warning': error.severity == 'Warning','label-info': error.severity == 'Trivial'}">{{error.severity}} {{error.code}}</span>
+                                            {{error.message}}
+                                            <span ng-if="error.description != ''" class="row"><br>Description: {{error.description}}</span>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row form-group" ng-if="reel.MainSubtitle">
+                                <div class="col-md-3"><label>Subtitles</label></div>
+                                <div class="col-md-9">
+                                    <pre>{{reel.MainSubtitle.Subtitles | json}}</pre>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row" ng-if="params.tab == 'attachments' && mediaclip">
+            <div class="col-md-12" ng-if="!mediaclip.attachments">
+                <div class="alert alert-info"><i>no attachments</i></div>
+            </div>
+            <div class="col-md-12" ng-if="mediaclip.attachments">
+                <div ng-repeat="attachment in mediaclip.attachments" >
+                    <div ng-if="attachment.mimeType == 'video/mp4'">
+                        <h5>{{attachment.title}}</h5>
+                        <vjs-video-container vjs-ratio="999:540">
+                            <video class="video-js vjs-default-skin vjs-control-bar" width="50" height="50"
+                                   controls preload="auto" data-setup='{"controls": true,"aspectRatio":"640:267", "playbackRates": [0.5, 1, 1.5, 2, 3, 4, 5] }'>
+                                <source video-url video-url-src="{{attachment.url}}" type='video/mp4' />
+                            </video>
+                        </vjs-video-container>
+                    </div>
+                    <div ng-if="attachment.mimeType == 'image/png'">
+                        <h5>{{attachment.title}}</h5>
+                        <img ng-src="{{attachment.url}}">
+                    </div>
+                    <div ng-if="attachment.mimeType == 'application/xml'">
+                        <h5>{{attachment.title}}</h5>
+                        <a href="{{attachment.url}}" download>Download XML File</a>
+                    </div>
+                    <div ng-if="attachment.mimeType == 'text/xml'">
+                        <h5>{{attachment.title}}</h5>
+                        <a href="{{attachment.url}}" download>Download XML File</a>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row" ng-if="params.tab == 'devices' && mediaclip">
+            <div class="col-md-12" ng-controller="MediaclipScreeningDevicelistController">
+                <h5>Scheduled on Device</h5>
+                <table class="table table-striped">
+                    <tr>
+                        <th width="5%">Vendor</th>
+                        <th width="5%">Model</th>
+                    </tr>
+                    <tr ng-repeat="device in devices">
+                        <td width="5%"> {{device.deviceVendor}}</td>
+                        <td width="5%">{{device.deviceModel}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-12" ng-controller="MediaclipDevicelistController" ng-init="init(mediaclip.externalId)">
+                <h5>Available on Device</h5>
+                <table class="table table-striped">
+                    <tr>
+                        <th width="5%">Device</th>
+                        <th width="5%">Vendor</th>
+                        <th width="5%">Model</th>
+                        <th width="5%">Status</th>
+                    </tr>
+                    <tr  ng-repeat="device in devices">
+                        <td width="5%"><fms-link id="device.id" type="'com.openfms.model.core.playback.FmsPlaybackDevice'">{{device.displayName}}</fms-link></td>
+                        <td width="5%">{{device.vendor}}</td>
+                        <td width="5%">{{device.model}} </td>
+                        <td width="5%">
+                            <span ng-if="device.cplStatus.playable" class="label label-success"><i class="glyphicon glyphicon-ok-circle"> </i> </span>
+                            <span ng-if="!device.cplStatus.playable" class="label label-danger"><i class="glyphicon glyphicon-remove-circle"> </i> </span>
+                            {{device.cplStatus.lastErrorMessage}} </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="row" ng-if="params.tab == 'versions' && mediaclip">
+            <div class="col-md-12">
+                <h4>Versions</h4>
+            </div>
+
+            <div ng-controller="MediaclipVersionListController" ng-if="mediaclip.id">
+                <div class="row">
+                    <div class="col-md-12 form-group" ng-show="movieversions.length == 0" >
+                        <div class="alert alert-info">
+                            <i>no versions created for this movie</i>
+                        </div>
+                    </div>
+                    <div ng-repeat="movieversion in movieversions"class="col-md-12">
+                        <div class="shadow-box" ng-controller="MovieVersionListEntryController">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <h4>[{{movieversion.externalId}}] <a>{{movieversion.name}}</a></h4>
+                                    Created <fms-time ng-model="movieversion.created">{{date.since}}</fms-time>
+                                </div>
+                                <div class="col-md-12">
+                                    <movie-version-editor id="movieversion.id" movie-id="movieId" foldable="child.foldable" expanded="child.expanded">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row" ng-if="params.tab == 'movie' && mediaclip">
+            <div class="col-md-12">
+                <h4>Movie <fms-link type="'com.openfms.model.core.movie.FmsMovie'" id="mediaclip.movieId">{{mediaclip.movieName}}</fms-link></h4>
+            </div>
+            <div class="col-md-9" ng-if="mediaclip.movieId">
+                <movie-editor id="mediaclip.movieId">
+            </div>
+            <div class="col-md-3">
+                <div class="row">
+                    <comments-full type="'com.openfms.model.core.movie.FmsMovie'" id="mediaclip.movieId" ng-if="mediaclip.movieId">
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>

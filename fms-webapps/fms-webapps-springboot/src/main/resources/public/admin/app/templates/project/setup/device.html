@@ -1,0 +1,97 @@
+<div ng-controller="DeviceController">
+
+    <!--                                    -->
+    <!--                                    -->
+    <!--      MOVIE                         -->
+    <!--                                    -->
+    <!--                                    -->
+    <div fms-headline>
+        <a href="#/setup/devices">Devices</a> | 
+        {{device.vendor}} <i ng-if="!device.vendor || device.vendor.length == 0">[Vendor not set]</i>
+        {{device.model}}  <i ng-if="!device.model || device.model.length == 0">[Model not set]</i>
+        {{device.serial}} <i ng-if="!device.serial || device.serial.length == 0">[Serial not set]</i>
+        
+    </div>
+
+    <div class="col-md-12 form-group">
+        <ul class="nav nav-tabs">
+            <li ng-class="{'active': params.tab == 'overview'}"><a ng-click="tab('overview')">Overview</a></li>
+            <li ng-class="{'active': params.tab == 'status'}"><a ng-click="tab('status')">Status</a></li>
+        </ul>
+    </div>
+
+    <div class="col-md-12" ng-if="params.tab == 'overview'">
+        <device-editor id="device.id" ng-if="device"></device-editor>
+    </div>
+
+    <div class="col-md-12" ng-if="params.tab == 'status'">
+        <div ng-controller="DeviceStatusController">
+            <div class="row" ng-if="!status">
+                <div class="col-md-12">
+                    <div class="alert alert-info">
+                        <i>No status information available for this device</i>
+                    </div>
+                </div>
+            </div>
+            <div class="row" ng-if="status">
+                <div class="col-md-8 form-group">
+                </div>
+                <div class="col-md-4 form-group">
+                    <select class="form-control" ng-model="current.statusId">
+                        <option ng-repeat="brief in briefs" value="{{brief.id}}">
+                            {{brief.date}}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <h3><fms-time ng-model="status.created">{{date.date}} {{date.time}} {{date.since}}</fms-time></h3><br>
+                </div>
+                <div class="col-md-12">
+                    <label>Space</label><br>
+                </div>
+                <div class="col-md-2">
+                    Total: {{status.diskStatus.totalSpace | byteFilter}}
+                </div>
+                <div class="col-md-2 form-group">
+                    Available: {{status.diskStatus.availableSpace | byteFilter}}
+                </div>
+                <div class="col-md-12 form-group">
+                    <div class="progress" ng-if="(status.diskStatus.totalSpace - status.diskStatus.availableSpace) / status.diskStatus.totalSpace * 100 <= 70">
+                      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{(status.diskStatus.totalSpace - status.diskStatus.availableSpace) / status.diskStatus.totalSpace * 100}}" aria-valuemin="0" aria-valuemax="100" style="width: {{(status.diskStatus.totalSpace - status.diskStatus.availableSpace) / status.diskStatus.totalSpace * 100}}%;">
+                      </div>
+                    </div>
+                    <div class="progress" ng-if="(status.diskStatus.totalSpace - status.diskStatus.availableSpace) / status.diskStatus.totalSpace * 100 > 70 && (status.diskStatus.totalSpace - status.diskStatus.availableSpace) / status.diskStatus.totalSpace * 100 <= 85">
+                        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{(status.diskStatus.totalSpace - status.diskStatus.availableSpace) / status.diskStatus.totalSpace * 100}}" aria-valuemin="0" aria-valuemax="100" style="width: {{(status.diskStatus.totalSpace - status.diskStatus.availableSpace) / status.diskStatus.totalSpace * 100}}%;">
+                        </div>
+                    </div>
+                    <div class="progress" ng-if="(status.diskStatus.totalSpace - status.diskStatus.availableSpace) / status.diskStatus.totalSpace * 100 > 85">
+                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{(status.diskStatus.totalSpace - status.diskStatus.availableSpace) / status.diskStatus.totalSpace * 100}}" aria-valuemin="0" aria-valuemax="100" style="width: {{(status.diskStatus.totalSpace - status.diskStatus.availableSpace) / status.diskStatus.totalSpace * 100}}%;">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 form-group">
+                    <table class="table table-compact"> 
+                        <tr ng-repeat="cplStatus in status.cplStatus">
+                            <td>
+                                <span ng-if="cplStatus.playable" class="label label-success"><i class="glyphicon glyphicon-ok-circle"> </i> </span>
+                                <span ng-if="!cplStatus.playable" class="label label-danger"><i class="glyphicon glyphicon-remove-circle"> </i> </span>
+                            </td>
+                            <td ng-controller="MediaclipSearchController" ng-init="init(cplStatus.cplUuid)">
+                                {{cplStatus.cplUuid}}<br>
+                                <span ng-if="mediaclips.length > 0"><fms-link id="mediaclips[0].id" type="'com.openfms.model.core.movie.FmsMediaClip'">{{cplStatus.contentTitleText}}</fms-link></span>
+                                <span ng-if="mediaclips.length == 0">{{cplStatus.contentTitleText}}</span>
+                            </td>
+                            <td>{{cplStatus.size | byteFilter}}</td>
+                            <td>{{cplStatus.lastErrorMessage}}</td>
+                        </tr>
+                    </table>
+                </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+</div>

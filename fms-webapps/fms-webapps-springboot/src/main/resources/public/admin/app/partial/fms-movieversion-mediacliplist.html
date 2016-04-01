@@ -1,0 +1,32 @@
+<div class="row">
+	<div class="col-md-12" ng-if="mediaclips">
+		<div ng-if="mediaclips.length == 0" class="alert alert-info">
+			<span  >
+				<i>no media clips selected</i>
+			</span>
+		</div>
+		<table class="table table-compact table-striped">
+			<tbody ng-repeat="mediaclip in mediaclips">
+				<tr>
+					<td><small><fms-link object="mediaclip">{{mediaclip.name}}</fms-link></small></td>
+					<td><small>{{mediaclip.length}}</small></td>
+					<td><small>{{mediaclip.type}}</small></td>
+					<td width="45%">
+	                    <span ng-repeat="l in mediaclip.audioLanguageIds" class="label label-primary" style="margin:2px"><i class="glyphicon glyphicon-volume-up"></i> {{l}}</span>
+	                    <span ng-repeat="l in mediaclip.subtitleLanguageIds" class="label label-primary" style="margin:2px"><i class="glyphicon glyphicon-font"></i> {{l}}</span>
+	                    <span ng-repeat="l in mediaclip.tags" class="label label-success" style="margin:2px"><i class="glyphicon glyphicon-map-marker"></i> {{l}}</span>
+	                    <span ng-if="mediaclip.encrypted" class="label label-danger">Encrypted</span>
+	                    <span ng-if="mediaclip.disabled" class="label label-danger"><i class="glyphicon glyphicon-ban-circle"></i> Clip Disabled</span>
+	                    <span ng-if="!mediaclip.disabled" class="label label-success"><i class="glyphicon glyphicon-ok-circle"></i> Clip Enabled</span>
+
+					</td>
+					<td width="5%">  
+	                    <fms-status status="mediaclip.status">
+	                        <i class="glyphicon glyphicon-hdd"></i>
+	                    </fms-status>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>	
+</div>

@@ -1,0 +1,80 @@
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>Name</label><br>
+                    {{package.name}}<br>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <span class="label label-danger pull-right" ng-if="packageErrorMap[package.id]>0">
+                    {{packageErrorMap[package.id]}} ERRORS
+                </span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Ext ID</label><br>
+                    {{package.externalId}}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Created</label><br>
+                    <fms-time ng-model="package.created">
+                        {{date.date}} {{date.time}}
+                    </fms-time>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="pull-right">
+                    <h4>
+                        {{package.size | byteFilter}}
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group" ng-click="showFiles = !showFiles">
+                    <i class="pull-right glyphicon glyphicon-chevron-down" ng-show="showFiles"></i>
+                    <i class="pull-right glyphicon glyphicon-chevron-up" ng-show="!showFiles"></i>
+                </div>
+            </div>
+            <div class="col-md-12"  ng-if="showFiles">
+                <div class="row"  ng-repeat="file in files">
+                    <div> 
+                        <table class="table table-compact">
+                            <tr>
+                                <td valign="top" width="40%">
+                                    {{file.name}}
+                                </td>
+                                <td valign="top" width="10%">
+                                    <span class="pull-right">
+                                        {{file.size | byteFilter}}
+                                    </span>
+                                </td>
+                                <td valign="top" width="50%">
+                                    <table class="table table-compact">
+                                        <tr ng-repeat="filecopy in fileCopyMap[file.id]">
+                                            <td width="65%"><small><fms-time ng-model="filecopy.created"> {{date.date}} {{date.time}}</fms-time></small></td>
+                                            <td width="65%"><small>{{filecopy.relativePath}}</small></td>
+                                            <td width="15%"><small>{{packageCopyMap[filecopy.packageCopyId].storageSystem.type}}</small></td>
+                                            <td width="15%"><small>{{packageCopyMap[filecopy.packageCopyId].storageSystem.name}}</small></td>
+                                            <td width="5%">
+                                                <small class="label label-success" ng-show="filecopy.ok"><i class="glyphicon glyphicon-ok"> </i>  {{filecopy.complete}}</small>
+                                                <small class="label label-danger" ng-show="!filecopy.ok"><i class="glyphicon glyphicon-remove"> </i>  {{filecopy.complete}}</small>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>                
+                </div>
+            </div>
+        </div>
+
+

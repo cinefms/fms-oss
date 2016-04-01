@@ -1,0 +1,21 @@
+package com.openfms.model.exceptions;
+
+
+
+public class MalformedQueryException extends QueryException {
+
+	private static final long serialVersionUID = 3741067178876683135L;
+
+	public static final String MALFORMED_QUERY_END_WITHOUT_START = "MALFORMED_QUERY_END_WITHOUT_START";
+	public static final String MALFORMED_QUERY_OPERATOR_OR_WITHOUT_PREVIOUS_CONDITION = "MALFORMED_QUERY_OPERATOR_OR_WITHOUT_PREVIOUS_CONDITION";
+	public static final String MALFORMED_QUERY_OPERATOR_AND_WITHOUT_PREVIOUS_CONDITION ="MALFORMED_QUERY_OPERATOR_AND_WITHOUT_PREVIOUS_CONDITION"; 
+	public static final String MALFORMED_QUERY_KEY_MUST_NOT_BE_NULL ="MALFORMED_QUERY_KEY_MUST_NOT_BE_NULL"; 
+	public static final String MALFORMED_QUERY_START_WITH_PREVIOUS_CONDITION ="MALFORMED_QUERY_START_WITH_PREVIOUS_CONDITION"; 
+	public static final String MALFORMED_QUERY_LIMIT_ON_NESTED ="MALFORMED_QUERY_LIMIT_ON_NESTED"; 
+	public static final String MALFORMED_QUERY_SORT_ON_NESTED ="MALFORMED_QUERY_SORT_ON_NESTED"; 
+	
+	public MalformedQueryException(String key) {
+		super(key);
+	}
+
+}

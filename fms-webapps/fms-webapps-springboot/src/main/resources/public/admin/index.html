@@ -1,0 +1,224 @@
+<html>
+  <head>
+    <title>FMS</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="bower_components/angular-markdown-editor/dist/angular-markdown-editor.css">
+    <link rel="stylesheet" href="bower_components/select2/select2.css">
+    <link rel="stylesheet" href="bower_components/bootstrap3-datetimepicker/build/css/bootstrap-datetimepicker.css">
+    <!--
+    <link rel="stylesheet" href="bower_components/angular-ui/build/angular-ui.min.css">
+    -->
+    <link rel="stylesheet" type="text/css" href="bower_components/jsoneditor/jsoneditor.min.css">
+    <link rel="stylesheet" href="bower_components/angular-hotkeys/build/hotkeys.min.css">
+    <link rel="stylesheet" href="bower_components/angular-chart.js/dist/angular-chart.css">
+    <link rel="stylesheet" href="bower_components/fullcalendar/dist/fullcalendar.css"/>
+    <link rel="stylesheet" href="bower_components/fullcalendar-scheduler/dist/scheduler.css"/>
+    <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css"/>
+    <link rel="stylesheet" href="bower_components/video.js/dist/video-js.css"/>
+    <link rel="stylesheet" href="bower_components/angular-tooltips/dist/angular-tooltips.css"/>
+
+
+
+      <link rel="stylesheet" href="app/css/select2-bootstrap.css">
+
+    <link rel="stylesheet" href="app/css/admin.css">
+
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
+    <script type="text/javascript" src="bower_components/angular-route/angular-route.js"></script>
+    <script type="text/javascript" src="bower_components/restangular/dist/restangular.js"></script>
+    <script type="text/javascript" src="bower_components/markdown/lib/markdown.js"></script>
+    <script type="text/javascript" src="bower_components/angular-hotkeys/build/hotkeys.js"></script>
+
+
+    <script type="text/javascript" src="bower_components/moment/min/moment-with-locales.js"></script>
+    <script type="text/javascript" src="bower_components/moment-timezone/builds/moment-timezone-with-data.js"></script>
+    <script type="text/javascript" src="bower_components/moment-timezone/moment-timezone-utils.js"></script>
+
+    <script type="text/javascript" src="bower_components/ng-multi-transclude/src/multi-transclude.js"></script>
+    <script type="text/javascript" src="bower_components/select2/select2.js"></script>
+
+    <script type="text/javascript" src="bower_components/bootstrap3-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <!--
+    <script type="text/javascript" src="bower_components/angular-ui/build/angular-ui.min.js"></script>
+    <script type="text/javascript" src="bower_components/ui-router/release/angular-ui-router.min.js"></script>
+    -->
+    <script type="text/javascript" src="bower_components/jsoneditor/jsoneditor.js"></script>
+    <script type="text/javascript" src="bower_components/jsoneditor/asset/jsonlint/jsonlint.js"></script>
+    <script type="text/javascript" src="bower_components/jsoneditor/asset/ace/ace.js"></script>
+    <!--
+    <script type="text/javascript" src="bower_components/angular-markdown-editor/dist/angular-markdown-editor.min.js"></script>
+    -->
+    <script type="text/javascript" src="bower_components/lodash/dist/lodash.js"></script>
+    <script type="text/javascript" src="bower_components/uri.js/src/URI.js"></script>
+    <script type="text/javascript" src="bower_components/d3/d3.min.js"></script>
+
+    <script type="text/javascript" src="bower_components/Chart.js/Chart.js"></script>
+    <script type="text/javascript" src="bower_components/angular-chart.js/dist/angular-chart.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui-calendar/src/calendar.js"></script>
+    <script type="text/javascript" src="bower_components/fullcalendar/dist/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="bower_components/fullcalendar-scheduler/dist/scheduler.min.js"></script>
+    <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="bower_components/sweetalert/SweetAlert.min.js"></script>
+    <script type="text/javascript" src="bower_components/video.js/dist/video.js"></script>
+    <script type="text/javascript" src="bower_components/video.js/dist/videojs.hotkeys.js"></script>
+    <script type="text/javascript" src="bower_components/angular-tooltips/dist/angular-tooltips.js"></script>
+
+
+
+      <script type="text/javascript" src="app/js/shortcuts.js"></script>
+
+    <script type="text/javascript" src="app/js/spinner.js"></script>
+    <script type="text/javascript" src="app/js/app.js"></script>
+    <script type="text/javascript" src="app/js/services_auth.js"></script>
+    <script type="text/javascript" src="app/js/services_services.js"></script>
+    <script type="text/javascript" src="app/js/services_controllers.js"></script>
+    <script type="text/javascript" src="app/js/services_directives.js"></script>
+    <script type="text/javascript" src="app/js/ifb_services.js"></script>
+    <script type="text/javascript" src="app/js/services.js"></script>
+    <script type="text/javascript" src="app/js/filters.js"></script>
+    <script type="text/javascript" src="app/js/directives.js"></script>
+    <script type="text/javascript" src="app/js/controllers.js"></script>
+    <script type="text/javascript" src="app/js/controller_utils.js"></script>
+    <script type="text/javascript" src="app/js/movie_controllers.js"></script>
+    <script type="text/javascript" src="app/js/movie_directives.js"></script>
+    <script type="text/javascript" src="app/js/schedule_controllers.js"></script>
+    <script type="text/javascript" src="app/js/schedule_directives.js"></script>
+    <script type="text/javascript" src="app/js/setup_controllers.js"></script>
+    <script type="text/javascript" src="app/js/setup_directives.js"></script>
+    <script type="text/javascript" src="app/js/comments_directives.js"></script>
+    <script type="text/javascript" src="app/js/vjs.directive.js"></script>
+
+
+
+  </head>
+  <body ng-app="cinefms">
+
+    <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+      <div class="nav navbar-header">
+        <ul class="nav navbar-nav loader-inactive">
+          <li class="dropdown">
+            <a href="#"><span class="glyphicon glyphicon-refresh loader-not-spinning"> </span>  </a>
+          </li>
+          <li>
+            <img src="img/cinefms.png" style="height: 45; width: auto; padding: 0 10 0 50">
+          </li>
+        </ul>
+      </div>
+      <div class="navbar-header"  ng-controller="LoginStatusController">
+        <a class="navbar-brand" href="#/home">CineFMS {{project.name}}</a>
+      </div>
+      <div class="nav navbar-collapse" ng-controller="LoginStatusController"  ng-show="authenticated">
+        <ul class="nav navbar-nav" ng-if="project">
+          <li class="dropdown" nav-active="/movies">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="">Movies <span class="caret"></span></a>
+            <ul role="menu" class="dropdown-menu">
+              <li nav-active="/movies/movies"><a href="#/movies/movies">Movies</a></li>
+              <li nav-active="/movies/mediaclips"><a href="#/movies/mediaclips">Mediaclips</a></li>
+              <li nav-active="/movies/packages"><a href="#/movies/packages">Packages</a></li>
+              <li nav-active="/movies/tasks"><a href="#/movies/tasks">Tasks</a></li>
+            </ul>
+          </li>
+            <li class="dropdown" nav-active="/keys">
+                <a data-toggle="dropdown" class="dropdown-toggle" href="">Keys <span class="caret"></span></a>
+                <ul role="menu" class="dropdown-menu">
+                    <li nav-active="/keys/overview"><a href="#/keys/overview">Overview</a></li>
+                    <li nav-active="/keys/uploads"><a href="#/keys/uploads">Uploads</a></li>
+                </ul>
+            </li>
+          <li class="dropdown" nav-active="/schedule">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="">Schedule <span class="caret"></span></a>
+            <ul role="menu" class="dropdown-menu">
+              <li nav-active="/schedule/events"><a href="#/schedule/events">Events</a></li>
+              <li nav-active="/schedule/overview"><a href="#/schedule/overview">Overview</a></li>
+              <li nav-active="/schedule/overview"><a href="#/schedule/calendar">Calendar</a></li>
+              <li nav-active="/schedule/devicestatus"><a href="#/schedule/devicestatus">Device Status</a></li>
+            </ul>
+          </li>
+          <li class="dropdown" nav-active="/setup">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="">Setup <span class="caret"></span></a>
+            <ul role="menu" class="dropdown-menu">
+              <li class="divider"></li>
+              <li nav-active="/setup/project"><a href="#/setup/project">Project</a></li>
+              <li class="divider"></li>
+              <li nav-active="/setup/sites"><a href="#/setup/sites">Sites</a></li>
+              <li nav-active="/setup/locations"><a href="#/setup/locations">Locations</a></li>
+              <li nav-active="/setup/devices"><a href="#/setup/devices">Playback Devices</a></li>
+              <li class="divider"></li>
+              <li nav-active="/setup/keys"><a href="#/setup/keys">Keys</a></li>
+              <li nav-active="/setup/certificates"><a href="#/setup/certificates">Certificates</a></li>
+              <li class="divider"></li>
+              <li nav-active="/setup/tags"><a href="#/setup/tags">Tags & Types</a></li>
+              <li nav-active="/setup/workflow"><a href="#/setup/workflow">Workflow</a></li>
+              <li nav-active="/setup/scheduledjobs"><a href="#/setup/scheduledjobs">Scheduled Jobs</a></li>
+              <li class="divider"></li>
+              <li nav-active="/setup/users_groups"><a href="#/setup/users_groups">Users &amp; Groups</a></li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav">
+          <li class="dropdown" ng-if="user.admin" nav-active="/admin/projects">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="">Admin <span class="caret"></span></a>
+            <ul role="menu" class="dropdown-menu">
+              <li nav-active="/admin/projects"><a href="#/admin/projects">Projects</a></li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <notification-display-small>
+          </li>
+          <li>
+            <a href="#/profile"><strong>{{user.name}}</strong></a>
+          </li>
+          <li>
+            <a href="#" ng-click="logout()"><span class="glyphicon glyphicon-off"> </span> logout</a>
+          </li>
+          <li style="width:100px">
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container" style="padding-top: 60px">
+      <div class="row">
+        <ng-view>
+        </ng-view>
+      </div>
+      <div class="row" style="height:60px">
+      </div>
+      <div ng-controller="SearchController">
+        <ng-include src="'app/templates/search-dialog.html'">
+      </div>
+      <div ng-controller="ErrorController">
+        <div class="fms-error-overlay"  ng-show="show">
+          <div class="fms-search-dialog">
+            <div class="row">
+                <div class="col-md-12">
+                <h4>Error! {{error.status}}</h4>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class=" alert alert-error">
+                  <h5>{{status}} {{error.config.url}}</h5>{{error.status}}
+                  {{error.data.errorMessage}}
+                </div>
+                <div>
+                  {{error.data}}
+                </div>
+              </div>
+              <div class="col-md-12">
+                <button class="btn btn-primary pull-right" ng-click="dismiss()">OK</button>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

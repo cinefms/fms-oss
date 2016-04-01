@@ -1,0 +1,48 @@
+package com.openfms.core.service.project.impl.listeners;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.openfms.core.service.FmsLocationService;
+import com.openfms.model.FmsObjectChangeNotifier.OPERATION;
+import com.openfms.model.annotations.FmsListener;
+import com.openfms.model.annotations.FmsNotify;
+import com.openfms.model.core.playback.FmsLocation;
+import com.openfms.model.core.playback.FmsPlaybackDevice;
+
+@Component
+@FmsListener
+public class PlaybackDeviceListener {
+
+	private static Log log = LogFactory.getLog(PlaybackDeviceListener.class);
+
+	@Autowired
+	private FmsLocationService locationService;
+
+	@FmsNotify(operations = { OPERATION.UPDATED, OPERATION.DELETED }, runWithRoles = "ROLE_ADMIN")
+	public void whenLocationSavedUpdateLocationNameInDevices(FmsLocation newLocation, FmsLocation oldLocation) {
+		try {
+			if (newLocation != null && oldLocation != null) {
+				// UPDATED
+				for (FmsPlaybackDevice pd : locationService.listPlaybackDevices(null, newLocation.getId(), null, null, null, null, true, null, null)) {
+					log.debug(" updating playback device: " + pd.getId() + " --- " + newLocation.getName());
+					pd.setLocationName(newLocation.getName());
+					locationService.savePlaybackDevice(pd);
+				}
+			} else if (oldLocation != null) {
+				// DELETED
+				for (FmsPlaybackDevice pd : locationService.listPlaybackDevices(null, oldLocation.getId(), null, null, null, null, true, null, null)) {
+					log.debug(" updating playback device: removing reference to location " + oldLocation.getName());
+					pd.setLocationName(null);
+					pd.setLocationId(null);
+					locationService.savePlaybackDevice(pd);
+				}
+			}
+		} catch (Exception e) {
+			log.error("error in certificate listener:", e);
+		}
+	}
+
+}
