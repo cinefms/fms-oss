@@ -11,7 +11,6 @@
 		<module>fms-core</module>
 		<module>fms-model</module>
 		<module>fms-utils</module>
-		<module>fms-satellite</module>
 		<module>fms-tools</module>
 	</modules>
 	<properties>
@@ -94,7 +93,7 @@
 			<uniqueVersion>true</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
-	<!-- 
+	<!--
 	<pluginRepositories>
 		<pluginRepository>
 			<id>fms-public</id>
@@ -365,7 +364,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>
-		<!-- 
+		<!--
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
@@ -398,7 +397,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<!-- 
+	<!--
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -426,8 +425,8 @@
 					<reuseForks>true</reuseForks>
 					<argLine>-Xmx2048m</argLine>
 				</configuration>
-			</plugin>			
-  			<!-- 
+			</plugin>
+  			<!--
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>

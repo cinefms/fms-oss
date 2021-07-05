@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Mon Jul 05 19:28:58 CEST 2021
+https\://repo.maven.apache.org/maven2/.lastUpdated=1625506138501
+@default-skjlls-oss-releases-https\://infra.skjlls.com/nexus/content/repositories/releases-oss/.lastUpdated=1625506138348
+https\://infra.skjlls.com/nexus/content/repositories/releases-oss/.error=Could not transfer artifact org.springframework.security\:spring-security-bom\:pom\:4.0.3.RELEASE from/to skjlls-oss-releases (https\://infra.skjlls.com/nexus/content/repositories/releases-oss/)\: Transfer failed for https\://infra.skjlls.com/nexus/content/repositories/releases-oss/org/springframework/security/spring-security-bom/4.0.3.RELEASE/spring-security-bom-4.0.3.RELEASE.pom
